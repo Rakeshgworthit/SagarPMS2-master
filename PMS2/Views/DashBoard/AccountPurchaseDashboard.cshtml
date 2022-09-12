@@ -1,0 +1,544 @@
+﻿
+@{
+    ViewBag.Title = "AccountPurchaseDashboard";
+}
+
+
+
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-6">
+                <h3 class="animated fadeInLeft text-primary">Accounts Payable Dashboard</h3>
+            </div>
+            <div class="col-md-6 col-6">
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    @*<button type="button" onclick="openModelpop('/Admin/BranchLoadAddEdit', 'id', 0);" class='btn btn-primary pull-right'>
+                            <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">AP Dashboard</span>
+                        </button>*@
+                    <h5><a href="/DashBoard/AccountSalesDashboard" class="pull-right"><u><span style="padding-left:10px;">AR Dashboard</span></u> </a></h5>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mx-auto">
+
+    <div class="col-md-3 px-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col-md-12 align-self-end">
+                        <h3 class=" number-font text-center">Year</h3>
+                        <select id="size" style="width: 100%;">
+                            <option>2021</option>
+                            <option>2020</option>
+                            <option>2019</option>
+                            <option>2018</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>$15,600.00</strong></h4>
+                        <p class="mb-1">Total Purchases</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>3.3%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last year</span></span>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>9,320</strong></h4>
+                        <p class="mb-1">No.of Purchases</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>2.9%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last year</span></span>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>$12,200.00</strong></h4>
+                        <p class="mb-1">Average Purchases</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>2.1%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last year</span></span>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>$16,340.00</strong></h4>
+                        <p class="mb-1">Largest Purchases</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>1.1%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last year</span></span>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 px-1">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h3 class="card-title">Purchases</h3>
+            </div>
+            <div class="pt-1 card-body">
+                @*<div class="row d-flex mb-5">
+                        <div class="col">
+
+                            <h3 class="mb-0 mt-2 number-font"><i class="fa fa-inr"></i>7,534</h3>
+                            <p class="mb-1">Current Period</p>
+
+                        </div>
+                        <div class="col">
+
+                            <h3 class="mb-0 mt-2 number-font"><i class="fa fa-inr"></i>7,534</h3>
+                            <p class="mb-1">Previous Period</p>
+                        </div>
+                    </div>*@
+                <div class="k-content wide">
+                    <div id="purchase_combo_charts" style="width:100%;height: 520px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 px-2">
+        <div class="card">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col-md-12 align-self-end">
+                        <h3 class=" number-font text-center">Branch</h3>
+                        <select id="size" style="width: 100%;">
+                            <option>Richard</option>
+                            <option>Design 4 Space Pte Ltd (Trade Hub)</option>
+                            <option>Design 4 Space Pte Ltd (Toa Payoh)</option>
+                            <option>Design 4 Space Pte Ltd (Paya Lebar)</option>
+                            <option>Areana Creation Pte Ltd (AZ)</option>
+                            <option>Areana Creation Interior Pte Ltd (AMK)</option>
+                            <option>Tanjong Katong</option>
+                            <option>KORATAM</option>
+                        </select>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>$4,000.00</strong></h4>
+                        <p class="mb-1">Current Day</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>2.3%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than yesterday</span></span>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>$10,000.00</strong></h4>
+                        <p class="mb-1">Current Month</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>4.4%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last month</span></span>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>$19,640.00</strong></h4>
+                        <p class="mb-1">Current Quarter</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>4.8%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last quarter</span></span>
+            </div>
+        </div>
+        <div class="card mt-1">
+            <div class="card-body">
+                <div class="row d-flex mb-1">
+                    <div class="col">
+                        <h4 class="mb-0 mt-2 number-font"><strong>6,000.00</strong></h4>
+                        <p class="mb-1">No.of Completed Projects</p>
+                    </div>
+                    <div class="col-auto mb-0">
+                        <div class="dash-icon text-orange">
+                            <i class="fa fa-bar-chart"></i>
+                        </div>
+                    </div>
+                </div>
+                <span class="fs-12 text-success"> <strong>1.1%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last year</span></span>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-auto mt-2">
+
+    <div class="col-md-6 px-2">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h4 class="card-title">Top 10 Loan Balance Salesmans </h4>
+            </div>
+            <div class="pt-1 card-body">
+                <div id="top_loan_balance"></div>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 px-1">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h4 class="card-title">Top 10 Suppliers </h4>
+            </div>
+            <div class="pt-1 card-body">
+                <table id="top_sites">
+                    <colgroup>
+                        <col style="width:60px" />
+                        <col style="width:26px" />
+                        @*<col style="width:110px" />
+                            <col style="width:120px" />
+                            <col style="width:130px" />*@
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th data-field="make">Suppliers</th>
+                            <th data-field="model">Amount</th>
+                            @*<th data-field="year">Year</th>
+                                <th data-field="category">Category</th>
+                                <th data-field="airconditioner">Air Conditioner</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$12,300.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$12,200.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 px-1">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h4 class="card-title">Top 10 Payments Pending</h4>
+            </div>
+            <div class="pt-1 card-body">
+                <table id="top_sites_owing">
+                    <colgroup>
+                        <col style="width:60px" />
+                        <col style="width:26px" />
+                        @*<col style="width:110px" />
+                            <col style="width:120px" />
+                            <col style="width:130px" />*@
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th data-field="make">Suppliers</th>
+                            <th data-field="model">Amount</th>
+                            @*<th data-field="year">Year</th>
+                                <th data-field="category">Category</th>
+                                <th data-field="airconditioner">Air Conditioner</th>*@
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$12,300.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$12,200.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+                        </tr>
+                        <tr>
+                            <td>1 STOP WATERPROOFING P L</td>
+                            <td>$11,450.00</td>
+
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row mx-auto mt-2">
+    <div class="col-md-12 px-1">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h4 class="card-title">Top 10 Loan Report</h4>
+            </div>
+            <div class="pt-1 card-body">
+
+                <div id="top_loan_report"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    $(function () {
+        /*-------------------------------------------------------------*/
+        /*Total Purchase Kendo Chart*/
+
+        //Total Revenue Chart
+        $("#purchase_combo_charts").kendoChart({
+            // The Bottom Labels
+            legend: {
+                visible: false,
+                position: "bottom",
+            },
+            // Data For Dataset(Bar Chart))
+            series: [{
+                type: "column",
+                name: "Revenue ",
+                color: "#1a1b77",
+                data: [700, 350, 400, 250, 300, 600, 750, 550, 680, 920, 840, 960],
+            },
+            // Data For Dataset(line Chart)
+            {
+                type: "line",
+                name: "Growth",
+                color: "#955757",
+                style: "smooth",
+                width: 3,
+                data: [700, 350, 400, 250, 300, 600, 750, 550, 680, 920, 840, 960],
+
+                markers: {
+                    visible: true,
+                    background: "#1a1b77",
+
+                },
+            },],
+            //X Axis Value Range for labels
+            valueAxis: {
+                min: 100,
+                max: 1000,
+                majorGridLines: {
+                    visible: true
+                },
+            },
+            //Y Axis Data labels
+            categoryAxis: {
+
+                justified: true,
+                majorGridLines: {
+                    visible: true
+                },
+
+                categories: ['Jan', 'Feb', 'March', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+
+
+            },
+            // Tootip For Dataset
+            tooltip: {
+                visible: true,
+
+                template: "#= category # : #= value #K"
+
+
+            },
+
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Sippliers
+        $("#top_sites").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Payments Pending
+        $("#top_sites_owing").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Loan Report
+        $("#top_loan_report").kendoGrid({
+            columns: [
+                { field: "Date" },
+                { field: "Purpose" },
+                { field: "Closedfile" },
+                { field: "LoanPayouts" },
+                { field: "Modeofpayment" },
+                { field: "TotalBalance" },
+
+            ],
+            dataSource: [
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+                { Date: "03/12/2020", Purpose: "Blk 312 Sembawang Dr #02-480", Closedfile: "$-2086.68", LoanPayouts: "-", Modeofpayment: "Cheque UOB - TRADEHUB-D4S", TotalBalance: "$3374.96" },
+
+
+
+            ]
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Loan Balance
+        $("#top_loan_balance").kendoGrid({
+            columns: [
+                { field: "Salesman" },
+                { field: "Comission" },
+                { field: "LoanAmount" },
+                { field: "Loanpaid" },
+                { field: "RepaidLoan" },
+
+            ],
+            dataSource: [
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                {
+                    Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: 
+                    "6,000"
+                },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+                { Salesman: "Chai Chiun", Comission: "3,000", LoanAmount: "12,000", Loanpaid: "6,000", RepaidLoan: "6,000" },
+
+
+
+            ]
+        });
+    /*-------------------------------------------------------------*/
+    /*-------------------------------------------------------------*/
+    });
+</script>

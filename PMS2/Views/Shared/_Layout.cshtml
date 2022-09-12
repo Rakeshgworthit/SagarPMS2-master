@@ -1,0 +1,643 @@
+﻿@using Microsoft.AspNet.Identity
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PMS</title>
+    <link rel="shortcut icon" href="~/Content/img/logomi.png">
+    <!-- start: Css -->
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/themes/blue/pace-theme-center-circle.min.css" integrity="sha512-LcqLb2MZgZ2/tlNXZuIZ8udWd4MRMHlApdG2eiF/ebefnISiKBmk4iRlinNaQsMqUnNffv4A82nxCahMoea+eA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pace/1.2.4/pace.min.js" integrity="sha512-2cbsQGdowNDPcKuoBd2bCcsJky87Mv0LEtD/nunJUgk6MOYTgVMGihS/xCEghNf04DPhNiJ4DZw5BxDd1uyOdw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <!-- Bootstrap CSS -->
+
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css" integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l" crossorigin="anonymous">
+
+    @*<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tour/0.12.0/css/bootstrap-tour-standalone.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />*@
+    <!-- Select2 CSS -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" integrity="sha512-nMNlpuaDPrqlEls3IX/Q56H36qvBASwb3ipuo3MxeWbsQB1881ox0cRv7UPTgBlriqoynt35KjEwgGUeUXIPnw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- Owl Carousel -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css" integrity="sha512-tS3S5qG0BlhnQROyJXvNjeEM4UpMXHrQfTGmbQ1gKmelCxlSEBUaxhRBj/EFTzpbP4RVSrpEikbmdJobCvhE3g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css" integrity="sha512-sMXtMNL1zRzolHYKEujM2AqCLUR9F2C4/05cdbxjjLSRvMQIciEPCQZo++nk7go3BtSuK9kfa/s+a4f4i5pLkw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <!-- daterangepicker -->
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+
+    <!-- plugins -->
+    <link rel="stylesheet" type="text/css" href="~/Content/css/plugins/font-awesome.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/css/plugins/simple-line-icons.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/css/plugins/animate.min.css" />
+    <link rel="stylesheet" href="~/Content/css/jquery-ui.css">
+    <link href="~/scripts/jquery.loader.css" rel="stylesheet" />
+    <link href="~/Content/css/notifIt.css" type="text/css" rel="stylesheet">
+    <link href="~/Content/Kendo/kendo.common.min.css" rel="stylesheet" />
+    <link href="~/Content/Kendo/kendo.default.min.css" rel="stylesheet" />
+
+    <!-- General CSS -->
+    <link href="~/Content/css/style.css?v=' + @DateTime.Now+'" rel="stylesheet">
+
+
+
+    @*<link href="~//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css" rel="stylesheet">*@
+    @*<link rel="stylesheet" type="text/css" href="~/Content/css/bootstrap.min.css">*@
+    @*<link rel="stylesheet" type="text/css" href="~/Content/css/plugins/icheck/skins/flat/aero.css" />*@
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+    @*<link href="~/Content/kendo.common.min.css" rel="stylesheet" />
+        <link href="~/Content/kendo.rtl.min.css" rel="stylesheet" />
+        <link href="~/Content/kendo.default.min.css" rel="stylesheet" />
+        <link href="~/Content/kendo.mobile.all.min.css" rel="stylesheet" />*@
+    @*<link rel="stylesheet" href="~/Content/css/jquery.ui.min.css">*@
+
+    <!-- end: Css -->
+    <!-- Start: Js -->
+    <!-- Jquery  -->
+    <script src="~/Content/js/jquery.min.js"></script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js" integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns" crossorigin="anonymous"></script>
+    <script src="~/Content/js/jquery.ui.min.js"></script>
+
+    <!-- Select2 JS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.full.min.js" integrity="sha512-RtZU3AyMVArmHLiW0suEZ9McadTdegwbgtiQl5Qqo9kunkVg1ofwueXD8/8wv3Af8jkME3DDe3yLfR8HSJfT2g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js" integrity="sha512-bPs7Ae6pVvhOSiIcyUClR7/q2OAsRiovw4vAkX+zJbw3ShAeeqezq50RIIcIURq7Oa20rW2n2q+fyXBNcU9lrw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+    <script src="~/Scripts/jquery.validate.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+    @*<script src="~/Content/js/bootstrap.min.js"></script>*@
+
+
+    <script src="~/Content/chosen.jquery.js" type="text/javascript"></script>
+    <script src="~/Content/js/prism.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Content/js/init.js" type="text/javascript" charset="utf-8"></script>
+    <script src="~/Scripts/Kendo/kendo.all.min.js"></script>
+    @*Nihtin Added Foe Exporting Kendo grid to Excel File*@
+    <script src="https://kendo.cdn.telerik.com/2021.2.616/js/jszip.min.js"></script>
+
+    @*<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-tour/0.12.0/js/bootstrap-tour-standalone.min.js" integrity="sha512-KlU17Q8b+noPYQtMWXM8BO08lReJoX3AHxYm7Zyi3UpYYkE4ch7r8d82DGitdIE3r82OW20VMQLVwsYyXo99sQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>*@
+    @*<script src="~/Scripts/kendo.all.min.js"></script>*@
+    @*<script src="~/Scripts/jszip.min.js"></script>*@
+    <link rel="stylesheet" href="~/Content/js/prism.css">
+    <link rel="stylesheet" href="~/Content/chosen.css">
+
+    <style>
+        /*  .tree > li > a {
+            line-height: 20px !important;
+        }
+
+        .tree li a {
+            padding: 7px !important;
+        }*/
+
+        .fade {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body id="mimin" class="dashboard">
+    <!-- start: Header -->
+    <nav class="navbar navbar-light bg-nav-primary header fixed-top pt-0 pb-1 ">
+        @*<div class="col-md-12" >*@
+        @*<div class="navbar-header" style="width:100%;">*@
+        @*<div class="row nav-wrapper">
+            <div class="col-md-10 col-sm-9 col-xs-10">*@
+
+
+        <div class="opener-left-menu is-open">
+            <span class="top"></span>
+            <span class="middle"></span>
+            <span class="bottom"></span>
+        </div>
+
+        <a href="Projects" class="navbar-brand">
+            <b>Design 4 Space - @PMS.Common.SessionManagement.SelectedBranchName</b>
+        </a>
+        @*<ul class="nav navbar-nav search-nav">
+                <li>
+                    <div class="search">
+                        <span class="fa fa-search icon-search" style="font-size:23px;"></span>
+                        <div class="form-group form-animate-text">
+                            <input type="text" class="form-text" required>
+                            <span class="bar"></span>
+                            <label class="label-search">Type anywhere to <b>Search</b> </label>
+                        </div>
+                    </div>
+                </li>
+            </ul>*@
+        @*</div>
+            <div class="col-md-2 col-sm-3 col-xs-2 pl-0">*@
+
+        <ul class="nav navbar-nav  ml-auto ">
+
+
+            <li class="dropdown nav-item" style="display:inline-flex">
+                <a href="#" onclick="toggleFullScreen()" id="full-screen">
+                    <i class="fa fa-arrows-alt"></i>
+                </a>
+                @using (Html.BeginForm("LogOff", "Account", FormMethod.Post, new { id = "logoutForm" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">
+                        <span class="user-name">@User.Identity.GetUserName()</span>
+                        @*<img src="~/content/img/avatar.jpg" class=" avatar  " alt="user name" />*@
+                        <img src="~/content/img/avatar_1.png" class=" avatar  " alt="user name" />
+
+
+                    </a>
+
+                    <div class="dropdown-menu">
+                        <div class="user_profile_dropdown_bg text-center">
+                            <h5 class="py-4">@User.Identity.GetUserName()</h5>
+                        </div>
+                        <a class="dropdown-item" href="/Manage/changepassword"><span class="fa fa-pencil-square-o mr-2" style="color:#909090"></span> Change Password</a>
+                        @*<div class="dropdown-divider"></div>*@
+                        <a class="dropdown-item" href="javascript:document.getElementById('logoutForm').submit()"><span class="	fa fa-sign-out mr-2" style="color:#909090;"></span> Logout</a>
+                        @*<li role="separator" class="divider"></li>
+                            <li class="more">
+                                <ul>
+                                    <li><a href=""><span class="fa fa-cogs"></span></a></li>
+                                    <li><a href=""><span class="fa fa-lock"></span></a></li>
+                                    <li><a href=""><span class="fa fa-power-off "></span></a></li>
+                                </ul>
+                            </li>*@
+                    </div>
+                    @*}*@
+
+
+                    @*<li><a href="#" class="opener-right-menu"><span class="fa fa-coffee"></span></a></li>*@
+
+
+                }
+
+                @*</div>
+                    </div>*@
+                @*</div>*@
+                @*</div>*@
+            </li>
+
+        </ul>
+
+
+    </nav>
+    <!-- end: Header -->
+    <div class="container-fluid mimin-wrapper">
+
+        <!-- start:Left Menu -->
+        <div id="left-menu" style="overflow:auto">
+            <div class="sub-left-menu scroll">
+                <ul class="nav nav-list nav flex-column">
+                    <li><div class="left-bg"></div></li>
+                    @*<li class="time">
+            <h1 class="animated fadeInLeft">21:00</h1>
+            <p class="animated fadeInRight">Sat,October 1st 2029</p>
+        </li>*@
+                    <li class="time">
+                        <h1 class="animated fadeInLeft"></h1>
+                        <p class="animated fadeInRight"></p>
+                    </li>
+                    @if (!User.IsInRole("Supplier"))
+                    {
+                        <li class="active ripple nav-item">
+                            <a class="tree-toggle nav-header">
+                                <span class="fa-bar-chart fa"></span> Home
+                                <span class="fa-angle-right fa right-arrow text-right"></span>
+                            </a>
+                            <ul class="nav nav-list tree">
+                                @*<li><a href="/Home/SalesDashBoard" class="nav-link">Sales DashBoard</a></li>
+                    <li><a href="/Home/AdminDashBoard" class="nav-link">Admin DashBoard</a></li>*@
+                                <li><a href="/Home/Index" class="nav-link">Change Branch</a></li>
+                                @if (User.IsInRole("SuperAdmin") || User.IsInRole("User"))
+                                {
+                                    <li><a href="/DashBoard/AccountSalesDashboard" class="nav-link">Admin DashBoard</a></li>
+                                    @*<li><a href="/Home/SalesDashBoard" class="nav-link">Sales DashBoard</a></li>*@
+
+                                }
+                                else if (User.IsInRole("Salesman"))
+                                {
+                                    <li><a href="/Home/SalesDashBoard" class="nav-link">Sales DashBoard</a></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                    @if (!User.IsInRole("Supplier"))
+                    {
+                        <li class="ripple nav-item">
+                            <a class="tree-toggle nav-header">
+                                <span class="fa-home fa"></span> Admin
+                                <span class="fa-angle-right fa right-arrow text-right"></span>
+                            </a>
+                            <ul class="nav-list tree">
+                                @if (User.IsInRole("SuperAdmin") || User.IsInRole("User"))
+                                {
+                                    <li><a href="/Admin/company" class="nav-link">Company</a></li>
+                                    <li><a href="/Admin/Branches" class="nav-link">Branches</a></li>
+                                    <li><a href="/Admin/Banks" class="nav-link">Banks</a></li>
+                                    <li><a href="/Master/SourceOfInquiry" class="nav-link">Source Of Inquiry</a></li>
+                                    <li><a href="/Admin/Salesmen" class="nav-link">Salesmen</a></li>
+                                    <li><a href="/Customer" class="nav-link">Customer</a></li>
+                                    <li><a href="/Supplier/" class="nav-link">Supplier</a></li>
+                                    @*<li><a href="/Master/TasksFlow" class="nav-link">Task</a></li>
+                                    <li><a href="/Master/UOM" class="nav-link">UOM</a></li>
+                                    <li><a href="/Master/Floor" class="nav-link">Floor</a></li>
+                                    <li><a href="/Master/Category" class="nav-link">Category</a></li>
+                                    <li><a href="/Master/Plan" class="nav-link">Plan</a></li>
+                                    <li><a href="/Master/PackageType" class="nav-link">Package Type</a></li>
+                                    <li><a href="/Master/Item" class="nav-link">Item</a></li>
+                                    <li><a href="/Master/PropertyType" class="nav-link">Property Type</a></li>
+                                    <li><a href="/Master/ElectricalItems" class="nav-link">Electrical Packages</a></li>
+                                    <li><a href="/Package/Packages" class="nav-link">Packages</a></li>*@
+                                    @*<li><a href="/Master/TasksFlow/">Adding Master Task's Flow</a></li>*@
+                                    @*<li><a href="/Master/TasksFlow/"></a></li>*@
+                                    <li><a href="/Master/ContractTerms" class="nav-link">Contract Terms</a></li>
+                                }
+                                else if (User.IsInRole("Salesman"))
+                                {
+                                    <li><a href="/Customer" class="nav-link">Customer</a></li>
+                                    <li><a href="/Supplier/" class="nav-link">Supplier</a></li>
+                                    @*<li><a href="/Master/Item" class="nav-link">Item</a></li>
+                                    <li><a href="/Master/PropertyType" class="nav-link">Property Type</a></li>
+                                    <li><a href="/Master/ElectricalItems" class="nav-link">Electrical Packages</a></li>
+                                    <li><a href="/Package/Packages" class="nav-link">Packages</a></li>*@
+                                }
+                            </ul>
+                        </li>
+                    }
+
+                    <li class="ripple nav-item">
+                        <a class="tree-toggle nav-header">
+                            <span class="fa-diamond fa"></span> Manage Projects
+                            <span class="fa-angle-right fa right-arrow text-right"></span>
+                        </a>
+                        <ul class="nav-list tree">
+                            @*<li><a href="/ProjectsBudget" class="nav-link">Quotation (Old)</a></li>
+        <li><a href="/Projects" class="nav-link">Contracts (Old)</a></li>
+        <li><a href="/Projects/Additions" class="nav-link">Additions & Omissions</a></li>
+        <li><a href="/ProjectsBudget" class="nav-link">Budgeted Cost</a></li>
+        <li><a href="/ProjectsBudget" class="nav-link">Approval</a></li>*@
+                            @if (!User.IsInRole("Supplier"))
+                            {
+                                @*<li><a href="/Quotation/Quotation" class="nav-link">Quotation </a></li>*@
+                                <li><a href="/Contract/ContractList" class="nav-link">Contract </a></li>
+                                <li><a href="/Projects/Additions" class="nav-link">Additions & Omissions</a></li>
+                                @*<li><a href="/VariationOrder/VariationOrderList" class="nav-link">Variation Order</a></li>*@
+                                @*<li><a href="/VariationOrder/ElectricalVariationOrderList" class="nav-link">Electrical Variation Order</a></li>*@
+                            }
+                            <li><a href="/ProjectsBudget" class="nav-link">Budgeted Cost</a></li>
+                            @if (User.IsInRole("SuperAdmin")|| User.IsInRole("User"))
+                            {
+                                <li><a href="/Receipts" class="nav-link">Customer Payments</a></li>
+                                <li><a href="/Payments" class="nav-link">Supplier Payments</a></li>
+                                <li><a href="/Loan/" class="nav-link">Loan</a></li>
+                            }
+
+                        </ul>
+                    </li>
+
+                    <!--<li class="ripple nav-item">
+        <a class="tree-toggle nav-header">
+            <span class="fa-user fa"></span> Account
+            <span class="fa-angle-right fa right-arrow text-right"></span>
+        </a>
+        <ul class="nav-list tree">
+            <li><a href="/Receipts" class="nav-link">Customer Payments</a></li>
+            <li><a href="/Payments" class="nav-link">Supplier Payments</a></li>
+        </ul>
+    </li>-->
+                    @if (!User.IsInRole("Supplier"))
+                    {
+                        <li class=" ripple nav-item">
+                            <a class="tree-toggle nav-header">
+                                <span class="fa-area-chart fa"></span> Reports
+                                <span class="fa-angle-right fa right-arrow text-right"></span>
+                            </a>
+                            <ul class="nav-list tree">
+                                <li><a href="/Report/ReceiptReport" class="nav-link">Customer Payment Report</a></li>
+                                <li><a href="/Report/SaleSummaryReport" class="nav-link">Sales Summary</a></li>
+                                <li><a href="/Report/PaymentReport" class="nav-link">Supplier Payment Report</a></li>
+                                <li><a href="/Report/IndividualSaleReport" class="nav-link">Individual Sale Report</a></li>
+                                @*<li><a href="/Report/ProjectListingReport">Project Listing Report</a></li>*@
+                                @*<li><a href="/Report/ProjectbyAddress">Project By Address</a></li>*@
+                                @*<li><a href="/Report/ProjectListingReport"></a></li>*@
+                                <!--<li><a href="/Report/ProjectbyAddress"></a></li>-->
+                                @*<li><a href="/Report/ProjectSummaryReport">Weeklly Project report</a></li>*@
+                                <!--<li><a href="/Report/ProjectSummaryReport"></a></li>-->
+                                <li><a href="/Report/ProjectSummaryReport" class="nav-link">Project Summary Report</a></li>
+                                <li><a href="/Report/ProjectCostingReport" class="nav-link">Project Costing Report</a></li>
+                                @*<li><a href="/Report/BankChequeDetails">Cheque Running Number</a></li>*@
+                                @*<li><a href="/Report/BankChequeDetails"></a></li>*@
+                                <li><a href="/Report/SupplierReport" class="nav-link">Supplier Report</a></li>
+                                @if (!User.IsInRole("Salesman"))
+                                {
+                                    <li><a href="/Report/LoanReport" class="nav-link">Loan Report</a></li>
+                                }
+                            </ul>
+                        </li>
+                    }
+
+                        @if (User.IsInRole("SuperAdmin"))
+                        {
+                            <li class="ripple nav-item">
+                                <a class="tree-toggle nav-header">
+                                    <span class="fa-shield fa"></span> Security
+                                    <span class="fa-angle-right fa right-arrow text-right"></span>
+                                </a>
+                                <ul class="nav-list tree">
+                                    <li><a href="/Account/Users">Users</a></li>
+                                    <li><a href="/Home/SalesMenGenerateLogin">SalesMen Users Map</a></li>
+                                    @*<li><a href="/Customer" class="nav-link">User</a></li>*@
+                                    @*<li><a href="/Supplier/" class="nav-link">Roles & Permission</a></li>*@
+                                </ul>
+                            </li>
+                        }
+                    </ul>
+            </div>
+        </div>
+        <!-- end: Left Menu -->
+        <!-- start: content -->
+        <div id="content">
+            @RenderBody()
+
+        </div>
+        <!-- end: content -->
+        <div class="footer_layout">
+            <div class="card footer_layout_card">
+                <div class="card-body py-2">
+
+                    @*<span class="h6 ">2021 © Powered By <span class="powered_by_content">Softpal Technologies Pvt Ltd.&nbsp;</span></span>*@
+                    <span class="h6 ">Copyright ©  2021 <span class="powered_by_content h5">Design 4 Space&nbsp;</span> All Rights Reserved</span>
+                 <span style="float:right">Version : <span><b>@PMS.Common.Constants.DebugVersion</b></span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- start: Mobile -->
+    <div id="mimin-mobile" class="reverse">
+        <div class="mimin-mobile-menu-list">
+            <div class="row">
+                <div class="col-md-12 sub-mimin-mobile-menu-list animated fadeInLeft">
+                    <ul class="nav nav-list nav flex-column">
+                        <li class="active ripple nav-item">
+                            <a class="tree-toggle nav-header nav-link">
+                                <span class="fa-bar-chart fa"></span>Home
+                                <span class="fa-angle-right fa right-arrow text-right"></span>
+                            </a>
+                            <ul class="nav-list tree">
+                                <li><a href="/DashBoard/AccountSalesDashboard" class="nav-link">Admin DashBoard</a></li>
+                                <li><a href="/Home/SalesDashBoard" class="nav-link">Sales DashBoard</a></li>
+                            </ul>
+                        </li>
+
+                        <li class="active ripple nav-item">
+                            <a class="tree-toggle nav-header nav-link">
+                                <span class="fa-home fa"></span>Admin
+                                <span class="fa-angle-right fa right-arrow text-right"></span>
+                            </a>
+                            <ul class="nav-list tree">
+                                <li><a href="/Admin/Salesmen" class="nav-link">Salesmen</a></li>
+                                <li><a href="/Customer" class="nav-link">Customer</a></li>
+                                @*<li><a href="/Supplier/" class="nav-link">Supplier</a></li>
+                                    <li><a href="/Loan/" class="nav-link">Loan</a></li>*@
+                                <li><a href="/Master/TasksFlow" class="nav-link">Task</a></li>
+                                <li><a href="/Master/UOM" class="nav-link">UOM</a></li>
+                                <li><a href="/Master/Floor" class="nav-link">Floor</a></li>
+                                <li><a href="/Master/Plan" class="nav-link">Plan</a></li>
+                                <li><a href="/Master/PackageType" class="nav-link">PackageType</a></li>
+                                <li><a href="/Master/MasterItemList" class="nav-link">Item</a></li>
+                                <li><a href="/Package/Packages" class="nav-link">Package</a></li>
+                                <li><a href="/Master/ContractTerms" class="nav-link">Contract Terms</a></li>
+                                <li><a href="/Master/TasksFlow/"></a></li>
+                            </ul>
+                        </li>
+                        <li class="ripple nav-item">
+                            <a class="tree-toggle nav-header">
+                                <span class="fa-diamond fa"></span>Manage Projects
+                                <span class="fa-angle-right fa right-arrow text-right"></span>
+                            </a>
+                            <ul class="nav-list tree">
+                                @*<li><a href="/ProjectsBudget" class="nav-link">Quotation (Old)</a></li>
+                                    <li><a href="/Projects" class="nav-link">Contracts (Old)</a></li>
+                                    <li><a href="/Projects/Additions" class="nav-link">Additions & Omissions</a></li>
+                                    <li><a href="/ProjectsBudget" class="nav-link">Budgeted Cost</a></li>
+                                    <li><a href="/ProjectsBudget" class="nav-link">Approval</a></li>*@
+                                <li><a href="/Quotation/Quotation" class="nav-link">Quotation </a></li>
+                                <li><a href="/Contract/ContractList" class="nav-link">Contract </a></li>
+                                @*<li><a href="/VariationOrder/VariationOrderList" class="nav-link">Variation Order</a></li>*@
+                            </ul>
+                        </li>
+                        @*<li class="ripple nav-item">
+                                <a class="tree-toggle nav-header">
+                                    <span class="fa-user fa"></span>Account
+                                    <span class="fa-angle-right fa right-arrow text-right"></span>
+                                </a>
+                                <ul class="nav-list tree">
+                                    <li><a href="/Receipts" class="nav-link">Customer Payments</a></li>
+                                    <li><a href="/Payments" class="nav-link">Supplier Payments</a></li>
+                                </ul>
+                            </li>
+                            <li class="ripple nav-item">
+                                <a class="tree-toggle nav-header">
+                                    <span class="fa-area-chart fa"></span>Reports
+                                    <span class="fa-angle-right fa right-arrow text-right"></span>
+                                </a>
+                                <ul class="nav-list tree">
+                                    <li><a href="/Report/ReceiptReport" class="nav-link">Customer Payment Report</a></li>
+                                    <li><a href="/Report/SaleSummaryReport" class="nav-link">Sales Summary</a></li>
+                                    <li><a href="/Report/PaymentReport" class="nav-link">Supplier Payment Report</a></li>
+                                    <li><a href="/Report/IndividualSaleReport" class="nav-link">Individual Sale Report</a></li>
+                                    <li><a href="/Report/ProjectListingReport" class="nav-link">Project Listing Report</a></li>
+                                    <li><a href="/Report/ProjectbyAddress" class="nav-link">Project By Address</a></li>
+                                    <li><a href="/Report/ProjectSummaryReport" class="nav-link">Project Summery</a></li>
+                                    <li><a href="/Report/ProjectCostingReport" class="nav-link">Project Costing Report</a></li>
+                                    <li><a href="/Report/BankChequeDetails" class="nav-link">Bank Cheque Details</a></li>
+                                    <li><a href="/Report/SupplierReport" class="nav-link">Supplier Report</a></li>
+                                </ul>
+                            </li>
+                            <li class="ripple nav-item">
+                                <a class="tree-toggle nav-header">
+                                    <span class="fa-shield fa"></span>Security
+                                    <span class="fa-angle-right fa right-arrow text-right"></span>
+                                </a>
+                                <ul class="nav-list tree">
+                                    <li><a href="/Customer" class="nav-link">User</a></li>
+                                    <li><a href="/Supplier/" class="nav-link">Roles & Permission</a></li>
+                                </ul>
+                            </li>*@
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button id="mimin-mobile-menu-opener" class="animated rubberBand btn btn-circle btn-primary">
+        <span class="fa fa-bars"></span>
+    </button>
+    <!-- end: Mobile -->
+    <!-- start: Javascript -->
+    <!-- plugins -->
+    <script src="~/Content/js/plugins/moment.min.js"></script>
+    <script src="~/Content/js/plugins/jquery.nicescroll.js"></script>
+
+    <!-- daterangepicker -->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    @*<script src="/Content/js/plugins/fullcalendar.min.js"></script>
+
+        <script src="/Content/js/plugins/jquery.vmap.min.js"></script>
+        <script src="/Content/js/plugins/maps/jquery.vmap.world.js"></script>
+        <script src="/Content/js/plugins/jquery.vmap.sampledata.js"></script>
+        <script src="/Content/js/plugins/chart.min.js"></script>*@
+    <script src="~/Content/js/plugins/fullcalendar.min.js"></script>
+
+    <script src="~/Content/js/plugins/jquery.vmap.min.js"></script>
+    <script src="~/Content/js/plugins/maps/jquery.vmap.world.js"></script>
+    <script src="~/Content/js/plugins/jquery.vmap.sampledata.js"></script>
+    @*<script src="~/Content/js/plugins/chart.min.js"></script>*@
+    <!-- custom -->
+    <script src="~/scripts/jquery.loader.js"></script>
+    <script src="~/Content/js/notifIt.js" type="text/javascript"></script>
+    @*<script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>*@
+    <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+    <script src="~/Content/js/main.js"></script>
+
+    <script src="~/MVCGridHandler.axd/script.js"></script>
+    <!-- end: Javascript -->
+    <script src="~/Scripts/common.js?v=' + @DateTime.Now+'"></script>
+
+    <script type="text/javascript" src="~/Content/thickbox-compressed.js"></script>
+    <link rel="stylesheet" href="~/Content/thickbox.css" type="text/css" media="screen" />
+
+    <div class="modal fade" role="dialog" id="mainModel" style="padding-right:20%; overflow-x:auto;overflow-y:auto;">
+        <div class="modal-dialog modal-xl modal-content-left">
+            <!-- Modal content-->
+            <div class="modal-content" id="modalcontent" style="width:120%; align-self:center;" >
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="modal fade" role="dialog" id="confirmModel">
+        <div class="modal-dialog modal-lg modal-content-left  w-sm-100" style="width:35%;">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <b>Confirmation</b>
+                </div>
+                <div class="modal-body">
+                    Are you sure want to delete this record?
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button" data-dismiss="modal" class="Deletebtn btn btn-primary" id="delete">Delete</button>
+
+                    <button type="button" data-dismiss="modal" class="btn">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //function toggleFullScreen() {
+        //    if (!document.fullscreenElement) {
+        //        document.documentElement.requestFullscreen();
+        //        $('#full-screen').css('color','White');
+        //    } else {
+        //        if (document.exitFullscreen) {
+        //            document.exitFullscreen();
+        //        }
+        //    }
+        //}
+        function toggleFullScreen() {
+            if (!document.fullscreenElement &&    // alternative standard method
+                !document.mozFullScreenElement && !document.webkitFullscreenElement && !document.msFullscreenElement) {  // current working methods
+                debugger
+                if (document.documentElement.requestFullscreen) {
+                    document.documentElement.requestFullscreen();
+                } else if (document.documentElement.msRequestFullscreen) {
+                    document.documentElement.msRequestFullscreen();
+                } else if (document.documentElement.mozRequestFullScreen) {
+                    document.documentElement.mozRequestFullScreen();
+                } else if (document.documentElement.webkitRequestFullscreen) {
+                    document.documentElement.webkitRequestFullscreen(Element.ALLOW_KEYBOARD_INPUT);
+                }
+            } else {
+                debugger
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                } else if (document.mozCancelFullScreen) {
+                    document.mozCancelFullScreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                }
+            }
+        }
+
+        //navbar selected item js
+        $(document).ready(function () {
+            $(document).on('click', '.nav li a', function () {
+                $('.active').removeClass('active');
+                $(this).parent().addClass('active');
+            });
+        });
+        function LoadDocumentsByProject(projectid) {
+            debugger;
+            $("#modalcontent").html("");
+            // $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                url: "/Projects/ProjectDocument", // the URL of the controller action method
+                data: {
+                    id: projectid,
+                    IsProject: true,
+                    viewdoc: true
+                }, // optional data
+                success: function (result) {
+                    debugger
+                    $("#modalcontent").html(result);
+                    // $.loader('close');
+                }
+            });
+            $("#mainModel").modal('show');
+        }
+           
+        function InvoiceFilePreviewInReport(projectid, project_budget_details_id) {
+            debugger
+            $("#modalcontent").html("");
+            $.ajax({
+                url: '@Url.Action("GetFilePathByProjectBudgetDetailsId", "ProjectsBudget")',
+                type: "POST",
+                data: {
+                    ProjectId: projectid,
+                    ProjectBudgetDetailsId: project_budget_details_id
+                },
+                success: function (result) {
+                    //debugger;
+                    var path = window.location.origin + result.data;
+                    window.open(path, '_blank');
+                    //printJS(path);
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.loader('close');
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+            });
+            $("#mainModel").modal('show');
+        }
+
+    </script>
+
+
+
+</body>
+</html>

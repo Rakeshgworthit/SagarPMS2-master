@@ -1,0 +1,425 @@
+﻿@model PMS.Models.ProjectAdditionsViewModel
+@{
+    Layout = null;
+}
+
+
+
+
+<div class="modal-header">
+    <h4 class="modal-title">Add/Edit Additions & Omissions</h4>
+    <button type="button" class="close" data-dismiss="modal" onclick="CloseModal();">&times;</button>
+
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="frmProject" name="frmProject">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="customer_name">Address/Site:</label>
+                        <div class="col-sm-8">
+
+                            @Html.HiddenFor(o => o.id)
+                            @Html.DropDownListFor(o => o.project_id, Model.ProjectList, new { @class = "form-control w-100", @tabindex = "1" })
+                            @Html.ValidationMessageFor(o => o.project_id, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Date:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.date, "{0:dd/MM/yyyy}", new { @class = "form-control", @tabindex = "2" })
+                            @Html.ValidationMessageFor(o => o.date, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="customer_name">Type:</label>
+                        <div class="col-sm-8">
+                            @{ var attributes = ViewBag.propertydisable ? (object)new { @class = "form-control", disabled = "disabled", @tabindex = "3" } : (object)new { @class = "form-control", @tabindex = "3" }; }
+                            @Html.DropDownListFor(o => o.record_type, Model.AdditionTypeList, attributes)
+                            @Html.ValidationMessageFor(o => o.record_type, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Description:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.addition_omissioni_description, new { @class = "form-control", @tabindex = "4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Remarks:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.remarks, new { @class = "form-control", @tabindex = "5" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Invoice Amount with GST:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.total_amount, "{0:0.00}", new { @class = "form-control amount", @tabindex = "6" })
+                            @Html.ValidationMessageFor(o => o.total_amount, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">Gst Percentage:</label>
+                        <div class="input-group col-sm-8">
+
+                            @Html.DropDownListFor(o => o.gst_percentage, Model.GSTList, new { @class = "form-control amount", @tabindex = "7" })
+
+                            @*<div class="input-group-append">
+                        <span class="input-group-text">%</span>
+                    </div>*@
+
+                            @Html.ValidationMessageFor(o => o.gst_percentage, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Gst Amount:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.gst_amount, "{0:0.00}", new { @class = "form-control amount", @tabindex = "8" })
+                            @Html.ValidationMessageFor(o => o.gst_amount, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Amount:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.amount, "{0:0.00}", new { @class = "form-control amount", @tabindex = "9" })
+                            @Html.ValidationMessageFor(o => o.amount, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row" style="position:center; padding-left:20%">
+                        <div class="col-md-3 " style="padding-left:0%;padding-right:0%">
+                            <button id="btnClear" name="btnClear" type="button" tabindex="10" class="btn btn-secondary col-sm-9" onclick="ClearModal();">Clear</button>
+                        </div>
+                        <div class="col-md-3" style="padding-left:0%;padding-right:0%">
+                            @if (@Model.id != 0)
+                            {
+                                <button id="btnSelect" name="btnSelect" type="button"  tabindex="11" class="btn btn-primary col-sm-9" onclick="SaveForm();">Update</button>
+                            }
+                            else
+                            {
+                                <button id="btnSelect" name="btnSelect" type="button"  tabindex="11" class="btn btn-primary col-sm-9" onclick="SaveForm();">Save</button>
+                            }
+                        </div>
+                        <div class="col-md-4 " style="padding-left:0%;padding-right:0%">
+                            <button id="btnClose" name="btnClose" type="button"  tabindex="12"  class="btn btn-secondary col-sm-9" data-dismiss="modal" onclick="CloseModal();">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @if (Model.id == 0)
+            {
+                <div class="col-md-12" style="align-self:center">
+                    <label id="Instrutions" style="padding-left:40%; font:bold;color:red">(Please Upload the Documents After Saving the Project)</label>
+                </div>
+            }
+            <div class="col-md-12">
+
+                <div class="demo-section k-content">
+                    <input name="files" id="files" type="file" />
+                </div>
+
+            </div>
+
+            <table class="table" id="DocumentsTable">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Description</th>
+                        <th>Uploaded By</th>
+                        <th>Uploaded Date</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.project_document_list.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4"><p class="alert alert-info" role="alert">Record Not Found.</p></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var pdlist in Model.project_document_list)
+                        {
+                            if ((pdlist.Uploaded_By_Name) != null)
+                            {
+                                <tr>
+
+                                    <td>@pdlist.file_name</td>
+                                    <td>@Html.Raw(pdlist.file_desc)</td>
+                                    <td>@pdlist.UploadedName</td>
+                                    <td>@pdlist.uploaded_on.ToString("MM/dd/yyyy")</td>
+                                    <td><a target="_blank" title="View document" href="@pdlist.document_path/@pdlist.file_name">View</a></td>
+                                    <td><a target="_self" title="Delete document" onclick="deletedocument(@pdlist.document_id,@pdlist.project_id, '@pdlist.file_name', '@pdlist.document_path')" href="Javascript:void(0)">Delete</a></td>
+                                </tr>
+                            }
+                        }
+
+                    }
+                </tbody>
+            </table>
+
+
+            @Html.HiddenFor(o => o.isactive)
+
+            <input type="hidden" id="RecordType"  value="@ViewBag.RecordType"/>
+
+            @*<div class="form-group">
+                    <label class="control-label col-sm-4" for="email">Is Active:</label>
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(o => o.isactive, Model.ActiveInactiveList, new { @class = "form-control" })
+                    </div>
+                </div>*@
+
+        </div>
+
+
+    </form>
+</div>
+<div class="modal-footer">
+    @*<button id="btnClear" name="btnClear" type="button" class="btn btn-secondary"  onclick="ClearModal();">Clear</button>
+    @if (@Model.id != 0)
+    {
+        <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveForm();">Update</button>
+    }
+    else
+    {
+        <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveForm();">Save</button>
+    }
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal" onclick="CloseModal();">Close</button>*@
+</div>
+<style>
+    .fileupload_design, .k-dropzone {
+        background: linear-gradient(to right, rgba(223,231,248,0), rgba(223,231,248,1));
+        border: 2px dotted black;
+        border-radius: 8px;
+        min-height: 80px;
+        text-align: center;
+    }
+</style>
+
+<script>
+    $(function () {
+
+        /*$("#ProjectId").chosen();*/
+        //$("#project_id_chosen").width(260);
+
+        $("#date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy" });
+        $('#date').removeAttr("data-val-date");
+
+        $("#total_amount").blur(function () {
+            CalculateGSTTotalAmount();
+        });
+        $("#gst_percentage").blur(function () {
+            CalculateGSTTotalAmount();
+        });
+
+        $("#gst_percentage").keydown(function () {
+            CalculateGSTTotalAmount();
+        });
+        $("#gst_percentage").keyup(function () {
+            CalculateGSTTotalAmount();
+        });
+        debugger;
+        var id = $("#id").val();
+        if (id != "0") {
+            $("#project_id").prop("disabled", true);
+        }
+
+
+    });
+    function ClearModal() {
+        debugger;
+        openModelpopup('/Projects/_LoadAdditions', 'id', 0, 'projectId', 0);
+
+    }
+
+    $("#gst_percentage").change(function () {
+        debugger;
+        CalculateGSTTotalAmount();
+    });
+
+    $("#files").kendoUpload({
+        async: {
+            saveUrl: '/Projects/SaveDocumentNew',
+            autoUpload: true
+        },
+        upload: function (e) {
+            var RecordType = $("#RecordType").val();
+            e.data = {
+                project_id: $("#id").val().split('-')[1],
+                IsProject: true,
+                file_desc: RecordType,
+                IdType: 7
+            };           
+        }
+        
+    });
+
+    $("#files").change(function () {
+        debugger;
+        var id = $("#id").val();
+        openModelpopup('/Projects/_LoadAdditions', 'id', id, 'projectId', 0);
+
+    });
+    function CalculateGSTTotalAmount() {
+        //var camount = $("#amount").val();
+
+        //$("#total_amount").val(camount);
+        //var gstp = $("#gst_percentage").val();
+        //if (String(camount).length > 0 && String(gstp).length > 0) {
+        //    var GST = parseFloat((camount * gstp) / 100).toFixed(2);
+        //    $("#gst_amount").val(GST);
+        //    var totalamt = (parseFloat(camount) + parseFloat(GST)).toFixed(2);
+        //    $("#total_amount").val(totalamt);
+        //}
+
+
+        var tolalamount = parseFloat($("#total_amount").val());
+
+        var gPer = 0;
+        if ($("#gst_percentage").val() > 0) {
+            gPer = parseFloat($("#gst_percentage").val());
+        }
+
+        var gstp = parseFloat(gPer / 100) + 1;
+        if (String(tolalamount).length > 0 && String(gstp).length > 0) {
+            var CAmount = parseFloat(tolalamount / gstp).toFixed(2);
+            var GST = parseFloat(tolalamount - CAmount).toFixed(2);
+            if (String(GST) == "NaN") {
+                GST = "0.00";
+            }
+            if (String(CAmount) == "NaN") {
+                CAmount = "0.00";
+            }
+            $("#gst_amount").val(GST);
+            $("#amount").val(CAmount)
+        }
+    }
+
+    $('#record_type').change(function () {
+        debugger;
+        var recordtypeid = $("#record_type").val();
+        var Recordtype = "";
+        if (recordtypeid == @PMS.Common.Constants.VoTypeList.Addition) {
+            Recordtype = "Addition";
+        }
+        else if (recordtypeid == @PMS.Common.Constants.VoTypeList.Omission) {
+            Recordtype = "Omission";
+        }
+        else if (recordtypeid == @PMS.Common.Constants.VoTypeList.Discount) {
+            Recordtype = "Discount";
+        }
+        else if (recordtypeid == @PMS.Common.Constants.VoTypeList.Electrical) {
+            Recordtype = "Electrical";
+        }
+        $("#RecordType").val(Recordtype);
+    });
+
+    function SaveForm() {
+        debugger;
+        var form = $('#frmProject');
+        $.validator.unobtrusive.parse(form);
+        $("#project_id_chosen").next(".field-validation-valid").html('');
+        if ($("#project_id").val() <= 0) {
+            $("#project_id_chosen").next(".field-validation-valid").html('Please select a project');
+            form.valid();
+            return false;
+        }
+        if (form.valid()) {
+            $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                type: "POST",
+                url: "/Projects/SaveProjectAdditions",
+                data: {
+                    id: $("#id").val().split('-')[1],
+                    date: $("#date").val(),
+                    project_id: $("#project_id").val(),
+                    addition_omissioni_description: $("#addition_omissioni_description").val(),
+                    amount: $("#amount").val(),
+                    gst_percentage: $("#gst_percentage").val(),
+                    gst_amount: $("#gst_amount").val(),
+                    total_amount: $("#total_amount").val(),
+                    remarks: $("#remarks").val(),
+                    isactive: $("#isactive").val(),
+                    record_type: $("#record_type").val()
+                },
+                success: function (result) {
+                    $.loader('close');
+                    if (result.cls == "error") {
+                        notify(result.msg, result.cls);
+                    } else {
+                        debugger;
+                        notify(result.id, result.cls);
+                        $("#id").val(result.id);
+                        openModelpopup('/Projects/_LoadAdditions', 'id', result.id, 'projectId', 0);
+                        if (result.id != "") {
+
+                            $("#Instrutions").prop("hidden", true);
+                        }
+                       /* $("#btnClose").click();*/
+                        /*loadGrid();*/
+                        notify(result.msg, result.cls);
+                    }
+                },
+                error: function (req, status, error) {
+                    notify(error, "error");
+                }
+            });
+        }
+    }
+
+    function deletedocument(docid, project_id, FileName, FilePath) {
+        var r = confirm("Are you sure want to delete this record?");
+        if (r == true) {
+            $.ajax({
+                url: '/Projects/DeleteDocument',
+                type: "post",
+                data: {
+                    Id: docid,
+                    FilePath: FilePath,
+                    FileName: FileName,
+                    project_id: project_id
+                },
+                success: function (data) {
+                    debugger;
+                    location.reload();
+
+                }
+            });
+        }
+    }
+
+    function CloseModal() {
+        @*window.location = '@Url.Action("Additions", "Projects")';*@
+        window.location.reload();
+    }
+</script>
+
+

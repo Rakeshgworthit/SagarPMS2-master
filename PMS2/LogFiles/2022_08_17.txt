@@ -1,0 +1,294 @@
+17 Aug 2022 2:35:13 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/SaveUpdate
+Method Name: SaveUpdate, Parameter : Parameters={UID=, paymentdet_project_id=, id=0, payment_date=, collection_date=, supplier_id=0, supplier_inv_number=, supplier_inv_number_text=, invoice_amount=, gst_amount=, payment_amount=, agreed_amount=0, bank_id=0, cheque_number=, rebate_amount= , actual_payment_amount=, total_payment_amount=, total_invoice_amount_after_gst=, remarks=, created_date=01/01/0001 00:00:00, created_by=, modified_date=01/01/0001 00:00:00, modified_by=, isactive=False, projectList=, supplierList=, bankList=, IsActiveList=, mode_of_paymentList=, payment_details=, payment_mode=0, SearchString=, SalesmenList=, ProjectSalesmenId=0, SearchFrom=, SearchTo=, SearchProject=0, isProjectClosed=False, description=, amount=, payment_descriptions=}
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+--------------------------------------------------------------------------------
+17 Aug 2022 2:35:14 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/PrintPreview?id=undefined
+Method Name: PrintPreview, Parameter : Id=undefined
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+--------------------------------------------------------------------------------
+17 Aug 2022 2:35:47 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/SaveUpdate
+Method Name: SaveUpdate, Parameter : Parameters={UID=, paymentdet_project_id=, id=0, payment_date=, collection_date=, supplier_id=0, supplier_inv_number=, supplier_inv_number_text=, invoice_amount=, gst_amount=, payment_amount=, agreed_amount=0, bank_id=0, cheque_number=, rebate_amount= , actual_payment_amount=, total_payment_amount=, total_invoice_amount_after_gst=, remarks=, created_date=01/01/0001 00:00:00, created_by=, modified_date=01/01/0001 00:00:00, modified_by=, isactive=False, projectList=, supplierList=, bankList=, IsActiveList=, mode_of_paymentList=, payment_details=, payment_mode=0, SearchString=, SalesmenList=, ProjectSalesmenId=0, SearchFrom=, SearchTo=, SearchProject=0, isProjectClosed=False, description=, amount=, payment_descriptions=}
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+--------------------------------------------------------------------------------
+17 Aug 2022 2:35:53 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/PrintPreview?id=undefined
+Method Name: PrintPreview, Parameter : Id=undefined
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+--------------------------------------------------------------------------------
+17 Aug 2022 2:38:12 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/SaveUpdate
+Method Name: SaveUpdate, Parameter : Parameters={UID=, paymentdet_project_id=, id=0, payment_date=, collection_date=, supplier_id=0, supplier_inv_number=, supplier_inv_number_text=, invoice_amount=, gst_amount=, payment_amount=, agreed_amount=0, bank_id=0, cheque_number=, rebate_amount= , actual_payment_amount=, total_payment_amount=, total_invoice_amount_after_gst=, remarks=, created_date=01/01/0001 00:00:00, created_by=, modified_date=01/01/0001 00:00:00, modified_by=, isactive=False, projectList=, supplierList=, bankList=, IsActiveList=, mode_of_paymentList=, payment_details=, payment_mode=0, SearchString=, SalesmenList=, ProjectSalesmenId=0, SearchFrom=, SearchTo=, SearchProject=0, isProjectClosed=False, description=, amount=, payment_descriptions=}
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+--------------------------------------------------------------------------------
+17 Aug 2022 2:38:51 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/PrintPreview?id=undefined
+Method Name: PrintPreview, Parameter : Id=undefined
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+--------------------------------------------------------------------------------
+17 Aug 2022 2:39:07 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/SaveUpdate
+Method Name: SaveUpdate, Parameter : Parameters={UID=, paymentdet_project_id=, id=0, payment_date=, collection_date=, supplier_id=0, supplier_inv_number=, supplier_inv_number_text=, invoice_amount=, gst_amount=, payment_amount=, agreed_amount=0, bank_id=0, cheque_number=, rebate_amount= , actual_payment_amount=, total_payment_amount=, total_invoice_amount_after_gst=, remarks=, created_date=01/01/0001 00:00:00, created_by=, modified_date=01/01/0001 00:00:00, modified_by=, isactive=False, projectList=, supplierList=, bankList=, IsActiveList=, mode_of_paymentList=, payment_details=, payment_mode=0, SearchString=, SalesmenList=, ProjectSalesmenId=0, SearchFrom=, SearchTo=, SearchProject=0, isProjectClosed=False, description=, amount=, payment_descriptions=}
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+--------------------------------------------------------------------------------
+17 Aug 2022 2:39:08 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/PrintPreview?id=undefined
+Method Name: PrintPreview, Parameter : Id=undefined
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+--------------------------------------------------------------------------------
+17 Aug 2022 2:39:24 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/SaveUpdate
+Method Name: SaveUpdate, Parameter : Parameters={UID=, paymentdet_project_id=, id=0, payment_date=, collection_date=, supplier_id=0, supplier_inv_number=, supplier_inv_number_text=, invoice_amount=, gst_amount=, payment_amount=, agreed_amount=0, bank_id=0, cheque_number=, rebate_amount= , actual_payment_amount=, total_payment_amount=, total_invoice_amount_after_gst=, remarks=, created_date=01/01/0001 00:00:00, created_by=, modified_date=01/01/0001 00:00:00, modified_by=, isactive=False, projectList=, supplierList=, bankList=, IsActiveList=, mode_of_paymentList=, payment_details=, payment_mode=0, SearchString=, SalesmenList=, ProjectSalesmenId=0, SearchFrom=, SearchTo=, SearchProject=0, isProjectClosed=False, description=, amount=, payment_descriptions=}
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+--------------------------------------------------------------------------------
+17 Aug 2022 2:39:25 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/PrintPreview?id=undefined
+Method Name: PrintPreview, Parameter : Id=undefined
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+--------------------------------------------------------------------------------
+17 Aug 2022 2:42:35 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/SaveUpdate
+Method Name: SaveUpdate, Parameter : Parameters={UID=, paymentdet_project_id=, id=0, payment_date=, collection_date=, supplier_id=0, supplier_inv_number=, supplier_inv_number_text=, invoice_amount=, gst_amount=, payment_amount=, agreed_amount=0, bank_id=0, cheque_number=, rebate_amount= , actual_payment_amount=, total_payment_amount=, total_invoice_amount_after_gst=, remarks=, created_date=01/01/0001 00:00:00, created_by=, modified_date=01/01/0001 00:00:00, modified_by=, isactive=False, projectList=, supplierList=, bankList=, IsActiveList=, mode_of_paymentList=, payment_details=, payment_mode=0, SearchString=, SalesmenList=, ProjectSalesmenId=0, SearchFrom=, SearchTo=, SearchProject=0, isProjectClosed=False, description=, amount=, payment_descriptions=}
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+Get Base Exception  :  
+System.ArgumentException: Can not convert Null to Int32.
+   at Newtonsoft.Json.Linq.JToken.op_Explicit(JToken value)
+   at Newtonsoft.Json.Linq.JValue.System.IConvertible.ToInt32(IFormatProvider provider)
+   at System.Convert.ToInt32(Object value)
+   at PMS.Models.PaymentsViewModel.FromJson(String val) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Models\PaymentsViewModel.cs:line 221
+   at PMS.Controllers.PaymentsController.SaveUpdate(PaymentsViewModel objView) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 468
+--------------------------------------------------------------------------------
+17 Aug 2022 2:42:36 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Payments/PrintPreview?id=undefined
+Method Name: PrintPreview, Parameter : Id=undefined
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt32(String s, NumberStyles style, NumberFormatInfo info)
+   at System.Convert.ToInt32(String value)
+   at PMS.Controllers.PaymentsController.PrintPreview(String Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\PaymentsController.cs:line 649
+--------------------------------------------------------------------------------

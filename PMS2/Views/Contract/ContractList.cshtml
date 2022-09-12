@@ -1,0 +1,898 @@
+﻿@model PMS.Models.Quotation
+@{
+    ViewBag.Title = "ContractList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.css" integrity="sha512-zrPsLVYkdDha4rbMGgk9892aIBPeXti7W77FwOuOBV85bhRYi9Gh+gK+GWJzrUnaCiIEm7YfXOxW8rzYyTuI1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js" integrity="sha512-16cHhHqb1CbkfAWbdF/jgyb/FDZ3SdQacXG8vaOauQrHhpklfptATwMFAc35Cd62CQVN40KDTYo9TIsQhDtMFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-9">
+                <h3 class="animated fadeInLeft text-primary">Contract List</h3>
+            </div>
+            <div class="col-md-6 col-5 text-right">
+                @*onclick="openModelpop('/Contract/NewContract','id',0);"*@
+                @*<button type="button" onclick="QuotationList();" class='btn btn-primary ml-2 mb-2'>
+                    <span>Quotation List</span>
+                </button>*@
+                <button type="button" onclick="AddNewContract();" class='btn btn-primary ml-2 mb-2'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add New Contract</span>
+                </button>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1">
+    <div class="col-md-12">
+        @using (Html.BeginForm("ContractList", "Contract", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+        {
+            <div class="row">
+                <div class="col-md-2  col-sm-6" style="white-space:nowrap">
+                    <label class="control-label " for="from_date"> From Date:</label>
+                    <div class="input-group col-md-9">
+                        <input id="from_date" name="from_date" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.from_date).ToString("dd/MM/yyyy")" />
+                    </div>
+                </div>
+                <div class="col-md-2  col-sm-6" style="white-space:nowrap">
+                    <label class="control-label" for="to_date">To Date:</label>
+                    <div class="input-group col-md-9">
+                        <input id="to_date" name="to_date" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.to_date).ToString("dd/MM/yyyy")" />
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-1 col-xs-1">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm mt-srh-btn" ><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+
+            </div>
+        }
+    </div>
+</div>
+
+
+<div class="col-md-12 padding-0">
+    <div class="col-md-12">
+        <div class="responsive-table">
+            <div id="Contractgrid"></div>
+        </div>
+    </div>
+</div>
+
+<div id="modalWindow">
+    <h6> You want to print quantity column?</h6>
+    <button id="yes" class="btn btn-primary pull-right ml-2 mb-2">Yes</button>
+    <button id="no" class="btn btn-primary pull-right ml-2 mb-2">No</button>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        //$('#date_range').daterangepicker({
+        //    "autoUpdateInput": true,
+        //    "autoApply": true,
+        //    "showDropdowns": true,
+        //    locale: {
+        //        format: 'DD/MM/YYYY',
+        //        cancelLabel: 'Clear'
+        //    },
+        //    ranges: {
+        //        'Today': [moment(), moment()],
+        //        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        //        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        //        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        //        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        //        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        //        'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        //        'Last 6 Months': [moment().subtract(6, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        //        'Last 1 Year': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+
+        //    },
+        //    "alwaysShowCalendars": true,
+        //});
+
+        //$('#date_range').on('apply.daterangepicker', function (ev, picker) {
+        //    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        //});
+
+        //$('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+        //    $(this).val('');
+        //});
+
+        ////Nithin Start Added Defaultly 1 month from present date in DateRangePicker
+        //var present_date = new Date();
+        //var previous_date = present_date.setMonth(present_date.getMonth() - 1);
+        //$('#date_range').data('daterangepicker').setStartDate(present_date);
+        //$('#date_range').data('daterangepicker').setEndDate(previous_date);
+        ////Nithin End Added Defaultly 1 month from present date in DateRangePicker
+        //$('#date_range + .input-group-append').click(function () {
+        //    $('#date_range').trigger("focus");
+        //});
+
+        $("#from_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt2 = $('#to_date');
+                var startDate = $(this).datepicker('getDate');
+                var minDate = $(this).datepicker('getDate');
+                dt2.datepicker('option', 'minDate', minDate);
+            }
+        });
+
+        $('#from_date').removeAttr("data-val-date");
+
+        $("#to_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt1 = $('#from_date');
+                var startDate = $(this).datepicker('getDate');
+                var maxDate = $(this).datepicker('getDate');
+                dt1.datepicker('option', 'maxDate', maxDate);
+            }
+
+        });
+        $('#to_date').removeAttr("data-val-date");
+
+        BindDate();
+
+        BindProjectStatus();
+
+        BindSalesMan();
+
+        wnd = $("#modalWindow").kendoWindow({
+            title: "Quantity Confirmation",
+            modal: true,
+            visible: false,
+            resizable: false,
+            width: 300
+        }).data("kendoWindow");
+
+    });
+
+    function BindGrid() {
+        debugger;
+        var Values = {
+            //fromdate: $('#from_date').val(),
+            //todate: $('#to_date').val(),
+            fromdate: $('#from_date').val(),
+            todate: $('#to_date').val(),
+            projectStatus: $('#StatusId').val(),
+            salesMenId: $('#SalesmenId').val(),
+            searchText: $('#SearchString').val(),
+        };
+        var JsonValues = JSON.stringify(Values);
+
+        dataSource = new kendo.data.DataSource({
+            transport: {
+                             read: function (options) {
+                                $.ajax({
+                                   url: '@Url.Action("GetContractList", "Contract")?JsonValues=' + JsonValues,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                $.ajax({
+                                     url: '@Url.Action("UpsertProjectContract", "Contract")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonContract: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#Contractgrid").data('kendoGrid').dataSource.read();
+                                        if (result.data.Result > 0) {
+                                            $("#Contractgrid").data('kendoGrid').refresh();
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        //kendo.alert(result.data.Errormessage);
+                                        notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                update: function (options) {
+                    options.data.models[0].CreatedUpdated = "";
+                                debugger
+                                $.ajax({
+                                   url: '@Url.Action("UpsertProjectContract", "Contract")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonContract: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#Contractgrid").data('kendoGrid').dataSource.read();
+                                        if (result.data.Result > 0) {
+                                            $("#Contractgrid").data('kendoGrid').refresh();
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        //kendo.alert(result.data.Errormessage);
+                                        //notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                },
+
+                              destroy: function (options) {
+                                debugger
+                                var ProjectId = options.data.models[0].project_id;
+                                $.ajax({
+                                    url: '@Url.Action("DeleteProject_Contract", "Contract")?ProjectId=' + ProjectId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: {},
+                                    success: function (result) {
+                                        debugger
+                                        $("#Contractgrid").data('kendoGrid').dataSource.read();
+                                        $("#Contractgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            @*read: {
+                                url: '@Url.Action("GetContractList", "Contract")?JsonValues=' + JsonValues,
+                                        type: "GET",
+                                        dataType: "json",
+                            },
+                            update: {
+                                url: '@Url.Action("UpsertProjectContract", "Contract")',
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#Contractgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                 url: '@Url.Action("", "Contract")',
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#Contractgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                   create: {
+                       url: '@Url.Action("UpsertProjectContract", "Contract")',
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#Contractgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 15,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "project_id",
+                                fields: {
+                                    id: { editable: false },
+                                    project_id: { editable: false },
+                                    project_number: { editable: false, nullable: true },
+                                    project_name: { validation: { required: true } },
+                                    contract_date: { validation: { required: true }, type: "date" },
+                                    //name1: { validation: { required: true }},
+                                    //salesmen_name: { validation: { required: true } },
+                                    Customer: { type: "object", defaultValue: { Customer_id: 0, name1: "-- Select --" } },
+                                    Salesmen: { type: "object", defaultValue: { id: 0, salesmen_name: "-- Select --" } },
+                                    contract_amount: { validation: { required: true }, type: "number" },
+                                    total_amount: { validation: { required: true }, type: "number" },
+                                    CreatedUpdated: { validation: { required: false }, editable: false },
+                                    Status: { type: "object", defaultValue: { status_lookup_id: 0, description: "-- Select --" } },
+                                }
+                            }
+            },
+
+
+                    });
+
+        $("#Contractgrid").kendoGrid({
+            dataSource: dataSource,
+            navigatable: true,
+            toolbar: [{ name: "excel", text: "Export to Excel " }, { name: "search", title: "Search except Date and Special Characters.. " }, { template: '   <a type="button" class="k-button" style="float:right;" onclick="return  clearAllFilters()" >Clear All Filters</a>' }],
+            excel: {
+                fileName: "Contract List.xlsx",
+                allPages: true,
+            },
+            filterable: true,
+            sortable: true,
+            autoSync: true,
+            //resizable: true,
+            //reorderable: true,
+            pageable: {
+                pageSize: 15,
+                buttonCount: 15,
+                pageSizes: [5, 15, 30, 60, 100, 500],
+                refresh: true,
+                messages: {
+                    display: "{0} - {1} of {2} Contracts", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                    empty: "No Contracts to display",
+                    page: "Page",
+                    of: "of {0}", //{0} is total amount of pages
+                    itemsPerPage: "Contracts per page",
+                    first: "Go to the first page",
+                    previous: "Go to the previous page",
+                    next: "Go to the next page",
+                    last: "Go to the last page",
+                    refresh: "Refresh"
+                }
+            },
+            edit: onGridEditing,
+            columns: [
+
+                //{ field: "id", hidden: true },
+                { field: "project_number", title: "Contr No", width: "100px", filterable: { multi: true, search: true } },
+                { field: "contract_date", title: "Contr Date", width: "110px", format: "{0:dd-MMM-yyyy}", filterable: { multi: true, search: true } },
+                { field: "project_id", hidden: true },
+                { field: "id", hidden: true },
+                { field: "Salesmen.salesmen_name", title: "Salesmen", width: "140px", attributes: { style: "text-align:left;" }, editor: BindSalesManDropDownEditor, template: "#=Salesmen.salesmen_name#", filterable: { multi: true, search: true } },
+                { field: "Customer.name1", title: "Customer", width: "140px", editor: BindCustomerDropDownEditor, template: "#=Customer.name1#", filterable: { multi: true, search: true } },
+
+
+
+                { field: "project_name", title: "Address/Site", width: "160px", filterable: { multi: true, search: true }, editable: false },
+
+                //{ field: "name1", title: "Customer", editor: BindCustomerDropDownEditor, template: "#=data.name1#", filterable: { multi: true, search: true } },
+                //{ field: "salesmen_name", title: "Salesman", attributes: { style: "text-align:left;" }, editor: BindSalesManDropDownEditor, template: "#=data.salesmen_name#", filterable: { multi: true, search: true } },
+
+                { field: "contract_amount", title: "Contr Amt($)", width: "120px", format: "{0:c}", attributes: { style: "text-align:right;" }, filterable: { multi: true, search: true }, hidden: true },
+                { field: "total_amount", title: "Contr Amt($)", width: "120px", format: "{0:c}", attributes: { style: "text-align:right;" }, filterable: { multi: true, search: true } },
+                { field: "Status.description", title: "Contr Status", width: "120px", attributes: { style: "text-align:left;" }, editor: BillingUOMDropDownEditor, template: "#=Status.description#", filterable: { multi: true, search: true } },
+                { field: "CreatedUpdated", title: "Created/Updated", width: "160px", filterable: false, editable: false, encoded: false },
+                {
+                    command: [
+                        { name: "editdetails", text: " ", iconClass: "k-icon k-i-edit", click: ContractDetail },
+                        //{ name: "Print", text: "", iconClass: "k-icon k-i-print", click: PrintPreview },
+                        //{
+                        //    name: "vo", text: "<strong>VO</strong>", click: VariationOrderDetail /*, template: "<div class='VO # if(Status.status_lookup_id == 5 || Status.status_lookup_id == '5') {#display_vo_block# } else { #display_vo_none# } #'></div>"*/,
+                        //    visible: function () {
+                        //        var StatusId = Status.status_lookup_id; return StatusId == "5"
+                        //    }
+                        //},
+                        //{
+                        //    name: "evo", text: "<strong>EVO</strong>", click: ElectricalVariationOrderDetail /*, template: "<div class='VO # if(Status.status_lookup_id == 5 || Status.status_lookup_id == '5') {#display_vo_block# } else { #display_vo_none# } #'></div>"*/,
+                        //    visible: function () {
+                        //        var StatusId = Status.status_lookup_id; return StatusId == "5"
+                        //    }
+                        //},
+                        {
+                            name: "AO", text: "<strong>VO</strong>", click: AdditionOmissionDetail /*, template: "<div class='VO # if(Status.status_lookup_id == 5 || Status.status_lookup_id == '5') {#display_vo_block# } else { #display_vo_none# } #'></div>"*/,
+                            visible: function () {
+                                var StatusId = Status.status_lookup_id; return StatusId == "5"
+                            }
+                        },
+                        { name: "Documents", text: " ", iconClass: "k-icon k-i-file", click: UploadFile },
+                        { name: "ProjectCost", text: " ", iconClass: "k-icon k-i-dollar", click: ProjectCostingReport },
+                        //{
+                        //    name: "mapsuppliers", text: "<strong>Map Suppliers</strong>", click: SupplierMapDetail
+                        //}
+                            /*{ name: "destroy", text: " ", iconClass: "k-icon k-i-delete" }*/
+                        /*, { name: "Upload", text: "", iconClass: "k-icon k-i-upload", click: Upload }*/], title: "Action", width: "100px"
+                },
+            ],
+            editable: "inline"
+        });
+    }
+    function onGridEditing(arg) {
+        arg.container.find("input[name='project_number']").attr('maxlength', '150');
+        arg.container.find("input[name='project_name']").attr('maxlength', '250');
+    }
+
+    function BillingUOMDropDownEditor(container, options) {
+        var LookUpColumnId = 1;
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                optionLabel: "Select BillingUOM",
+                dataTextField: "description",
+                dataValueField: "status_lookup_id",
+               // select: onselect,
+				//change: onSelectUOM,
+				//select: onSelectBillingUOM,
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("Bind_StatusLookUp", "Master")?LookUpColumnId='+LookUpColumnId,
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                }
+            });
+    }
+    function BindSalesManDropDownEditor(container, options) {
+    /*  $('<input required name="' + options.field + '"/>')*/
+        $('<input data-bind="value:Salesmen"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                 optionLabel: "Select Salesmen",
+                //index: "1",
+                //value: "1",
+                //valuePrimitive: true,
+                //optionLabel: localize("format", "SelectType"),
+                dataTextField: "salesmen_name",
+                dataValueField: "id",//id
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("BindSalesmen", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                },
+
+                noDataTemplate: $("#SalesmenTemplate").html()
+            });
+    }
+
+    function BindCustomerDropDownEditor(container, options) {
+    /* $('<input required name="' + options.field + '"/>')*/
+        $('<input data-bind="value:Customer"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                optionLabel: "Select Customer",
+                dataTextField: "name1",
+                dataValueField: "Customer_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("BindCustomer", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                },
+                noDataTemplate: $("#CustomerTemplate").html()
+            });
+    }
+
+    function Search() {
+        var alphanumers = /^[\w\s]+$/;
+        if (!alphanumers.test($("#SearchStringmyprojects").val()) && $("#SearchStringmyprojects").val() != '') {
+            notify("Search can have only alphabets and numbers.", "error");
+            return false;
+        }
+    }
+
+    function BindProjectStatus() {
+        var Type = 2;
+        $.get('@Url.Action("BindProjectStatus", "Quotation")?Type='+Type, function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].projectStatusid + ">" + list.data[i].projectStatus + "</option>");
+                }
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select" + "</option>");
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+            }
+        });
+
+    }
+
+    function BindSalesMan() {
+
+        $.get('@Url.Action("BindSalesmen", "Master")', function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].id + ">" + list.data[i].salesmen_name + "</option>");
+                }
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+             debugger
+        var role = '@Model.role';
+            if (role == "Salesman") {
+                $("#SalesmenId").val('@Model.id').trigger('change');
+                $('#SalesmenId').prop('disabled', true);
+            }
+            else {
+                $('#SalesmenId').prop('disabled', false);
+            }
+            BindGrid();
+        });
+
+    }
+
+    function BindDate() {
+        $("#from_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt2 = $('#to_date');
+                var startDate = $(this).datepicker('getDate');
+                var minDate = $(this).datepicker('getDate');
+                dt2.datepicker('option', 'minDate', minDate);
+            }
+        });
+        $("#to_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt1 = $('#from_date');
+                var startDate = $(this).datepicker('getDate');
+                var maxDate = $(this).datepicker('getDate');
+                dt1.datepicker('option', 'maxDate', maxDate);
+            }
+        });
+
+        $('#from_date').removeAttr("data-val-date");
+        $('#to_date').removeAttr("data-val-date");
+
+    }
+
+    function SearchContract() {
+        debugger;
+            BindGrid();
+    }
+
+    function ContractDetail(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);          // get the date of this row
+        //window.location = '@Url.Action("ContractDetail", "Contract")?ProjectId=' + item.project_id;
+        window.location = '@Url.Action("NewContract", "Contract")?id=' + item.Id;
+    }
+    function VariationOrderDetail(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");
+        var item = this.dataItem(tr);
+        $.ajax({
+                    url: '@Url.Action("GetRowsCount", "VariationOrder")',
+                    type: "POST",
+                    dataType: "json",
+                    data: { ProjectId: item.project_id },
+                    success: function (result) {
+                        debugger
+
+                        if (result.data.Result > 1) {
+                            window.location = '@Url.Action("VariationOrderList", "VariationOrder")?ProjectId=' + item.project_id;
+                        }
+                        else {
+                            window.location = '@Url.Action("AdditionOmission", "VariationOrder")?ProjectId=' + item.project_id + '&ShowHide=' + true;
+                        }
+                        options.success(result);
+                    },
+                    error: function (result) {
+                        debugger
+
+                        options.error(result);
+                    }
+        });
+    }
+
+    function AdditionOmissionDetail(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+         $.ajax({
+                    url: '@Url.Action("GetAdditionOmissionRowsCount", "Contract")',
+                    type: "POST",
+             dataType: "json",
+             data: { ProjectId: item.Id },
+                    success: function (result) {
+                        debugger
+
+                        if (result.data.Result > 0) {
+                            window.location = '@Url.Action("Additions", "Projects")?ProjectId=' + item.Id;
+                        }
+                        else {
+                           openModelpopup('/Projects/_LoadAdditions', 'id', 0, 'projectId', item.Id);
+                        }
+                        options.success(result);
+                    },
+                    error: function (result) {
+                        debugger
+
+                        /* options.error(result);*/
+                        notify("Error While Retriving the Data", "error");
+                    }
+        });
+
+
+    }
+
+
+     function ElectricalVariationOrderDetail(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");
+        var item = this.dataItem(tr);
+        $.ajax({
+                    url: '@Url.Action("GetEVORowsCount", "VariationOrder")',
+                    type: "POST",
+                    dataType: "json",
+                    data: { ProjectId: item.project_id },
+                    success: function (result) {
+                        debugger
+
+                        if (result.data.Result > 1) {
+                            window.location = '@Url.Action("ElectricalVariationOrderList", "VariationOrder")?ProjectId=' + item.project_id;
+                        }
+                        else {
+                             window.location = '@Url.Action("ElectricalVariationOrder", "VariationOrder")?ProjectId=' + item.project_id + '&ShowHide=' + true;
+                        }
+
+                        options.success(result);
+                    },
+                    error: function (result) {
+                        debugger
+
+                        options.error(result);
+                    }
+        });
+    }
+
+    function AddNewContract() {
+        window.location = '@Url.Action("NewContract", "Contract")?id=0';
+       // "openModelpop('/Contract/NewContract','id',0);"
+    }
+
+    //function UploadFile(e) {
+    //    debugger;
+    //    var tr = $(e.target).closest("tr");    // get the current table row (tr)
+    //    var item = this.dataItem(tr);
+    //    var IsProject = true;
+    //    window.open("/Projects/ProjectDocument?id=" + item.Id + "&IsProject =" + IsProject, 'targetWindow', 'toolbar=no,location=no, status=no, menubar=no, scrollbars=yes,resizable=yes,width=850,height=500');
+
+    //}
+
+    function PrintPreview(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+
+        wnd.center().open();
+        $("#yes").click(function () {
+            debugger
+            @*location.href = '@Url.Action("PrintPreview", "Contract")?Id=' + item.project_id +
+                "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + true;*@
+             window.open('@Url.Action("PrintPreview", "Contract")?Id=' + item.project_id +
+                "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + true, "socialPopupWindow",
+               "location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+            wnd.close();
+        });
+        $("#no").click(function () {
+            debugger
+            @*location.href = '@Url.Action("PrintPreview", "Contract")?Id=' + item.project_id +
+                "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + false;*@
+            window.open('@Url.Action("PrintPreview", "Contract")?Id=' + item.project_id +
+                "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + false, "socialPopupWindow",
+               "location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+            wnd.close();
+        });
+    }
+
+    function Upload(e) {
+        debugger;
+        //openModelpop('/Contract/Upload', 'id', 0);
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        window.location.href = "http://localhost:5998/Contract/Upload?Id="+item.project_id;
+    }
+
+    function QuotationList() {
+        window.location = '@Url.Action("Quotation", "Quotation")';
+    }
+    //Nithin Added to clear all filterrs
+    function clearAllFilters() {
+        $("#Contractgrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");
+    }
+
+    function SupplierMapDetail(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);          // get the date of this row
+        window.location = '@Url.Action("ContractSupplierMapping", "Contract")?ProjectId=' + item.project_id;
+    }
+
+    function UploadFile(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var IsProject = true;
+        window.open("/Projects/ProjectDocument?id=" + item.Id + "&IsProject=" + true + "&IsDashBoard=" + false + "&IsContract=" + true, 'targetWindow', 'toolbar=no,location=no, status=no, menubar=no, scrollbars=yes,resizable=yes,width=850,height=500');
+        //UploadFile
+    }
+
+    function ProjectCostingReport(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        window.location = '@Url.Action("ProjectCostingReport", "Report")?ProjectId=' + item.Id;
+
+    }
+    //Tooltips For Kendogrid Action Btn
+
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-vo",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Create VO";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-editdetails",
+        autoHide: true,
+        position: "top",
+        content: function (e) {
+            return "Edit Contract Details";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-AO",
+        autoHide: true,
+        position: "top",
+        content: function (e) {
+            return "Additions And Omissions";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Delete Contract";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-Print",
+        autoHide: true,
+        position: "top",
+        content: function (e) {
+            return "Print Contract";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-evo",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Create Electric VO";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-mapsuppliers",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Map Suppliers to Contract";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-Documents",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Contract Documents";
+        }
+    });
+    $("#Contractgrid").kendoTooltip({
+        filter: ".k-grid-ProjectCost",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Project Cost Report";
+        }
+    });
+
+</script>
+<script id="CustomerTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    @*<button class="k-button" onclick="addNew()">Add new item</button>*@
+    <button type="button" onclick="openModelpop('/Customer/_LoadCustomer','id',0);" class='k-button'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:5px;">Add New Customer</span>
+                </button>
+</script>
+
+<script id="SalesmenTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    @*<button class="k-button" onclick="addNew()">Add new item</button>*@
+    <button type="button" onclick="openModelpop('/Admin/SalesmenLoadAddEdit', 'id', 0);" class='k-button'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:5px;">Add New Salesmen</span>
+                </button>
+</script>
+

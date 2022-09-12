@@ -1,0 +1,3617 @@
+﻿@model PMS.Models.QuotationDetails
+@{
+    ViewBag.Title = "QuotationDetail";
+}
+<style>
+    td[data-container-for="Item"], td[data-container-for="BillingUOM"], td[data-container-for="Category"], td[data-container-for="UOM"] {
+        overflow: initial;
+    }
+
+    #contract_terms_editor {
+        width: 100%;
+        height: 840px;
+    }
+
+    table.k-widget.k-editor {
+        height: 740px;
+    }
+
+    #discount, #discountPercentage {
+        text-align: right;
+        padding-right: 0px;
+        width: 120px;
+        padding: 10px;
+    }
+
+    /*   .jhhk {
+        position: absolute;
+        margin-top: -37px;
+        right: -25px;
+        left: 285px;
+        z-index: -1;
+        height: 10px;
+        box-shadow: 0px 0px 6px #0000004d;
+    }*/
+</style>
+
+<div class="modal" tabindex="-1" id="ModelForCopyPackagedetailID" role="dialog">
+    <div class="modal-dialog modal-sm" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Clone As Package</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <label class="control-label" for="from_date"><span class="data_inline_label">Plan</span></label>
+                        <div class="clone_select2_dropdown">
+                            <select name="PlanId" id="PlanId" class="form-control" required="required">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 form-group">
+                        <label class="control-label" for="from_date"><span class="data_inline_label">Package</span></label>
+                        <div class="clone_select2_dropdown">
+                            <select name="PackageTypeId" id="PackageTypeId" class="form-control" required="required">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 form-group">
+                        <label class="control-label" for="from_date"><span class="data_inline_label">Floor</span></label>
+                        <div class="clone_select2_dropdown">
+                            <select name="FloorId" id="FloorId" class="form-control" required="required">
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-12 form-group">
+                        <label for="from_date" class="control-label text-right "><span class="data_inline_label">Valid From</span></label>
+                        <div class="input-group">
+                            <input type="text" id="date_range_FromTo" name="date_range_FromTo" class="form-control date_form_control" readonly />
+                            <div class="input-group-append">
+                                <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="save_header" onclick="CreatePackageWithProjectDetails()">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="ClearPackage()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="ExistingProjectId" class="form-control col-8" />
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4 col-7">
+                <h3 class="animated fadeInLeft text-primary">Quotation Details</h3>
+            </div>
+            <div class="col-md-8 col-5 text-right ">
+
+                <button type="button" onclick="openImportExcelPopup('IsClose')" class='btn btn-primary mb-2'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Import From Excel</span>
+                </button>
+
+                <button type="button" class="btn btn-primary ml-2 mb-2" onclick="SaveAsPackage_Clone()">
+                    <span>Save As Package</span>
+                </button>
+                <button type="button" onclick="QuotationList();" class='btn btn-primary ml-2 mb-2'>
+                    <span>Quotation List</span>
+                </button>
+                <button type="button" onclick="AddQuotation();" class='btn btn-primary ml-2 mb-2'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add Quotation</span>
+                </button>
+
+
+            </div>
+            <!-- Button trigger modal -->
+            <!-- Modal -->
+            <div class="modal fade" id="remarks_modal_forPartially" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Remarks</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" rows="5" id="commentReasonforPartially"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" onclick="SubmitStatusChange(3);" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal fade" id="remarks_modal_forReject" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Remarks</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <textarea class="form-control" rows="5" id="commentReasonforReject"></textarea>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button type="button" onclick="SubmitStatusChange(4);" class="btn btn-primary">Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            @*<div class="col-md-8 col-5 text-right ">
+                    <button type="button" onclick="AddQuotation();" class='btn btn-primary mb-2'>
+                        <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add Quotation</span>
+                    </button>
+                    <button type="button" onclick="QuotationList();" class='btn btn-primary ml-2 mb-2'>
+                        <span>Quotation List</span>
+                    </button>
+                </div>*@
+
+
+        </div>
+    </div>
+</div>
+
+<!--<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="well">
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Salesmen:</label>
+                                <select name="SalesmenId" id="SalesmenId" class="form-control" required="required">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Customer:</label>
+                                <select name="Customer_Id" id="Customer_Id" class="form-control" required="required">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Status:</label>
+                                <select name="StatusId" id="StatusId" class="form-control" required="required">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 col-sm-6">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Quotation Date:</label>
+                                <input id="Quotation_date" name="Quotation_date" class="form-control" placeholder="From Date"-->
+@*value="@Convert.ToDateTime(Model.from_date).ToString("dd/MM/yyyy")"*@
+<!--/>
+
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-10">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Email:&nbsp;</label>
+                                <input id="Email" name="Email" class="form-control" />
+                            </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6 col-xs-10">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Adrress/Site:&nbsp;</label>
+                                <input id="Address" name="Address" class="form-control" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="QuotationGrid" class="accordion">
+        </div>
+    </div>
+</div>-->
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-2 ">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Salesmen</span></label>
+                    <div>
+                        <select name="SalesmenId" id="SalesmenId" class="form-control" disabled>
+                            <option selected value="">@Model.salesmen</option>
+                        </select>
+                    </div>
+                    @*<label class="control-label"><span class="data_inline">@Model.salesmen</span></label>*@
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Customer</span></label>
+                    <div>
+                        <select name="Customer_Id" id="Customer_Id" class="form-control" disabled>
+                            <option selected value="">@Model.customer</option>
+                        </select>
+                    </div>
+                    @*<label class="control-label"><span class="data_inline">@Model.customer</span></label>*@
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label ml-2" for="project_name"><span class="data_inline_label" style="">Address/Site</span></label>
+
+                    <input id="project_name" name="project_name" class="form-control" value="@Model.project_name" maxlength="100" />
+                    @*<label class="control-label"><span class="data_inline"><strong>$@Model.total_amount.ToString("#,##0.00")</strong></span></label>*@
+                </div>
+
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Status</span></label>
+                    <div>
+                        <select name="StatusId" id="StatusId" class="form-control" disabled>
+                            <option selected value="">@Model.status</option>
+                        </select>
+                    </div>
+                    @*<label class="control-label"><span class="data_inline">@Model.status</span></label>*@
+
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Amount</span></label>
+                    <input id="total_amount" name="total_amount" class="form-control" value="$@Model.total_amount.ToString("#,##0.00")" maxlength="100" disabled />
+                    @*<label class="control-label"><span class="data_inline"><strong>$@Model.total_amount.ToString("#,##0.00")</strong></span></label>*@
+                </div>
+            </div>
+
+            @*<div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label" style="font-size:20px">Email :</span></label>
+                    <label class="control-label"><span class="data_inline">@Model.Email</span></label>
+
+                </div>
+            </div>*@
+        </div>
+
+        <div class="row mb-2">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label class="control-label ml-2" for="project_number"><span class="data_inline_label" style="">Quote No</span></label>
+
+                    <input id="project_number" name="project_number" class="form-control" value="@Model.project_number" maxlength="100" readonly />
+                    @*<label class="control-label"><span class="data_inline"><strong>$@Model.total_amount.ToString("#,##0.00")</strong></span></label>*@
+                </div>
+
+            </div>
+            <div class="form-group col-md-2">
+                <label for="from_date" class="control-label text-md-right my-auto"><span class="data_inline_label">Quote Date </span></label>
+                @*<label class="control-label"><span class="data_inline">@Model.quotationForwardDate </span></label>*@
+                <div class="input-group">
+                    <input type="text" id="date_range" name="date_range" class="form-control date_form_control" readonly />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-3 mt-27">
+                <button type="button" id="btnUpdate" class="btn btn-primary " onclick="UpdateProjectDetails(0)">Update</button>
+                <button type="button" id="btnClear" class="btn btn-primary" onclick="CancelProjectDetails()">Clear</button>
+
+                @*<button type="button" class="btn btn-primary" onclick="SaveAsPackage_Clone()">SaveAsPackage</button>*@
+                @*<button type="button" id="btnCommit" class="btn btn-primary" onclick="Commit_Version()">Commit</button>*@
+            </div>
+            <div class="col-md-5 mt-27 text-right">
+                <button type="button" id="print_preview" onclick="PrintPreview();" class='btn btn-success mb-2'>
+                    @*ml-md-2 mt-md-1*@
+                    <i class="fa fa-print"></i><span class="ml-2">Print</span>
+                </button>
+                <button type="button" id="btnSendMail" onclick="OnClickSendMail();" class='btn btn-primary mb-2'>
+                    <i class="fa fa-envelope"></i><span class="ml-2">Send Email</span>
+                </button>
+                <button type="button" id="btnSendWhatsapp" onclick="openSendWhatsappSMSPopup()" class='btn btn-primary mb-2'>
+                    <i class="fa fa-whatsapp"></i><span class="ml-2">Send WhatsApp</span>
+                </button>
+            </div>
+
+
+            @if (ViewBag.ShowHide == true)
+            {
+                <div id="StatuschangeId" class="col-md-12 text-md-right">
+                    <button type="button" id="btnAccept" onclick="SubmitStatusChange(2);" class='btn btn-primary ml-2 mb-2'>
+                        <span>Accept & Confirm </span>
+                    </button>
+                    <button type="button" id="btnNotAccept" data-toggle="modal" data-target="#remarks_modal_forReject" class='btn btn-primary ml-2 mb-2'>
+                        <span>Not Accepted</span>
+                    </button>
+                    <button type="button" id="btnPartially" data-toggle="modal" data-target="#remarks_modal_forPartially" class='btn btn-primary ml-2 mb-2'>
+                        <span>Partially Accepted</span>
+                    </button>
+                </div>
+            }
+            else
+            {
+                <div id="StatuschangeId" class="col-md-12 text-md-right" style="display:none">
+                    <button type="button" id="btnAccept" onclick="SubmitStatusChange(2);" class='btn btn-primary ml-2 mb-2'>
+                        <span>Accepted</span>
+                    </button>
+                    <button type="button" id="btnNotAccept" data-toggle="modal" data-target="#remarks_modal_forReject" class='btn btn-primary ml-2 mb-2'>
+                        <span>Not Accepted</span>
+                    </button>
+                    <button type="button" id="btnPartially" data-toggle="modal" data-target="#remarks_modal_forPartially" class='btn btn-primary ml-2 mb-2'>
+                        <span>Partially Accepted</span>
+                    </button>
+                </div>
+            }
+
+            @*<div class="col-md-4 my-md-auto text-md-center my-3">
+                <button class="k-button" id="expand">Expand All</button>
+                <button class="k-button" id="collapse">Collapse All</button>
+            </div>*@
+
+        </div>
+
+        <input type="hidden" id="ProjectId" class="form-control " value="@ViewBag.ProjectId" />
+        <input type="hidden" id="PackageId" class="form-control " value="@Model.package_id" />
+        <input type="hidden" id="ParentTaskId" name="ParentTaskId" class="form-control" />
+        <input type="hidden" id="hdncontract_term_id" name="hdncontract_term_id" class="form-control" />
+        <input type="hidden" id="hdnmaster_contract_term_id" name="hdnmaster_contract_term_id" class="form-control" />
+
+        <input type="hidden" id="QuoteDate" class="form-control " value="@Model.quotationForwardDate" />
+        <input type="hidden" id="CustomerName" class="form-control " value="@Model.customer" />
+        <input type="hidden" id="SalesmenName" class="form-control " value="@Model.salesmen" />
+        @*$('#project_name').val()*@
+        @*$('#project_number').val()*@
+
+        <div id="PackageGrid" class="accordion">
+            @*<label ><input type="checkbox" id="" onchange="toggleEditing(event)" checked/> Enable Editing</label>*@
+        </div>
+
+        <div>
+            <label style="font-size: x-large; font-weight: bolder; "> Quotation Details</label>
+        </div>
+
+        <div id="QuotationGrid" class="accordion">
+            @*<label ><input type="checkbox" id="" onchange="toggleEditing(event)" checked/> Enable Editing</label>*@
+        </div>
+
+        <br />
+        <div class="row justify-content-end ">
+            <div class="col-md-4 mr-4">
+                <table class="table task_total_amount_tables">
+                    <tbody>
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Sub Total :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    <label id="sub_total_amount" name="sub_total_amount">
+                                        $@Model.contract_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Discount % :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    @if (Model.status_id == 1)
+                                    {
+                                        <input type="text" id="discountPercentage" name="discountPercentage" class="form-control decimal-restrict" value="@Model.discount_percentage.ToString()" onblur="onBlurDiscount('')" onchange="OnChangeDiscountPercentage()" />
+                                    }
+                                    else
+                                    {
+                                        <input type="text" id="discountPercentage" name="discountPercentage" class="form-control decimal-restrict" value="@Model.discount_percentage.ToString()" readonly />
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Discount Amount :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    @if (Model.status_id == 1)
+                                    {
+                                        <input type="text" id="discount" name="discount" class="form-control decimal-restrict" value="@Model.discount.ToString("#,##0.00")" onblur="onBlurUpdate('')" />
+                                    }
+                                    else
+                                    {
+                                        <input type="text" id="discount" name="discount" class="form-control decimal-restrict" value="@Model.discount.ToString("#,##0.00")" readonly />
+                                    }
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles"> Total :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    <label id="total_afterDiscount" name="total_afterDiscount">
+                                        @*$@Model.contract_amount.ToString("#,##0.00")*@
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">
+
+                                <p class="task_total_amount_titles">
+                                    <label class="task_total_amount_titles" id="gst_percentage" name="gst_percentage">
+                                        @Model.gst_percentage % GST :
+                                    </label>
+                                </p>
+                            </td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    <label id="gst_amount" name="gst_amount">
+                                        $@Model.gst_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Grand Total :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    @*<span><i class="fa fa-dollar mr-2"></i></span>*@ <label id="grand_total_amount" name="grand_total_amount">
+                                        $@Model.total_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <label class="control-label mt-3" for="from_date"><span class="data_inline_label">Payment Terms</span></label>
+
+
+        <div id="TermsGrid" class="accordion">  </div>
+        <label class="control-label mt-5"><span class="data_inline_label">Contract Terms</span></label>
+        <!--<div class="row">-->
+        @*<div class="col-md-3">
+            <div class="form-group">
+                <label class="control-label" for="ContractTerm"><span class="data_inline_label">Select Contract Term :</span></label>
+            </div>
+        </div>*@
+        <!--<div class="col-md-6">
+            <div class="form-group">
+                <div>
+                    <select name="ContractTermId" id="ContractTermId" class="form-control" onchange="FetchInContractEditor();">
+                        <option value="">-- Please Select Contract Term --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <button type="button" class="btn btn-primary " id="btnAddContractTerms" onclick="SaveContractTerms()">Save</button>
+        </div>
+    </div>-->
+
+        <div class="demo-section k-content wide form-group">
+            <textarea id="contract_terms_editor" class="form-control" rows="100" cols="60" aria-label="editor">
+            </textarea>
+        </div>
+
+        @* Start We need to have for Each Task Total*@
+        <br />
+        <div class="row">
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Created By</label>
+                            <div class="created_updated_card_content" id="createdBy">@Model.created_by</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Created On</label>
+                            <div class="created_updated_card_content" id="created_date">@Model.created_date</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Updated By</label>
+                            <div class="created_updated_card_content" id="modified_by">@Model.modified_by</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Updated on</label>
+                            <div class="created_updated_card_content" id="modified_date">@Model.modified_date</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <input type="hidden" id="hdncontract_amount" value="@Model.contract_amount" />
+</div>
+<div id="modalWindow">
+    <h6> You want to print Unit Price column?</h6>
+    <button id="yes" class="btn btn-primary pull-right ml-2 mb-2">Yes</button>
+    <button id="no" class="btn btn-primary pull-right ml-2 mb-2">No</button>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+
+        debugger;
+        onpageLoadStatusChange();
+        BindPlan();
+        BindFloor();
+        BindPackageType();
+        FetchDatesFromDateRangePicker();
+        var SubTotal = @Model.contract_amount;
+        var discount =  @Model.discount;
+        var tolalamount = SubTotal - discount;
+        $("#total_afterDiscount").text(formatCurrency(tolalamount));
+        //  $("#discount").val(@Model.discount);
+        $('#sub_total_amount').text(formatCurrency(SubTotal));
+        $("#discount").val(formatCurrency(discount));
+
+           // GetContractTerms();
+            ShowHideStatus();
+            BindProjectStatus();
+            BindSalesMan();
+            BindCustomer();
+            BindContractTerms();
+        @*$("#date_range").kendoDatePicker();
+        debugger
+        console.log('@Model.quotationForwardDate');
+        var date1 ="@Model.quotationForwardDate";
+        $("#date_range").data("kendoDatePicker").value(date1);*@
+
+         $('#date_range').daterangepicker({
+             "singleDatePicker": true,
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+            //ranges: {
+            //    'Today': [moment(), moment()],
+            //    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            //    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            //    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            //    'This Month': [moment().startOf('month'), moment().endOf('month')],
+            //    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            //},
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') /*+ ' - ' + picker.endDate.format('DD/MM/YYYY')*/);
+        });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        $('#date_range').data('daterangepicker').setStartDate('@Model.quotationForwardDate');
+        $('#date_range + .input-group-append').click(function () {
+            $('#date_range').trigger("focus");
+        });
+        wnd = $("#modalWindow").kendoWindow({
+            title: "Quantity Confirmation",
+            modal: true,
+            visible: false,
+            resizable: false,
+            width: 300
+        }).data("kendoWindow");
+        var element = $("#QuotationGrid").kendoGrid({
+                    dataSource: {
+                       transport: {
+                            //@*read: {
+                            //   url: '@Url.Action("GetProjectTasksItem", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + TaskId,
+                            //            type: "GET",
+                            //            dataType: "json"
+                            //},*@
+
+                            read: function (options) {
+                               $.ajax({
+                                   url: '@Url.Action("GetProjectTasksQuotationItem", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + TaskId + '&IsFromPackage=' + false,
+                                   type: "GET",
+                                   dataType: "json",
+                                   success: function (result) {
+                                       debugger
+                                       options.success(result);
+                                   },
+                                   error: function (result) {
+                                       debugger
+                                       options.error(result);
+                                   }
+                               });
+                            },
+                            update: {
+                                url: '@Url.Action("UpsertProjectTasks", "Quotation")?ProjectId=' + ProjectId,
+                                type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#QuotationGrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                url: '@Url.Action("", "Quotation")',
+                                type: "POST",
+                                dataType: "json"
+                            },
+                            create: {
+                                url: '@Url.Action("UpsertProjectTasks", "Quotation")?ProjectId=' + ProjectId,
+                                type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#QuotationGrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 6,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "Task_Id",
+                                fields: {
+                                   // Task_Id: { hidden : true },
+                                  //  Task_Name: { validation: { required: true } },
+                                   // Task_Name: { defaultValue: { Task_Id: 0, Task_Name: "Select Task" }, validation: { required: true } },
+                                    Task: { defaultValue: { Task_Id: 0, Task_Name: "Select Task" } },
+                                }
+                            }
+                        }
+                    },
+                    pageable: true,
+        /* toolbar: ["create"],*/
+            toolbar: [
+                { name: "create", text: "Add new Quotation Task" }, { template: '<a class="k-button"  onclick="return  collapse_all()"  style="float:right" >Collapse All</a>' }, { template: '<a class="k-button"  onclick="return  expand_all()"  style="float:right">Expand All</a>' }
+            ],
+                    detailInit: detailInit,
+                    dataBound: function () {
+                        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+                    },
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} tasks", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No tasks to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "tasks per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+                    columns: [
+                       // { field: "Task_Id", title: "Task Id", hidden: true },
+                    /* { field: "Task_Name", title: " ", attributes: { style: "text-align:left;font-size: 22px;" }, editor: GetProjectTasksListItem, template: "#=data.Task_Name#" }*/
+
+                        { field: "Task", title: " ", attributes: { style: "text-align:left;font-size: 20px;" }, editor: GetProjectTasksListItem, template: "#=Task.Task_Name#" },
+
+                        //,
+                        //{
+                        //    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                        //        { name: "destroy", text: " " }], title: "Action", width: "100px" }
+                    ],
+                    editable: "inline"
+        });
+        var PackageDetails = $("#PackageGrid").kendoGrid({
+            dataSource: {
+                transport: {
+                    //@*read: {
+                            //   url: '@Url.Action("GetProjectTasksItem", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + TaskId,
+                            //            type: "GET",
+                            //            dataType: "json"
+                            //},*@
+
+                    read: function (options) {
+                        $.ajax({
+                            url: '@Url.Action("GetProjectTasksQuotationItem", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + TaskId + '&IsFromPackage=' + true,
+                            type: "GET",
+                            dataType: "json",
+                            success: function (result) {
+                                debugger
+                                options.success(result);
+                            },
+                            error: function (result) {
+                                debugger
+                                options.error(result);
+                            }
+                        });
+                    },
+                            @*update: {
+                                url: '@Url.Action("UpsertProjectTasks", "Quotation")?ProjectId=' + ProjectId,
+                                type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#PackageGrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                    @*destroy: {
+                                url: '@Url.Action("", "Quotation")',
+                                type: "POST",
+                                dataType: "json"
+                            },*@
+                    @*create: {
+                                url: '@Url.Action("UpsertProjectTasks", "Quotation")?ProjectId=' + ProjectId,
+                                type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#PackageGrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 6,
+                schema: {
+                    data: "data.Items", total: "data.TotalCount",
+                    model: {
+                        id: "Task_Id",
+                        fields: {
+                            // Task_Id: { hidden : true },
+                            //  Task_Name: { validation: { required: true } },
+                            // Task_Name: { defaultValue: { Task_Id: 0, Task_Name: "Select Task" }, validation: { required: true } },
+                            Task: { defaultValue: { Task_Id: 0, Task_Name: "Select Task" } },
+                        }
+                    }
+                }
+            },
+            pageable: true,
+            /* toolbar: ["create"],*/
+            toolbar: [
+                { template: '<a class="k-Text" style="float:Left;/* width: 41%; */font-size: large;font-size: x-large;color: white;" >Package Details</a>' }, { template: '<a class="k-button"  onclick="return  collapse_allPackages()"  style="float:right" >Collapse</a>' }, { template: '<a class="k-button"  onclick="return  expand_allPackage()"  style="float:right">Expand</a>' }
+            ],
+            detailInit: detailInitPackage,
+            dataBound: function () {
+                //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+            },
+            pageable: {
+                pageSize: 10,
+                buttonCount: 10,
+                pageSizes: [5, 10, 20, 50, 100, 500],
+                messages: {
+                    display: "{0} - {1} of {2} tasks", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                    empty: "No tasks to display",
+                    page: "Page",
+                    of: "of {0}", //{0} is total amount of pages
+                    itemsPerPage: "tasks per page",
+                    first: "Go to the first page",
+                    previous: "Go to the previous page",
+                    next: "Go to the next page",
+                    last: "Go to the last page",
+                    refresh: "Refresh"
+                }
+            },
+            columns: [
+                // { field: "Task_Id", title: "Task Id", hidden: true },
+                /* { field: "Task_Name", title: " ", attributes: { style: "text-align:left;font-size: 22px;" }, editor: GetProjectTasksListItem, template: "#=data.Task_Name#" }*/
+
+                { field: "Task", title: " ", attributes: { style: "text-align:left;font-size: 20px;" }, editor: GetProjectTasksListItem, template: "#=Task.Task_Name#" },
+
+                //,
+                //{
+                //    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                //        { name: "destroy", text: " " }], title: "Action", width: "100px" }
+            ],
+            editable: false
+        });
+
+    });
+
+    function openImportExcelPopup() {
+        openModelpop('/Quotation/_FileUpload', 'id', 0);
+    }
+
+    function openSendWhatsappSMSPopup() {
+        debugger;
+        var ProjectId = $('#ProjectId').val();
+
+        var QuoteDate = $('#QuoteDate').val();
+        var CustomerName = $("#CustomerName").val();
+        var SalesmenName = $("#SalesmenName").val();
+        var CustomerAddress = $('#project_name').val();
+        var QuoteNumber = $('#project_number').val();
+
+        var Values = {
+            project_id: ProjectId,
+            //QuoteDate: QuoteDate,
+            CustomerName: CustomerName,
+            SalesmenName: SalesmenName,
+            CustomerAddress: CustomerAddress,
+            QuoteNumber: QuoteNumber
+        };
+        var JsonValues = JSON.stringify(Values);
+        openModelpop('/Manage/WhatsAppPhoneNumber', 'QuoteNO', QuoteNumber);
+    }
+
+    //$('.decimal-restrict').keypress(function (event) {
+    //    var $this = $(this);
+    //    if ((event.which != 46 || $this.val().indexOf('.') != -1) &&
+    //        ((event.which < 48 || event.which > 57) &&
+    //            (event.which != 0 && event.which != 8))) {
+    //        event.preventDefault();
+    //    }
+
+    //    var text = $(this).val();
+    //    if ((event.which == 46) && (text.indexOf('.') == -1)) {
+    //        setTimeout(function () {
+    //            if ($this.val().substring($this.val().indexOf('.')).length > 3) {
+    //                $this.val($this.val().substring(0, $this.val().indexOf('.') + 3));
+    //            }
+    //        }, 1);
+    //    }
+
+    //    if ((text.indexOf('.') != -1) &&
+    //        (text.substring(text.indexOf('.')).length > 2) &&
+    //        (event.which != 0 && event.which != 8) &&
+    //        ($(this)[0].selectionStart >= text.length - 2)) {
+    //        event.preventDefault();
+    //    }
+    //});
+
+    //$('.decimal-restrict').bind("paste", function (e) {
+    //    var text = e.originalEvent.clipboardData.getData('Text');
+    //    if ($.isNumeric(text)) {
+    //        if ((text.substring(text.indexOf('.')).length > 3) && (text.indexOf('.') > -1)) {
+    //            e.preventDefault();
+    //            $(this).val(text.substring(0, text.indexOf('.') + 3));
+    //        }
+    //    }
+    //    else {
+    //        e.preventDefault();
+    //    }
+    //});
+
+    function OnChangeDiscountPercentage() {
+        debugger
+        var discountPercentage = parseFloat($("#discountPercentage").val());
+        var sub_total_amount = parseFloat($("#sub_total_amount").text().replace('$', '').replace(',', '').trim());
+        if (sub_total_amount == "NaN" || parseFloat(sub_total_amount) == parseFloat(0)) {
+            sub_total_amount = 1;
+        }
+
+        if (discountPercentage == null || discountPercentage == "") {
+            return false;
+        }
+        var res = (discountPercentage / 100) * sub_total_amount;
+        $("#discount").val("$" + res.toFixed(2).toString());
+    }
+
+
+    function detailInit(e) {
+        $("<div id='quotationchildGrid'/>").appendTo(e.detailCell).kendoGrid({
+            dataSource: {
+                transport: {
+
+                    read: function (options) {
+                        if (e.data.Task.Task_Id == "0" || e.data.Task.Task_Id == 0) {
+
+                        }
+                        else {
+                            $.ajax({
+                                url: '@Url.Action("GetProjectTasksQuotationItemDetails", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task.Task_Id + '&IsFromPackage=' + false,
+                                type: "GET",
+                                dataType: "json",
+                                success: function (result) {
+                                    debugger
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    debugger
+                                    options.error(result);
+                                }
+                            });
+                        }
+                    },
+                    update: function (options) {
+                        debugger;
+                        if (options.data.models[0].UOM === null || options.data.models[0].UOM === undefined) {
+                            options.data.models[0].UOM = { uom_id: 0, uom_description: "-- Select --" }
+                        }
+                        if (options.data.models[0].BillingUOM.description === "Standard") {
+                            if (options.data.models[0].UOM.uom_id == 0) {
+                                notify("Please Select UOM", "error");
+                                $('div.k-loading-mask').css('display', 'none');
+                                return false;
+                            }
+                        }
+                        if ((options.data.models[0].UOM.uom_description !== "Lumpsum")) {
+                            options.data.models[0].Amount = options.data.models[0].Price * options.data.models[0].Qty;
+                        }
+                        //options.data.models[0].Item = { item_id: options.data.models[0].Item.item_id, item_description: options.data.models[0].AdditionalDescription}
+                        if (options.data.models[0].Item.item_id === undefined && options.data.models[0].Item.item_description === undefined) {
+                            options.data.models[0].Item = { item_id: "", item_description: options.data.models[0].Item }
+                        }
+                        if (options.data.models[0].Item.item_id === 0) {
+                            options.data.models[0].Item.item_id = "";
+                        }
+                        //if (options.data.models[0].AdditionalDescription == "" || if (options.data.models[0].AdditionalDescription == null) {
+                        //    options.data.models[0].AdditionalDescription = ViewData["AdditionalDescription"].toString();
+                        //}
+
+                        $.ajax({
+                            url: '@Url.Action("UpsertProjectDetails", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + escape(e.data.Task.Task_Name),
+                            type: "POST",
+                            dataType: "json",
+                            data: { JsonQuotationDetails: JSON.stringify(options.data.models[0]) },
+                            success: function (result) {
+                                debugger
+                                $("#QuotationGrid").data('kendoGrid').dataSource.read();
+                                $("#QuotationGrid").data('kendoGrid').refresh();
+                                if (result.data.Result > 0) {
+                                    // notify(result.data.Errormessage, "success");
+
+                                    var Subtotal = result.data.SubTotal;
+
+                                    if (Subtotal != 0 || Subtotal != 0.00) {
+                                        $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                        onBlurDiscount(result.data.Errormessage);
+                                    }
+                                    else {
+                                        notify(result.data.Errormessage, "success");
+                                        $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                        $('#total_amount').val(formatCurrency(result.data.Amount));
+                                        $('#gst_percentage').text(result.data.gst_percentage + '% GST :');
+                                        $('#gst_amount').text(formatCurrency(result.data.gst_amount));
+                                        $('#grand_total_amount').text(formatCurrency(result.data.Amount));
+                                        $('#total_afterDiscount').text("$0.00");
+                                        $("#discount").val('0');
+                                    }
+
+                                }
+                                else {
+                                    notify(result.data.Errormessage, "error");
+                                }
+                                options.success(result);
+                            },
+                            error: function (result) {
+                                debugger
+                                options.error(result);
+                            }
+                        });
+
+                    },
+                    create: function (options) {
+                        debugger;
+                        if (options.data.models[0].UOM === null || options.data.models[0].UOM === undefined) {
+                            options.data.models[0].UOM = { uom_id: 0, uom_description: "-- Select --" }
+                        }
+                        if (options.data.models[0].BillingUOM.description === "Standard") {
+                            if (options.data.models[0].UOM.uom_id == 0) {
+                                notify("Please Select UOM", "error");
+                                $('div.k-loading-mask').css('display', 'none');
+                                return false;
+                            }
+                        }
+                        if ((options.data.models[0].UOM.uom_description !== "Lumpsum")) {
+                            options.data.models[0].Amount = options.data.models[0].Price * options.data.models[0].Qty;
+                        }
+                        if (options.data.models[0].Item.item_id === undefined && options.data.models[0].Item.item_description === undefined) {
+                            options.data.models[0].Item = { item_id: "", item_description: options.data.models[0].Item }
+                        }
+                        //if (options.data.models[0].AdditionalDescription == "" || if (options.data.models[0].AdditionalDescription == null) {
+                        //    options.data.models[0].AdditionalDescription = ViewData["AdditionalDescription"].toString();
+                        //}
+
+
+                        if (e.data.Task.Task_Id == 0) {
+                            notify("Please Select Task", "error");
+                            $('div.k-loading-mask').css('display', 'none');
+                            // options.error(result);
+                        }
+                        else {
+                            $.ajax({
+                                url: '@Url.Action("UpsertProjectDetails", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + escape(e.data.Task.Task_Name),
+                                type: "POST",
+                                dataType: "json",
+                                data: { JsonQuotationDetails: JSON.stringify(options.data.models[0]) },
+                                success: function (result) {
+                                    debugger;
+                                    enableButtons();
+                                    $("#QuotationGrid").data('kendoGrid').dataSource.read();
+                                    $("#QuotationGrid").data('kendoGrid').refresh();
+                                    if (result.data.Result > 0) {
+                                        //notify(result.data.Errormessage, "success");
+                                        var Subtotal = result.data.SubTotal;
+
+                                        if (Subtotal != 0 || Subtotal != 0.00) {
+                                            $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                            onBlurDiscount(result.data.Errormessage);
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "success");
+                                            $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                            $('#total_amount').val(formatCurrency(result.data.Amount));
+                                            $('#gst_percentage').text(result.data.gst_percentage + '% GST :');
+                                            $('#gst_amount').text(formatCurrency(result.data.gst_amount));
+                                            $('#grand_total_amount').text(formatCurrency(result.data.Amount));
+                                            $('#total_afterDiscount').text("$0.00");
+                                            $("#discount").val('0');
+                                        }
+
+                                    }
+                                    else {
+                                        notify(result.data.Errormessage, "error");
+                                    }
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    debugger
+                                    /*kendo.alert(result.data.Errormessage);*/
+                                    notify(result.data.Errormessage, "error");
+                                    options.error(result);
+                                }
+                            });
+                        }
+                    },
+                    destroy: function (options) {
+                        debugger
+                        var Project_det_id = options.data.models[0].Project_Det_Id;
+                        $.ajax({
+                            url: '@Url.Action("DeleteProjectDetails", "Quotation")?Project_det_id=' + Project_det_id,
+                            type: "POST",
+                            dataType: "json",
+                            success: function (result) {
+                                debugger
+                                $("#QuotationGrid").data('kendoGrid').dataSource.read();
+                                $("#QuotationGrid").data('kendoGrid').refresh();
+                                if (result.data.Result > 0) {
+                                    //notify(result.data.Errormessage, "success");
+                                    var Subtotal = result.data.SubTotal;
+
+                                    if (Subtotal != 0 || Subtotal != 0.00) {
+                                        $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                        onBlurDiscount(result.data.Errormessage);
+                                    }
+                                    else {
+                                        notify(result.data.Errormessage, "success");
+                                        $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                        $('#total_amount').val(formatCurrency(result.data.Amount));
+                                        $('#gst_percentage').text(result.data.gst_percentage + '% GST :');
+                                        $('#gst_amount').text(formatCurrency(result.data.gst_amount));
+                                        $('#grand_total_amount').text(formatCurrency(result.data.Amount));
+                                        $('#total_afterDiscount').text("$0.00");
+                                        $("#discount").val('0');
+                                    }
+                                }
+                                else {
+                                    notify(result.data.Errormessage, "error");
+                                }
+                                options.success(result);
+                            },
+                            error: function (result) {
+                                debugger
+                                options.error(result);
+                            }
+                        });
+
+                    },
+                        @*update: {
+                            url: '@Url.Action("UpsertProjectDetails", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task_Id + '&TaskName=' + e.data.Task_Name,
+                                        type: "POST",
+                                 dataType: "json",
+                                 complete: function (e) {
+                                    e.data("kendoGrid").dataSource.read();
+                                 }
+                            },*@
+                    @*destroy: {
+                                 url: '@Url.Action("", "Quotation")',
+                                        type: "POST",
+                                dataType: "json"
+                            },*@
+                    @*create: {
+                                url: '@Url.Action("UpsertProjectDetails", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task_Id + '&TaskName=' + e.data.Task_Name,
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    e.data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 10,
+                schema: {
+                    data: "data.Items", total: "data.TotalCount",
+                    model: {
+                        //id: "project_id",
+                        id: "project_Id",
+                        fields: {
+                            project_Id: { editable: false },
+                            Project_Det_Id: { editable: false },
+                            Task_Id: { defaultValue: e.data.Task.Task_Id, editable: false },
+                            Category: { defaultValue: { category_Id: 1, category_name: "No Category" }, validation: { required: true } },
+                            Item: { defaultValue: { item_id: null, item_description: "" }, validation: { required: true /*, maxlength: 3*/ } },
+                            AdditionalDescription: { defaultValue: "", validation: { required: false } },
+                            BillingUOM: { defaultValue: { status_lookup_id: 1, description: "Standard" }, validation: { required: true } },
+                            Qty: { validation: { required: true, min: 0, maxlength: 8 }, type: "number" },
+                            UOM: { defaultValue: { uom_id: 0, uom_description: "-- Select --" }, validation: { required: true } },
+                            Price: { validation: { required: true, min: 0, maxlength: 20 }, type: "number" },
+                            item_remarks: { validation: { required: false, max: 100 } },
+                            Amount: { type: "number", maxlength: 30 },
+                            Cost_Amount: { type: "number", maxlength: 30 },
+                            Profit_Loss: { type: "number", maxlength: 30 },
+                            Highlight: { defaultValue: false, validation: { required: false }/*, editable: false*/ }
+                        }
+                    }
+                },
+                aggregate: [
+                    { field: "Price", aggregate: "sum" },
+                    { field: "Amount", aggregate: "sum" }
+                ]
+            },
+            scrollable: true,
+            sortable: true,
+            pageable: true,
+            navigatable: true,
+            /* toolbar: ["create"],*/
+            toolbar: [
+                { name: "create", text: "Add new Quotation Item" }
+            ],
+            autoSync: true,
+            resizable: true,
+            pageable: {
+                pageSize: 10,
+                buttonCount: 10,
+                pageSizes: [5, 10, 20, 50, 100, 500],
+
+            },
+
+            columns: [
+
+                { field: "Highlight", width: "70px", editor: customBoolEditor },
+
+                /* { field: "Highlight", width: "70px", title: "Highlight", template: "<input type=\"checkbox\" #= (Highlight == true) ? checked ='checked' : '' #/>", attributes: { style: "text-align:center;" } },*/
+                {
+                    field: "Category", width: "120px", title: "Category", attributes: { style: "text-align:left;"/*, filterable: { multi: true, search: true }*/ }, editor: CategoryDropDownEditor, template: "#=Category.category_name#"
+                },
+                { field: "Item", title: "Item Description", width: "120px", attributes: { style: "text-align:left;" }, editor: ItemDropDownEditor, template: "#=Item.item_description#" },
+                {
+                    command: [{ name: "Additional Description", text: " ", iconClass: "k-icon k-i-change-manually", click: LoadDescription, editor: " " }], title: "Description", width: "50px"
+                },
+                { field: "BillingUOM", width: "100px", title: "Billing UOM", attributes: { style: "text-align:left;" }, editor: BillingUOMDropDownEditor, template: "#=BillingUOM.description#" },
+
+                { field: "Qty", width: "100px", title: "Quantity" },
+                { field: "UOM", width: "100px", title: "UOM", attributes: { style: "text-align:left;" }, editor: UOMDropDownEditor, template: "#=UOM.uom_description#" },
+                { field: "Price", width: "100px", title: "Price ($)", format: "{0:c}" }, //, footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" }
+                { field: "item_remarks", width: "100px", title: "Remarks", attributes: { style: "text-align:left;" } },
+                {
+                    field: "Amount", width: "100px", title: "Amount", format: "{0:c}", footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" },
+
+                    //editor: function (cont, options) {
+                    //    debugger
+
+                    //    $("<span class='totalSpan'>" + options.model.Amount + " &dollar;</span>").appendTo(cont);
+                    //},
+                },
+                {
+                    field: "Cost_Amount", width: "100px", title: "Cost Amount", format: "{0:c}",
+                    attributes: { style: "text-align:right;" },
+                },
+                {
+                    field: "Profit_Loss", width: "100px", title: "Profit Loss", format: "{0:c}",
+                    attributes: { style: "text-align:right;" },
+                },
+
+                {
+                    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " }, visible: function () {
+                                var StatusId =@Model.status_id;return StatusId == "1"} },
+                        {
+                            name: "destroy", text: " ", iconClass: "k-icon k-i-delete", visible: function () {
+                                var StatusId =@Model.status_id;return StatusId == "1"}}] , title: "Action", width: "100px"
+                },
+                    ],
+            editable: "inline",
+            //height:"100px",
+            edit: function (e) {
+                debugger;
+                      //  debugger;
+                        var priceEditor = e.container.find("input[name=Price]").data("kendoNumericTextBox");
+                        var quantityEditor = e.container.find("input[name=Qty]").data("kendoNumericTextBox");
+
+						var amountEditor = e.container.find("input[name=Amount]").data("kendoNumericTextBox");
+                        var costAmountEditor = e.container.find("input[name=Cost_Amount]").data("kendoNumericTextBox");
+                        var profitLossEditor = e.container.find("input[name=Profit_Loss]").data("kendoNumericTextBox");
+						var uomEditor = e.container.find("input[name=UOM]").data("kendoDropDownList");
+						//var uomEditor = e.container.find("input[name=BillingUOM]").data("kendoDropDownList");
+						var billinguomValue = e.container.find("[data-container-for='BillingUOM'] .k-input").text();
+						var uomValue = e.container.find("[data-container-for='UOM'] .k-input").text();
+
+                        profitLossEditor.enable(false);
+						if (billinguomValue == "FOC" || billinguomValue == "Inclusive" || billinguomValue == "Complementary") {
+							priceEditor.enable(false);
+							quantityEditor.enable(false);
+							amountEditor.enable(false);
+							uomEditor.enable(false);
+						}
+						if (uomValue == "Lumpsum") {
+							priceEditor.enable(false);
+							quantityEditor.enable(false);
+							//amountEditor.enable(true);
+						}
+
+                        priceEditor.bind("change", function (e) {
+                            var price = this.value();
+                            var quantity = quantityEditor.value();
+
+                            amountEditor.value(price * quantity);
+
+                            //var totalSpan = this.element.closest("tr").find(".totalSpan");
+                            //totalSpan.html(price * quantity);
+
+                        });
+
+                        quantityEditor.bind("change", function (e) {
+                            var price = priceEditor.value();
+                            var quantity = this.value();
+
+                            amountEditor.value(price * quantity);
+
+                            //var totalSpan = this.element.closest("tr").find(".totalSpan");
+                            //totalSpan.html(price * quantity);
+                        });
+
+                        amountEditor.bind("change", function (e) {
+                            var costAmount = costAmountEditor.value();
+                            var amount = this.value();
+                            profitLossEditor.value(amount - costAmount);
+                            profitLossEditor.trigger("change");
+                        });
+
+                        costAmountEditor.bind("change", function (e) {
+                            debugger
+                            var amount = amountEditor.value();
+                            var costAmount = this.value();
+                            profitLossEditor.value(amount - costAmount);
+                            profitLossEditor.trigger("change");
+                        });
+
+                        @*debugger;
+                        var detailGridWrapper = this.wrapper;
+                        var parentRow = detailGridWrapper.closest("tr.k-detail-row").prev("tr");
+                        var parentGrid = parentRow.closest("[data-role=grid]").data("kendoGrid");
+                        debugger
+                        var parentModel = parentGrid.dataItem(parentRow);
+
+                        var ParesntTaskId = parentModel.Task.Task_Id;
+                        var ParesntTaskName = parentModel.Task.Task_Name;
+                        debugger
+                        var a = this;
+                         a.dataSource.transport.create.url = '@Url.Action("UpsertProjectDetails", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + ParesntTaskId + '&TaskName=' + ParesntTaskName;*@
+                    },
+                    complete: function (e) {
+                        //debugger
+                        //e.data("kendoGrid").dataSource.read();
+                        $("#QuotationGrid").data("kendoGrid").dataSource.read();
+                        $("#QuotationGrid").data('kendoGrid').refresh();
+
+                    }
+                });
+
+        //Nithin Added for hiding Action Column based on status
+      onpageLoadStatusChange();
+    }
+
+     function detailInitPackage(e) {
+         $("<div id='quotationchildGrid'/>").appendTo(e.detailCell).kendoGrid({
+             dataSource: {
+                 transport: {
+
+                     read: function (options) {
+                         if (e.data.Task.Task_Id == "0" || e.data.Task.Task_Id == 0) {
+
+                         }
+                         else {
+                             $.ajax({
+                                 url: '@Url.Action("GetProjectTasksQuotationItemDetails", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task.Task_Id + '&IsFromPackage=' + true,
+                                 type: "GET",
+                                 dataType: "json",
+                                 success: function (result) {
+                                     debugger
+                                     options.success(result);
+                                 },
+                                 error: function (result) {
+                                     debugger
+                                     options.error(result);
+                                 }
+                             });
+                         }
+                     },
+                     parameterMap: function (options, operation) {
+                         if (operation !== "read" && options.models) {
+                             return { models: kendo.stringify(options.models) };
+                         }
+                     }
+                 },
+                 batch: true,
+                 pageSize: 10,
+                 schema: {
+                     data: "data.Items", total: "data.TotalCount",
+                     model: {
+                         //id: "project_id",
+                         id: "project_Id",
+                         fields: {
+                             project_Id: { editable: false },
+                             Project_Det_Id: { editable: false },
+                             Task_Id: { defaultValue: e.data.Task.Task_Id, editable: false },
+                             Category: { defaultValue: { category_Id: 1, category_name: "No Category" }, validation: { required: true } },
+                             Item: { defaultValue: { item_id: null, item_description: "" }, validation: { required: true /*, maxlength: 3*/ } },
+                             //AdditionalDescription: { defaultValue: "", validation: { required: false } },
+                             BillingUOM: { defaultValue: { status_lookup_id: 1, description: "Standard" }, validation: { required: true } },
+                             Qty: { validation: { required: true, min: 0, maxlength: 8 }, type: "number" },
+                             UOM: { defaultValue: { uom_id: 0, uom_description: "-- Select --" }, validation: { required: true } },
+                             Price: { validation: { required: true, min: 0, maxlength: 20 }, type: "number" },
+                             item_remarks: { validation: { required: false, max: 100 } },
+                             Amount: { type: "number", maxlength: 30 },
+                             Cost_Amount: { type: "number", maxlength: 30 },
+                             Profit_Loss: { type: "number", maxlength: 30 },
+                             //Highlight: { defaultValue: false, validation: { required: false }/*, editable: false*/ }
+                         }
+                     }
+                 },
+                 aggregate: [
+                     { field: "Price", aggregate: "sum" },
+                     { field: "Amount", aggregate: "sum" }
+                 ]
+             },
+             scrollable: true,
+             sortable: true,
+             pageable: true,
+             navigatable: true,
+             /* toolbar: ["create"],*/
+             toolbar: [
+                /* { name: "create", text: "Add new Quotation Item" }*/
+             ],
+             autoSync: true,
+             resizable: true,
+             pageable: {
+                 pageSize: 10,
+                 buttonCount: 10,
+                 pageSizes: [5, 10, 20, 50, 100, 500],
+
+             },
+
+             columns: [
+
+                 //{ field: "Highlight", width: "70px", editor: customBoolEditor },
+
+                 /* { field: "Highlight", width: "70px", title: "Highlight", template: "<input type=\"checkbox\" #= (Highlight == true) ? checked ='checked' : '' #/>", attributes: { style: "text-align:center;" } },*/
+                 {
+                     field: "Category", width: "120px", title: "Category", attributes: { style: "text-align:left;"/*, filterable: { multi: true, search: true }*/ }, editor: CategoryDropDownEditor, template: "#=Category.category_name#"
+                 },
+                 { field: "Item", title: "Item Description", width: "120px", attributes: { style: "text-align:left;" }, editor: ItemDropDownEditor, template: "#=Item.item_description#" },
+                 //{
+                 //    command: [{ name: "Additional Description", text: " ", iconClass: "k-icon k-i-change-manually", click: LoadDescription, editor: " " }], title: "Description", width: "50px"
+                 //},
+                 { field: "BillingUOM", width: "100px", title: "Billing UOM", attributes: { style: "text-align:left;" }, editor: BillingUOMDropDownEditor, template: "#=BillingUOM.description#" },
+
+                 { field: "Qty", width: "100px", title: "Quantity" },
+                 { field: "UOM", width: "100px", title: "UOM", attributes: { style: "text-align:left;" }, editor: UOMDropDownEditor, template: "#=UOM.uom_description#" },
+                 { field: "Price", width: "100px", title: "Price ($)", format: "{0:c}" }, //, footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" }
+                 { field: "item_remarks", width: "100px", title: "Remarks", attributes: { style: "text-align:left;" } },
+                 {
+                     field: "Amount", width: "100px", title: "Amount", format: "{0:c}", footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" },
+
+                     //editor: function (cont, options) {
+                     //    debugger
+
+                     //    $("<span class='totalSpan'>" + options.model.Amount + " &dollar;</span>").appendTo(cont);
+                     //},
+                 },
+                 {
+                     field: "Cost_Amount", width: "100px", title: "Cost Amount", format: "{0:c}",
+                     attributes: { style: "text-align:right;" },
+                 },
+                 {
+                     field: "Profit_Loss", width: "100px", title: "Profit Loss", format: "{0:c}",
+                     attributes: { style: "text-align:right;" },
+                 },
+
+                @*{
+                    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " }, visible: function () {
+                                var StatusId =@Model.status_id;return StatusId == "1"} },
+                        {
+                            name: "destroy", text: " ", iconClass: "k-icon k-i-delete", visible: function () {
+                                var StatusId =@Model.status_id;return StatusId == "1"}}] , title: "Action", width: "100px"
+                },*@
+             ],
+             editable: false,
+             complete: function (e) {
+                 //debugger
+                 //e.data("kendoGrid").dataSource.read();
+                 $("#PackageGrid").data("kendoGrid").dataSource.read();
+                 $("#PackageGrid").data('kendoGrid').refresh();
+
+             }
+         });
+
+        //Nithin Added for hiding Action Column based on status
+      //onpageLoadStatusChange();
+    }
+
+
+    function LoadDescription(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var id = item.Project_Det_Id;
+        var ItemRemarks = item.Item;
+        var description = item.Item.item_description;
+        //var Additionaldescription = item.AdditionalDescription.toString();
+        var EncrptDescription = "";
+        //if (Additionaldescription != "")
+        //    EncrptDescription = escape(Additionaldescription);
+        if (description != undefined)
+            EncrptDescription = escape(description);
+        else
+            EncrptDescription = escape(ItemRemarks);
+        openModelpopup('/Quotation/LoadDescription', 'description', EncrptDescription, 'Id', id);
+
+    }
+
+     //Nithin Added for hiding Action Column based on status
+    function onpageLoadStatusChange() {
+        debugger
+        var StatusId =@Model.status_id;
+        if (StatusId == "2" || StatusId == "3" || StatusId == "4") {
+            $("#btnCommit").prop("disabled", true);
+            $("#btnUpdate").prop("disabled", true);
+            $("#btnClear").prop("disabled", true);
+            $("#discount").prop("disabled", true);
+            $(".k-grid-add").css("display", "none");
+            $("#project_name").prop("disabled", true);
+            $("#date_range").prop("disabled", true);
+
+        }
+        else {
+            $("#discount").prop("disabled", false);
+            $("#btnCommit").prop("disabled", false);
+            $("#btnUpdate").prop("disabled", false);
+            $(".k-grid-add").height(10);
+            $("#btnClear").prop("disabled", false);
+        }
+    }
+
+    function onGridEditing(arg) {
+        arg.container.find("input[name='item_remarks']").attr('maxlength', '100');
+    }
+
+    function customBoolEditor(container, options) {
+        $('<input class="k-checkbox" type="checkbox" name="Highlight" data-type="boolean" data-bind="checked:Highlight">').appendTo(container);
+    }
+    function CategoryDropDownEditor(container, options) {
+
+		$('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                             filter: "contains",
+                            autoBind: false,
+                            optionLabel: "Select Category",
+                            dataTextField: "category_name",
+                            dataValueField: "category_Id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("CategoryDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   //sort: { field: "category_name", dir: "asc" },
+                            },
+                            noDataTemplate: $("#CategoryTemplate").html()
+                        });
+           }
+
+    function ItemDropDownEditor(container, options) {
+
+      //  debugger
+
+        //var task_id = options.model.Task_Id;
+        var ParentTaskId = $('#ParentTaskId').val();
+        var task_id = options.model.Task_Id;
+        var id;
+        if (ParentTaskId == "" && task_id != 0) {
+            id = task_id;
+        }
+        else {
+            id = ParentTaskId;
+        }
+
+        $('<input maxlength="250" required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        //.kendoDropDownList({
+                        .kendoComboBox({
+                           // maxlength:"3",
+                           // comboObject.input.attr("maxlength", 3);
+                            filter: "contains",
+                            autoBind: false,
+                           // optionLabel: "Select Item Description",
+                            dataTextField: "item_description",
+                            optionLabel: "Select Item Description",
+                            dataValueField: "item_id",
+                            select: onSelectItem,
+                               dataSource: {
+                                    type: "json",
+                                   transport: {
+                                        read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("ItemDropDownList", "Master")?TaskId=' + id,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        //debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                       // debugger
+                                        options.error(result);
+                                    }
+                                });
+                            }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "item_description", dir: "asc" },
+                            }
+                        });
+    }
+
+    function UOMDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter:"contains",
+                            autoBind: false,
+                            optionLabel: "Select UOM",
+                            dataTextField: "uom_description",
+                            dataValueField: "uom_id",
+							select: onSelectUOM,
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("UOMDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "uom_description", dir: "asc" },
+                            },
+                           // noDataTemplate: $("#UOMTemplate").html()
+                        });
+    }
+
+	function onSelectUOM(e) {
+		//debugger
+		var detailGridWrapper = this.wrapper;
+		var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+		var value = e.dataItem.uom_description;
+
+		var price = parentTR.find("td[data-container-for='Price'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		var qty = parentTR.find("td[data-container-for='Qty'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		//var uomDesc = parentTR.find("td[data-container-for='UOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+		var amount = parentTR.find("td[data-container-for='Amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+
+		if (value == "Lumpsum") {
+			price.enable(false);
+			qty.enable(false);
+			//uomDesc.enable(false);
+			amount.enable(true);
+
+			//to get total row values in a grid
+			var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+			var row = e.sender.element.closest("tr");
+			var dataItem = grid.dataItem(row);
+		//	debugger
+			//console.log(dataItem);
+			dataItem.set('Price', 0);
+            dataItem.set('Qty', 0);
+			dataItem.set('Amount', 0);
+
+        } else {
+            //var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+            //var row = e.sender.element.closest("tr");
+            //var dataItem = grid.dataItem(row);
+
+            //var ItemId = dataItem.Item.item_id;
+            //GetItemDetails(e, ItemId);
+			price.enable(true);
+			qty.enable(true);
+			//uomDesc.enable(true);
+			amount.enable(true);
+		}
+
+	};
+
+    function BillingUOMDropDownEditor(container, options) {
+        var LookUpColumnId = 1;
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+				autoBind: false,
+               //optionLabel: "Select BillingUOM",
+                dataTextField: "description",
+                dataValueField: "status_lookup_id",
+				select: onSelectBillingUOM,
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("Bind_StatusLookUp", "Master")?LookUpColumnId='+LookUpColumnId,
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    },
+                    sort: { field: "description", dir: "asc" },
+                }
+            });
+    }
+
+	function onSelectBillingUOM(e) {
+        //debugger
+        var detailGridWrapper = this.wrapper;
+        var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+        var value = e.dataItem.description;
+
+		var price = parentTR.find("td[data-container-for='Price'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		var qty = parentTR.find("td[data-container-for='Qty'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		//var amount = parentTR.find("td[data-container-for='Amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+        var uomDesc = parentTR.find("td[data-container-for='UOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+		var amount = parentTR.find("td[data-container-for='Amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		//debugger
+		if (value == "FOC" || value == "Inclusive" || value == "Complementary") {
+            price.enable(false);
+            qty.enable(false);
+            uomDesc.enable(false);
+			amount.readonly();
+
+            //to get total row values in a grid
+            var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+            var row = e.sender.element.closest("tr");
+            var dataItem = grid.dataItem(row);
+            console.log(dataItem);
+            dataItem.set('Price', 0);
+            dataItem.set('Qty', 0);
+            dataItem.UOM.set('uom_description', '');
+            dataItem.UOM.set('uom_id', 0);
+			dataItem.set('Amount', 0);
+
+            //qty.value('');
+            //price.value('');
+            uomDesc.value('');
+
+
+           // parentTR.find("td[data-container-for='Amount'] .totalSpan").html('');
+            //amount.enable(amount.element.is(':disabled'));
+        } else {
+           //debugger
+            //to get total row values in a grid
+            var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+            var row = e.sender.element.closest("tr");
+            var dataItem = grid.dataItem(row);
+            // debugger
+            //console.log(dataItem);
+            //debugger
+            var ItemId = dataItem.Item.item_id;
+            GetItemDetails(e, ItemId);
+			price.enable(true);
+			qty.enable(true);
+            uomDesc.enable(true);
+			amount.enable(true);
+			//amount.enable(amount.element.is(':disabled'));
+		}
+
+    };
+
+    function GetProjectTasksListItem(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter:"contains",
+                            autoBind: false,
+                            //optionLabel: "Select Task",
+                            dataTextField: "Task_Name",
+                            dataValueField: "Task_Id",
+                            select: onSelect,
+                        /*change: onChange,*/
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("GetProjectTasksListItem", "Quotation")?ProjectId=' + ProjectId + '&TaskId=' + TaskId,
+                                            @*url: '@Url.Action("GetProjectTasksListItem", "Package")?PackageId=' + PackageId + '&TaskId=' + TaskId,*@                                            type: "GET",
+                                            dataType: "json",
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "Seq_No", dir: "asc" },
+                            },
+                            noDataTemplate: $("#TaskTemplate").html()
+                        });
+    }
+
+    function PaymentTermsDropDownEditor(container, options) {
+        $('<input maxlength="250" required name="' + options.field + '"/>')
+            .appendTo(container)
+            //.kendoDropDownList({
+            .kendoComboBox({
+                filter:"contains",
+                autoBind: false,
+                optionLabel: "Select Payment Description",
+                dataTextField: "Master_payment_description",
+                dataValueField: "Master_payment_term_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                             url: '@Url.Action("BindMasterpaymentterms", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    },
+                    sort: { field: "Master_payment_description", dir: "asc" },
+                },
+                //noDataTemplate: $("#PaymentTermTemplate").html()
+            });
+    }
+          @*function BindContractTerms() {
+        $.get('@Url.Action("BindContractTerms", "Master")', function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "--Please Select Contract Term--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].Id  + ">" + list.data[i].ShortName + "</option>");
+                }
+
+                $("#ContractTermId").html(items.join(' '));T
+                $('#ContractTermId').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select Contract Term" + "</option>");
+                $("#ContractTermId").html(items.join(' '));
+                $('#ContractTermId').select2();
+            }
+        });
+
+    }*@
+     function BindContractTerms() {
+        var editor = $("#contract_terms_editor").data("kendoEditor");
+           $.ajax({
+            url: '@Url.Action("ContractTermList", "Master")',
+            type: "POST",
+            dataType: "json",
+            success: function (result) {
+                //debugger
+                editor.value(result.data.Items[0].Description);
+            },
+            error: function (result) {
+                //   debugger
+
+            }
+            });
+    }
+    function BindCustomer() {
+        var selectedCustomerId = $("#Customer_Id").val();
+        var selectedCustomerText = $("#Customer_Id").text();
+        $.get('@Url.Action("BindCustomer", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "--Select Customer--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].Customer_id + ">" + list.data[i].name1 + "</option>");
+                }
+                items.push("<option selected value=" + selectedCustomerId + ">" + selectedCustomerText + "</option>");
+                $("#Customer_Id").html(items.join(' '));
+                $('#Customer_Id').select2();
+            }
+            else {
+                var items = [];
+                //items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#Customer_Id").html(items.join(' '));
+                $('#Customer_Id').select2();
+            }
+        });
+
+    }
+
+         function BindSalesMan() {
+             var selectedSalesmenId = $("#SalesmenId").val();
+             var selectedSalesmentext = $("#SalesmenId").text();
+        $.get('@Url.Action("BindSalesmen", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                //items.push("<option value=" + 0 + ">" + "--Select Salesman--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].id + ">" + list.data[i].salesmen_name + "</option>");
+                }
+                items.push("<option selected value=" + selectedSalesmenId + ">" + selectedSalesmentext + "</option>");
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+        });
+
+    }
+
+    function BindProjectStatus() {
+        var selectedStatusId = $("#StatusId").val();
+        var selectedStatustext = $("#StatusId").text();
+        //var selectedStatusId = $('#StatusId :selected').val();
+        //var selectedStatustext = $('#StatusId :selected').text();
+        $.get('@Url.Action("BindProjectStatus", "Quotation")', function (list) {
+           // debugger
+            if (list != null) {
+                var items = [];
+                /*items.push("<option value=" + 0 + ">" + "ALL" + "</option>");*/
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].projectStatusid + ">" + list.data[i].projectStatus + "</option>");
+                }
+                items.push("<option selected value=" + selectedStatusId + ">" + selectedStatustext + "</option>");
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+            }
+        });
+
+    }
+
+    function onChange(e) {
+      //  debugger
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        $("#ParentTaskId").val(item.Task_Id)
+    };
+
+    function onSelect(e) {
+       // debugger
+        /*if ("kendoConsole" in window) {*/
+        if (e.dataItem) {
+            // ParentTaskId = e.dataItem.Task_Id;
+            $("#ParentTaskId").val(e.dataItem.Task_Id);
+            $("#quotationchildGrid").data("kendoGrid").cancelRow("tr:eq(1)");
+        }
+        /*}*/
+    };
+
+    function expand_allPackage(e) {
+        debugger;
+        var grid = $("#PackageGrid").data("kendoGrid");
+        $(".k-master-row").each(function (index) {
+            grid.expandRow();
+        });
+    }
+
+
+    function collapse_allPackages(e) {
+        var grid = $("#PackageGrid").data("kendoGrid");
+        $(".k-master-row").each(function (index) {
+            grid.collapseRow(this);
+        });
+    }
+
+    function expand_all(e) {
+        var grid = $("#QuotationGrid").data("kendoGrid");
+        $(".k-master-row").each(function (index) {
+            grid.expandRow(this);
+        });
+    }
+
+    function collapse_all(e) {
+        var grid = $("#QuotationGrid").data("kendoGrid");
+        $(".k-master-row").each(function (index) {
+            grid.collapseRow(this);
+        });
+    }
+     function QuotationList() {
+        window.location = '@Url.Action("Quotation", "Quotation")';
+    }
+
+
+     function OnStatusChange_ContractDetail() {
+         debugger;
+         var ProjectId = $('#ProjectId').val();
+         window.location = '@Url.Action("ContractDetail", "Contract")?ProjectId=' + ProjectId + '&bIsFromQuotation=' + true;
+    }
+    function OnClickSendMail() {
+        debugger;
+        var ProjectId = $('#ProjectId').val();
+
+        var QuoteDate = $('#QuoteDate').val();
+        var CustomerName = $("#CustomerName").val();
+        var SalesmenName = $("#SalesmenName").val();
+        var CustomerAddress = $('#project_name').val();
+        var QuoteNumber = $('#project_number').val();
+
+        var Values = {
+            project_id: ProjectId,
+            QuoteDate: QuoteDate,
+            CustomerName: CustomerName,
+            SalesmenName: SalesmenName,
+            CustomerAddress: CustomerAddress,
+            QuoteNumber: QuoteNumber
+        };
+        var JsonValues = JSON.stringify(Values);
+           // var JsonValues = JSON.stringify(Values);
+        $.loader({ content: "<table><tr><td><h5>Sending Email</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+            $.ajax({
+                type: "POST",
+                url: "/Quotation/SendingMail", // the URL of the controller action method
+                data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    debugger;
+                    $.loader('close');
+                   var Result = data.data.Result;
+                    var Errormessage = data.data.Errormessage;
+                    if (Errormessage == "The email has been sent.") {
+                        notify(Errormessage, "success");
+                    }
+                    else
+                        notify(Errormessage, "error");
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.loader('close');
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+            });
+    }
+
+    function OnClickSendWhatsappSMS() {
+        debugger;
+        var ProjectId = $('#ProjectId').val();
+
+        var QuoteDate = $('#QuoteDate').val();
+        var CustomerName = $("#CustomerName").val();
+        var SalesmenName = $("#SalesmenName").val();
+        var CustomerAddress = $('#project_name').val();
+        var QuoteNumber = $('#project_number').val();
+
+        var Values = {
+            project_id: ProjectId,
+            QuoteDate: QuoteDate,
+            CustomerName: CustomerName,
+            SalesmenName: SalesmenName,
+            CustomerAddress: CustomerAddress,
+            QuoteNumber: QuoteNumber
+        };
+        var JsonValues = JSON.stringify(Values);
+        // var JsonValues = JSON.stringify(Values);
+        $.loader({ content: "<table><tr><td><h5>Sending Whatsapp SMS</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+        $.ajax({
+            type: "POST",
+            url: "/Quotation/SendWhatsappSMS", // the URL of the controller action method
+            data: { "JsonValues": JsonValues },
+            dataType: 'Json',
+            success: function (data) {
+                debugger;
+                $.loader('close');
+                var Result = data.data.Result;
+                var Errormessage = data.data.Errormessage;
+                if (Errormessage == "The whatsapp sms has been sent.") {
+                    notify(Errormessage, "success");
+                }
+                else
+                    notify(Errormessage, "error");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.loader('close');
+                notify("Fail", "error");
+                notify(jqXHR, "error");
+            }
+        });
+    }
+
+    function SubmitStatusChange(statusId) {
+      //  debugger;
+        var project_id = $('#ProjectId').val();
+        var Reason = "";
+        if (statusId == 3) {
+            Reason= $('#commentReasonforPartially').val();
+        }
+        else if (statusId == 4) {
+            Reason= $('#commentReasonforReject').val();
+        }
+        else {
+            Reason = ""
+        }
+
+        var QuoteDate = $('#QuoteDate').val();
+        var CustomerName = $("#CustomerName").val();
+        var SalesmenName = $("#SalesmenName").val();
+        var CustomerAddress = $('#project_name').val();
+        var QuoteNumber = $('#project_number').val();
+
+        var Values = {
+            project_id: project_id,
+            Status_Id: statusId,
+            Reason: Reason,
+            QuoteDate: QuoteDate,
+            CustomerName: CustomerName,
+            SalesmenName: SalesmenName,
+            CustomerAddress: CustomerAddress,
+            QuoteNumber: QuoteNumber
+            };
+        var JsonValues = JSON.stringify(Values);
+        $.loader({ content: "<table><tr><td><h5>Accept Quotation in Progress</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+            $.ajax({
+                type: "POST",
+                url: "/Quotation/Update_ProjectStatus", // the URL of the controller action method
+                data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                  $.loader('close');
+                  //  debugger;
+                   var Result = data.data.Result;
+                    var Errormessage = data.data.Errormessage;
+                    if (Result == "1") {
+                        if (statusId == 2) {
+                            //$("#btnUpdate").prop("disabled", true);
+                            //$("#btnClear").prop("disabled", true);
+                            //$("#discount").prop("disabled", true);
+                            //$("#project_name").prop("disabled", true);
+                            //$("#date_range").prop("disabled", true);
+                            //$("#StatusId").text('Accepted');
+                            //disableButtons();
+                            //BindProjectStatus();
+                            window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + ProjectId + '&ShowHide=' + true;
+
+                            OnStatusChange_ContractDetail();
+
+                        }
+                        else if (statusId == 3) {
+                           // $('#commentReasonforPartially').val('');
+                           // $('#remarks_modal_forPartially').modal('hide');
+                           //$("#StatusId").text('Partially Accepted');
+                           // disableButtons();
+                           // BindProjectStatus();
+                             window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + ProjectId + '&ShowHide=' + true;
+
+                        }
+                        else if (statusId == 4) {
+                          //  $('#commentReasonforReject').val('');
+                          //  $('#remarks_modal_forReject').modal('hide');
+                          //$("#StatusId").text('Rejected');
+                          //  disableButtons();
+                          //  BindProjectStatus();
+                             window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + ProjectId + '&ShowHide=' + true;
+                        }
+                        else {
+                            disableButtons();
+                            BindProjectStatus();
+
+                        }
+                        notify(Errormessage, "success");
+                    }
+                    else {
+                        if (statusId == 3) {
+                            $('#commentReasonforPartially').val('');
+                            $('#remarks_modal_forPartially').modal('hide');
+                        }
+                        else if (statusId == 4) {
+                            $('#commentReasonforReject').val('');
+                            $('#remarks_modal_forReject').modal('hide');
+                        }
+                        else {
+                        }
+
+                        notify(Errormessage, "error");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.loader('close');
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+            });
+
+    }
+    function SaveContractTerms() {
+        debugger;
+        var MasterContractTerm_Id = $('#ContractTermId').find('option:selected').val();
+        var contract_term_id = $('#hdncontract_term_id').val();
+        if (contract_term_id == "") {//insert
+            contract_term_id = 0;
+             if (MasterContractTerm_Id == 0 || MasterContractTerm_Id == "0") {
+                notify("please select Contract Term", "error");
+                return false;
+            }
+        }
+        else {//update
+            contract_term_id = contract_term_id;
+            MasterContractTerm_Id = $('#hdnmaster_contract_term_id').val();
+        }
+        var ProjectId= $('#ProjectId').val();
+        var ContractTerm_EditorText = escape($("#contract_terms_editor").data("kendoEditor").value());
+
+        if (ContractTerm_EditorText == "" || ContractTerm_EditorText == null) {
+            notify("please enter Contract Term", "error");
+            return false;
+        }
+        //debugger;
+            var Values = {
+                contract_term_id: contract_term_id,
+                contract_desrcription: ContractTerm_EditorText,
+                master_contract_term_id: MasterContractTerm_Id,
+            };
+            var JsonValues = JSON.stringify(Values);
+            $.ajax({
+                type: "POST",
+                url: "/Contract/UpsertProjectContractTerms", // the URL of the controller action method
+                data: { "JsonContractTerms": JsonValues, "ProjectId": ProjectId },
+                dataType: 'Json',
+                success: function (data) {
+                   // debugger;
+                   var Result = data.data.Result;
+                    //var ProjectId = data.data.Id;
+                    var Errormessage = data.data.Errormessage;
+                    if (Result >0) {
+                        notify(Errormessage, "success");
+                        BindContractTerms();
+                        //$('#ContractTermId').select2();
+                        GetContractTerms();
+
+                    }
+                    else {
+                        notify(Errormessage, "error");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+            });
+
+    }
+    function FetchInContractEditor() {
+      //  debugger;
+
+        var ContractTerm_Id = $('#ContractTermId').find('option:selected').val()/*.split('#')[0]*/;
+        $('#hdnmaster_contract_term_id').val(ContractTerm_Id);
+       // var selectedContractTermText = $('#ContractTermId').find('option:selected').text();
+       // var selectedContractTermText = $('#ContractTermId').find('option:selected').val().split('#')[1];
+        var editor = $("#contract_terms_editor").data("kendoEditor");
+        //if (ContractTerm_Id != 0 && ContractTerm_Id != "0") {
+        //    editor.value(selectedContractTermText);
+        //}
+        //else {
+        //    editor.value('');
+        //}
+        if (ContractTerm_Id != 0 && ContractTerm_Id != "0") {
+            $.ajax({
+            url: '@Url.Action("ContractTermList", "Master")',
+            type: "POST",
+            dataType: "json",
+            success: function (result) {
+             //   debugger
+                for (i = 0; i < result.data.Items.length; i++) {
+                    if (result.data.Items[i].Id == ContractTerm_Id) {
+                        editor.value(result.data.Items[i].Description);
+                        return false;
+                    }
+                    else {
+                        editor.value('');
+                    }
+                }
+
+            },
+            error: function (result) {
+                //   debugger
+
+            }
+            });
+        }
+        else {
+            editor.value('');
+        }
+    }
+    var ProjectId = $('#ProjectId').val();
+    var TaskId = '00000000-0000-0000-0000-000000000000';
+    function onBlurDiscount(Det_ErrorMessage) {
+        debugger
+
+      //  var compare_value_new = parseFloat(compare_value_old.replace.('/[^0-9-.]/g'));
+        var SubTotal = $("#sub_total_amount").text().replace('$', '').trim();
+        var sub_total_amount = parseFloat(SubTotal.replace(',', ''));
+        //var discount = parseFloat($("#discount").val());
+        var discount = parseFloat($("#discount").val().replace(',', '').replace('$', '').trim());
+        if (sub_total_amount > discount && String(sub_total_amount) !== "0.00") {
+            if (String(discount) === "" || String(discount) === "NaN") {
+                return false;
+            }
+            else {
+                OnChangeDiscountPercentage();
+                CalculateGSTTotalAmountAfterDiscount();
+                UpdateProjectDetails(1, Det_ErrorMessage);
+            }
+        }
+        else {
+            notify("Discount should be less than SubTotal", "error");
+            $("#discount").val('0.00');
+            return false;
+        }
+    }
+
+    function onBlurUpdate(Det_ErrorMessage) {
+        debugger
+        var SubTotal = $("#sub_total_amount").text().replace('$', '').trim();
+        var sub_total_amount = parseFloat(SubTotal.replace(',', ''));
+        var discount = parseFloat($("#discount").val().replace(',', '').replace('$', '').trim());
+        if (sub_total_amount > discount && String(sub_total_amount) !== "0.00") {
+            if (String(discount) === "" || String(discount) === "NaN") {
+                return false;
+            }
+            else {
+                CalculateGSTTotalAmountAfterDiscount();
+                UpdateProjectDetails(1, Det_ErrorMessage);
+            }
+        }
+        else {
+            notify("Discount should be less than Sub Total", "error");
+            $("#discount").val('0.00');
+            return false;
+        }
+    }
+
+    function CalculateGSTTotalAmountAfterDiscount() {
+       // debugger;
+        var SubTotal = $("#sub_total_amount").text().replace('$','').trim();
+        //var discount_val = parseFloat($("#discount").val());
+        var discount = parseFloat($("#discount").val().replace(',', '').replace('$', '').trim());
+        if (String(discount) === "" || String(discount) == "NaN") {
+            return false;
+        }
+        var sub_total_amount = (parseFloat(SubTotal.replace(',', '')));
+        var tolalamount = sub_total_amount - discount;
+        var gstPercentage = parseFloat($("#gst_percentage").text().replace("% GST", ""));
+
+        var gPer = 0;
+        if (gstPercentage > 0) {
+            gPer = gstPercentage;
+        }
+        var gstp = parseFloat(gPer / 100);/// + 1;
+        if (String(tolalamount).length > 0 && String(gstp).length > 0) {
+            //var CAmount = parseFloat(tolalamount / gstp).toFixed(2);
+            //var GST = parseFloat(tolalamount - CAmount).toFixed(2);
+            var GST1= parseFloat(tolalamount * gstp);
+            var CAmount = parseFloat(tolalamount + GST1).toFixed(2);
+            var GST = GST1.toFixed(2);
+            if (String(GST) == "NaN") {
+                GST = "0.00";
+            }
+            if (String(CAmount) == "NaN") {
+                CAmount = "0.00";
+            }
+
+            $("#gst_amount").text(formatCurrency((GST)));
+            $("#grand_total_amount").text(formatCurrency((CAmount)));
+            $("#total_afterDiscount").text(formatCurrency((tolalamount)));
+            $('#total_amount').val(formatCurrency((CAmount)));
+            $("#discount").val(formatCurrency((discount)));
+           // $("#sub_total_amount").text(formatCurrency((sub_total_amount)));
+        }
+
+
+    }
+    function GetContractTerms() {
+        //debugger;
+        var editor = $("#contract_terms_editor").data("kendoEditor");
+           $.ajax({
+               url: '@Url.Action("GetProjectContractTermsList", "Contract")?ProjectId=' + ProjectId,
+            type: "POST",
+            dataType: "json",
+            success: function (result) {
+                //debugger
+                if (result.data.Items.length > 0) {
+                    editor.value(result.data.Items[0].contract_desrcription);
+                    $('#hdncontract_term_id').val(result.data.Items[0].contract_term_id);
+                    $('#hdnmaster_contract_term_id').val(result.data.Items[0].master_contract_term_id);
+                    $("#btnAddContractTerms").html('Update');
+                }
+                else {
+                    editor.value('');
+                    $('#hdncontract_term_id').val('');
+                    $('#hdnmaster_contract_term_id').val('');
+                }
+            },
+            error: function (result) {
+
+            }
+            });
+    }
+    function disableButtons() {
+        $("#btnAccept").prop("disabled", true);
+        $("#btnNotAccept").prop("disabled", true);
+        $("#btnPartially").prop("disabled", true);
+
+
+    }
+    function enableButtons() {
+       // $("#StatuschangeId").val();
+        $("#StatuschangeId").css('display', 'block');
+        //$("#btnAccept").css('display', 'block');
+        //$("#btnNotAccept").css('display', 'block');
+        //$("#btnPartially").css('display', 'block');
+    }
+    function ShowHideStatus() {
+       var ShowHide='@ViewBag.ShowHide';
+        if (ShowHide == 'True' || ShowHide == 'true') {
+            var StatusId =@Model.status_id;
+            if (StatusId == 1) {
+                $("#btnAccept").prop("disabled", false);
+                $("#btnNotAccept").prop("disabled", false);
+                $("#btnPartially").prop("disabled", false);
+            }
+            else {
+                disableButtons();
+            }
+        }
+    }
+    function CreatePackageWithProjectDetails() {
+        //debugger;
+        var isValid = ValidationCreatePackage();
+        if (isValid) {
+        var PlanId = $('#PlanId').val();
+        var package_type_id = $('#PackageTypeId').val();
+        var FloorId = $('#FloorId').val();
+        var valid_from = $('#date_range_FromTo').data('daterangepicker').startDate;
+        var valid_to = $('#date_range_FromTo').data('daterangepicker').endDate;
+        var ExistingProjectId = $('#ProjectId').val();
+
+
+        var Values = {
+            plan: { plan_id: PlanId },
+            package: { package_type_id: package_type_id },
+            floor: { floor_id: FloorId },
+            valid_from: valid_from,
+            valid_to: valid_to,
+            ExistingProjectId: ExistingProjectId
+        };
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("Upsert_Package_For_Clone_InProject", "Package")',
+             data: { "JsonPackage": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.data.Result;
+                    var Errormessage = data.data.Errormessage;
+                    var NewPackageId = data.data.Id;
+                    if (Result >0) {
+                        ClearPackage();
+                        notify(Errormessage, "success");
+                        //$('#save_header').prop('disabled', true);
+                        $('#NewPackage').css('display', 'block');
+                       // $('#PackageId').val(PackageId);
+                        @*window.location = '@Url.Action("PackageDetail", "Package")?PackageId=' + NewPackageId;*@
+                        $('#ModelForCopyPackagedetailID').modal('hide');
+                    }
+                    else {
+                        notify(Errormessage, "error");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });
+        }
+    }
+    function ValidationCreatePackage() {
+       // debugger
+        if ($('#PlanId').val() == 0) {
+            notify("Please Select Plan", "error");
+        }
+        else if ($('#PackageTypeId').val() == 0) {
+            notify("Please Select Package", "error");
+        }
+        else if ($('#FloorId').val() == 0) {
+            notify("Please Select Floor", "error");
+        }
+        else {
+            return true;
+        }
+    }
+    function ClearPackage() {
+        debugger
+        $("#PlanId").select2("val", "0");
+        $("#PackageTypeId").select2("val", "0");
+        $("#FloorId").select2("val", "0");
+        $('#save_header').prop('disabled', false);
+        $('#NewPackage').css('display', 'none');
+    }
+    function FetchDatesFromDateRangePicker() {
+        debugger;
+        $('#date_range_FromTo').daterangepicker({
+
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+            ranges: {
+                //'Today': [moment(), moment()],
+                //'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 6 Months': [moment().subtract(6, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 1 Year': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            },
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range_FromTo').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+
+        $('#date_range_FromTo').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        $('#date_range_FromTo + .input-group-append').click(function () {
+            $('#date_range_FromTo').trigger("focus");
+        });
+        //Nithin Start Added Defaultly 1 month from present date in DateRangePicker
+        debugger
+        var present_date = new Date();
+        var previous_date = new Date();
+        var date = previous_date.setFullYear(present_date.getFullYear() + 4, present_date.getMonth(), present_date.getDate() - 1)
+        var previous_date = new Date(date);
+        //var previous_date = present_date.setMonth(present_date.getMonth() - 1);
+        $('#date_range_FromTo').data('daterangepicker').setStartDate(present_date);
+        $('#date_range_FromTo').data('daterangepicker').setEndDate(previous_date);
+        //Nithin End Added Defaultly 1 month from present date in DateRangePicker
+    }
+</script>
+<script id="CategoryTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewCategory('#: instance.filterInput.val() #' )">Add new Category</button>
+</script>
+
+<script id="UOMTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewUOM('#: instance.filterInput.val() #' )">Add new UOM</button>
+</script>
+
+<script id="TaskTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewTask('#: instance.filterInput.val() #' )">Add new Task</button>
+</script>
+
+<script id="PaymentTermTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewPaymentTerm('#: instance.filterInput.val() #' )">Add new Payment Term</button>
+</script>
+
+<script>
+      function addNewTask(name) {
+        var List = new Array();
+       // debugger;
+        var Values = {
+            task_id: "00000000-0000-0000-0000-000000000000",
+           // task_cd: "",
+            task_name:name,
+            task_description:name,
+            isactive:1
+        };
+        List.push(Values);
+        var JsonValues = JSON.stringify(List);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewTask", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+    function addNewUOM(name) {
+        var List = new Array();
+        //debugger;
+        var Values = {
+            uom_id: 0,
+           // uom_cd: "",
+            uom_description:name,
+            isactive:1
+        };
+        List.push(Values);
+        var JsonValues = JSON.stringify(List);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewUOM", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+       function addNewCategory(name) {
+        var List = new Array();
+        debugger;
+        var Values = {
+            category_Id: 0,
+          //  category_cd: 7,
+            category_description:name,
+            category_name: name,
+            isactive:1
+        };
+        List.push(Values);
+        var JsonValues = JSON.stringify(List);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewCategory", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+       function addNewPaymentTerm(name) {
+       // var List = new Array();
+           debugger;
+           if (name == "" || name == null) {
+               notify("Please enter Payment Description", "error");
+               return false;
+           }
+        var Values = {
+            master_payment_termid: 0,
+            description:name,
+        };
+      //  List.push(Values);
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewMasterPaymentTerms", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+
+    @*function BindTermsGrid() {
+        var Package_Id = $('#PackageId').val();
+        $("#TermsGrid").kendoGrid({
+                    dataSource: {
+                   transport: {
+                            read: function (options) {
+                           debugger
+                                $.ajax({
+                                    url: '@Url.Action("GetPackagepaymentterms", "Package")?PackageId=' + Package_Id,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                     //   debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+//debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id == 0 || options.data.models[0].payment_term_id == '0') {
+                                    notify("Please Select Payment Terms", "error");
+                                    $('div.k-loading-mask').css('display', 'none');
+                                } else {
+                                    // debugger
+                                    $.ajax({
+                                        url: '@Url.Action("UpsertPackagePaymentTerms", "Package")?PackageId=' + Package_Id,
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: { JsonPackage: JSON.stringify(options.data.models[0]) },
+                                        success: function (result) {
+                                            //  debugger
+                                            $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                            $("#TermsGrid").data('kendoGrid').refresh();
+                                            if (result.data.Result > 0) {
+                                                notify(result.data.Errormessage, "success");
+                                            }
+                                            else {
+                                                notify(result.data.Errormessage, "error");
+                                            }
+                                            options.success(result);
+                                        },
+                                        error: function (result) {
+                                            //    debugger
+                                            /*kendo.alert(result.data.Errormessage);*/
+                                            notify(result.data.Errormessage, "error");
+                                            options.error(result);
+                                        }
+                                    });
+                                }
+                            },
+                            update: function (options) {
+
+                                    //   debugger
+                                    $.ajax({
+                                        url: '@Url.Action("UpsertPackagePaymentTerms", "Package")?PackageId=' + Package_Id,
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: { JsonPackage: JSON.stringify(options.data.models[0]) },
+                                        success: function (result) {
+                                            //  debugger
+                                            $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                            $("#TermsGrid").data('kendoGrid').refresh();
+                                            //kendo.alert(result.data.Errormessage);
+                                            //options.success(result);
+                                            if (result.data.Result > 0) {
+                                                notify(result.data.Errormessage, "success");
+                                            }
+                                            else {
+                                                notify(result.data.Errormessage, "error");
+                                            }
+                                            options.success(result);
+                                        },
+                                        error: function (result) {
+                                            //  debugger
+                                            /*kendo.alert(result.data.Errormessage);*/
+                                            notify(result.data.Errormessage, "error");
+                                            options.error(result);
+                                        }
+                                    });
+
+                            },
+                                 destroy: function (options) {
+                               // debugger
+                                     var payment_term_id = options.data.models[0].payment_term_id;
+                                $.ajax({
+                                    url: '@Url.Action("DeletePackagePaymentTermsByID", "Package")?Payment_term_id=' + payment_term_id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                     //   debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                       // debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 6,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "payment_term_id",
+                                fields: {
+                                    payment_term_id: { hidden: true },//editable: false, nullable: true
+                                    paymentdescription: { defaultValue: { Master_payment_term_id: 0, Master_payment_description: "--Select--" } },
+                                }
+                            }
+                        }
+               },
+               filterable: true,
+                scrollable: false,
+                sortable: true,
+                pageable: true,
+                navigatable: true,
+           /* toolbar: ["create"],*/
+               toolbar: [
+                   { name: "create", text: "Add new Payment Term" }
+               ],
+                autoSync: true,
+                resizable: true,
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500]
+                    },
+                    columns: [
+                       // { field: "payment_term_id", title: "Id", filterable: { multi: true, search: true }},
+                        { field: "payment_term_id", title: "", hidden: true },
+                        { field: "paymentdescription", title: "Payment Description", attributes: { style: "text-align:left;" }, filterable: false, editor: PaymentTermsDropDownEditor, template: "#=paymentdescription.Master_payment_description#" },
+                        {
+                            command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                                { name: "destroy", text: " " }], title: "Action", width: "100px" }
+                    ],
+                    editable: "inline"
+                });
+    }*@
+
+    function AddQuotation() {
+        window.location = '@Url.Action("NewQuotation", "Quotation")';
+    }
+
+    function Commit_Version() {
+        debugger;
+        UpsertProjectQuotationHistory();
+    }
+    function SaveAsPackage_Clone() {
+        debugger;
+        $('#ModelForCopyPackagedetailID').modal('show');
+    }
+
+     function CancelProjectDetails() {
+        debugger;
+         window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + ProjectId + '&ShowHide=' + true;
+    }
+    function UpdateProjectDetails(IsdiscountRelated, Det_ErrorMessage) {
+        debugger;
+
+        var Discount_Percentage = parseFloat($("#discountPercentage").val().replace(',', '').replace('$', ''));
+        var Discount_Amount = parseFloat($("#discount").val().replace(',', '').replace('$', ''));
+        var SubTotal = $("#sub_total_amount").text().replace('$', '');
+        var Gst_amount=$("#gst_amount").text().replace('$', '');
+        var GrandTotal = $("#grand_total_amount").text().replace('$', '');
+        var Total_afterDiscount = $("#total_afterDiscount").text();
+        var GstPercentage =  @Model.gst_percentage;
+
+        var project_id = ProjectId;
+        var project_number = '@Model.project_number';
+        var project_name = $('#project_name').val();
+       // var TotalAmount = $('#total_amount').val().replace('$', '');
+        var Customer_Id = $("#Customer_Id").val();
+        if (Customer_Id == "" || Customer_Id == null || Customer_Id == "0") {
+            Customer_Id = '@Model.customer_id';
+        }
+        var SalesmenId = $('#SalesmenId').val();
+        if (SalesmenId == "" || SalesmenId == null || SalesmenId == "0") {
+            SalesmenId = '@Model.salesmen_id';
+        }
+        var saleman_commission = @Model.saleman_commission;
+        debugger;
+        var contract_date = $('#date_range').data('daterangepicker').startDate;
+
+       // var contract_date = $("#date_range").data("kendoDatePicker").value();
+        debugger
+        var Values = {
+            project_id: project_id,
+            project_number: project_number,
+            project_name: project_name,
+            name1: Customer_Id,
+            salesmen_name: SalesmenId,
+            Customer_id: Customer_Id,
+            salesmen_id: SalesmenId,
+            saleman_commission: saleman_commission,
+            contract_date: contract_date,
+          //  total_amount: TotalAmount,
+            contract_amount: SubTotal,
+            gst_percentage: GstPercentage,
+            gst_amount: Gst_amount,
+            discount: Discount_Amount,
+            discount_percentage: Discount_Percentage,
+            total_amount: GrandTotal
+        };
+       // List.push(Values);
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpsertProjectQuotation", "Quotation")',
+             data: { "JsonQuotation": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.data.Result;
+                   var Errormessage = data.data.Errormessage;
+                    //if (Result >0) {
+                    //   notify(Errormessage, "success");
+                    //}
+                    //else {
+                    //    notify(Errormessage, "error");
+                    //}
+                    if (IsdiscountRelated == 0) {
+                        if (Result > 0) {
+                            notify(Errormessage, "success");
+                        }
+                        else {
+                            notify(Errormessage, "error");
+                        }
+                    }
+                    else {
+                        if (Result > 0) {
+                            if (Det_ErrorMessage == "") {
+                                Det_ErrorMessage = Errormessage;//"Updated Successfully";
+                            }
+                            notify(Det_ErrorMessage, "success");
+                        }
+                        else {
+                            if (Det_ErrorMessage == "") {
+                                Det_ErrorMessage = Errormessage;//"Updation Failed";
+                            }
+                            notify(Det_ErrorMessage, "error");
+                        }
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });
+
+    }
+    function BindPlan() {
+        $.get('@Url.Action("PlanDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select Plan" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].plan_id + ">" + list.data[i].plan_name + "</option>");
+                }
+                $("#PlanId").html(items.join(' '));
+                $('#PlanId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#PlanId").html(items.join(' '));
+                $('#PlanId').select2();
+            }
+        });
+
+    }
+
+       function BindFloor() {
+        $.get('@Url.Action("FloorDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select Floor" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].floor_id + ">" + list.data[i].floor_name + "</option>");
+                }
+                $("#FloorId").html(items.join(' '));
+                $('#FloorId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#FloorId").html(items.join(' '));
+                $('#FloorId').select2();
+            }
+        });
+
+    }
+
+    function BindPackageType() {
+        debugger;
+        $.get('@Url.Action("PackageDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select Package" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].package_type_id + ">" + list.data[i].package_name + "</option>");
+                }
+                $("#PackageTypeId").html(items.join(' '));
+                $('#PackageTypeId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#PackageTypeId").html(items.join(' '));
+                $('#PackageTypeId').select2();
+            }
+        });
+
+    }
+    //Nithin Added Contract Terms Editor
+
+    //$("#contract_terms_editor").kendoEditor({
+    //    resizable: true,
+    //    tools: [
+    //        "bold",
+    //        "italic",
+    //        "underline",
+    //        "strikethrough",
+    //        "justifyLeft",
+    //        "justifyCenter",
+    //        "justifyRight",
+    //        "justifyFull",
+    //        "insertUnorderedList",
+    //        "insertOrderedList",
+    //        "insertUpperRomanList",
+    //        "insertLowerRomanList",
+    //        "indent",
+    //        "outdent",
+    //        "createLink",
+    //        "unlink",
+    //        "insertImage",
+    //        "insertFile",
+    //        "subscript",
+    //        "superscript",
+    //        "tableWizard",
+    //        "createTable",
+    //        "addRowAbove",
+    //        "addRowBelow",
+    //        "addColumnLeft",
+    //        "addColumnRight",
+    //        "deleteRow",
+    //        "deleteColumn",
+    //        "mergeCellsHorizontally",
+    //        "mergeCellsVertically",
+    //        "splitCellHorizontally",
+    //        "splitCellVertically",
+    //        "tableAlignLeft",
+    //        "tableAlignCenter",
+    //        "tableAlignRight",
+    //        "viewHtml",
+    //        "formatting",
+    //        "cleanFormatting",
+    //        "copyFormat",
+    //        "applyFormat",
+    //        "fontName",
+    //        "fontSize",
+    //        "foreColor",
+    //        "backColor",
+    //        "print"
+    //    ]
+    //});
+
+    $("#contract_terms_editor").kendoEditor({
+        resizable: true,
+        tools: []
+
+    });
+
+    var editor = $("#contract_terms_editor").data("kendoEditor"),
+        editorBody = $(editor.body);
+
+    // Make the Editor read-only.
+    editorBody.removeAttr("contenteditable").find("a").on("click.readonly", false);
+
+    function onSelectItem(e) {
+        debugger
+        //Added for disabling price and Qty when it is lumpsum in UOm Default
+        var detailGridWrapper = this.wrapper;
+        var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+        var price = parentTR.find("td[data-container-for='Price'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+        var qty = parentTR.find("td[data-container-for='Qty'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+        var uomDesc = parentTR.find("td[data-container-for='UOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+        var Amount = parentTR.find("td[data-container-for='Amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+        var BillingUOM = parentTR.find("td[data-container-for='BillingUOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+        //uomDesc.enable(true);
+        //Amount.enable(true);
+        //BillingUOM.select(0);
+        if (e.dataItem === undefined) {
+            /*options.data.models[0].Item = { item_id: 0, item_description: options.data.models[0].Item }*/
+        }
+        else {
+            var ItemId = e.dataItem.item_id;
+            GetItemDetails(e, ItemId, price, qty);
+        }
+    };
+
+    function GetItemDetails(e, ItemId, price, qty) {
+        $.ajax({
+            url: '@Url.Action("GetItemByItemId", "Master")?ItemId=' + ItemId,
+            type: "POST",
+            dataType: "json",
+            //data: { JsonPackageDetails: JSON.stringify(options.data.models[0]) },
+            success: function (result) {
+                debugger
+                //to get total row values in a grid
+                var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+                var row = e.sender.element.closest("tr");
+                var dataItem = grid.dataItem(row);
+                dataItem.set('Price', result.data.Items[0].price);
+                dataItem.set('Qty', result.data.Items[0].default_qty);
+                dataItem.set('Amount', result.data.Items[0].price * result.data.Items[0].default_qty);
+                dataItem.set('UOM', result.data.Items[0].UOM);
+
+                if (result.data.Items[0].UOM.uom_description == "Lumpsum") {
+                    debugger
+                    price.enable(false);
+                    qty.enable(false);
+                    dataItem.set('Price', 0);
+                    dataItem.set('Qty', 0)
+                } else {
+                    price.enable(true);
+                    qty.enable(true);
+                }
+            },
+            error: function (result) {
+                //   debugger
+
+            }
+        });
+    }
+
+     //Nithin Added for hiding Action Column based on status
+    //function toggleEditing(e) {
+    //    debugger
+    // //  var shouldEdit = $(e.target).prop("checked");
+    //   //var shouldEdit = $(e.target).prop("checked");
+    //    var grid = $("#quotationchildGrid").data("kendoGrid");
+
+
+    //    grid.hideColumn(0);
+    //    grid.read();
+    //    grid.refresh();
+
+
+    //}
+    function BindTermsGrid() {
+        var ProjectId = $('#ProjectId').val();
+          $("#TermsGrid").kendoGrid({
+                    dataSource: {
+                transport: {
+                             read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("GetQuotationpaymentterms", "Quotation")?ProjectId=' + ProjectId,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id === undefined && options.data.models[0].paymentdescription.Master_payment_description === undefined) {
+                                    options.data.models[0].paymentdescription = { Master_payment_term_id: "", Master_payment_description: options.data.models[0].paymentdescription }
+                                } else {
+
+                                }
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id === 0) {
+                                    options.data.models[0].paymentdescription.Master_payment_term_id = "";
+                                }
+                                if (options.data.models[0].paymentdescription.Master_payment_description == '') {
+                                    notify("Please Enter/Select Payment Terms", "error");
+                                    $('div.k-loading-mask').css('display', 'none');
+
+                                }else {
+                                    $.ajax({
+                                        url: '@Url.Action("UpsertQuotationPaymentTerms", "Quotation")?ProjectId=' + ProjectId,
+                                        type: "POST",
+                                        dataType: "json",
+                                        data: { JsonQuotation: JSON.stringify(options.data.models[0]) },
+                                        success: function (result) {
+                                            debugger
+                                            $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                            $("#TermsGrid").data('kendoGrid').refresh();
+                                            if (result.data.Result > 0) {
+                                                notify(result.data.Errormessage, "success");
+                                            }
+                                            else {
+                                                notify(result.data.Errormessage, "error");
+                                            }
+                                            options.success(result);
+                                        },
+                                        error: function (result) {
+                                            debugger
+                                            options.error(result);
+                                        }
+                                    });
+                                }
+                            },
+                            update: function (options) {
+                                debugger
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id === undefined && options.data.models[0].paymentdescription.Master_payment_description === undefined) {
+                                    options.data.models[0].paymentdescription = { Master_payment_term_id: "", Master_payment_description: options.data.models[0].paymentdescription }
+                                }
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id === 0) {
+                                    options.data.models[0].paymentdescription.Master_payment_term_id = "";
+                                }
+                                $.ajax({
+                                     url: '@Url.Action("UpsertQuotationPaymentTerms", "Quotation")?ProjectId=' + ProjectId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonQuotation: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                             destroy: function (options) {
+                                       debugger
+                                       var payment_term_id = options.data.models[0].payment_term_id;
+                                $.ajax({
+                                    url: '@Url.Action("DeleteProject_QuotationPaymentTermsByID", "Quotation")?payment_term_id=' + payment_term_id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 6,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "payment_term_id",
+                                fields: {
+                                    payment_term_id: { editable: false, nullable: true },
+                                /*Master_payment_description: { validation: { required: true } },*/
+                                    paymentdescription: { defaultValue: { Master_payment_term_id: 0, Master_payment_description: "" } },
+                                }
+                            }
+                        }
+               },
+            filterable: true,
+            scrollable: true,
+                sortable: true,
+                pageable: true,
+                navigatable: true,
+        /* toolbar: ["create"],*/
+            toolbar: [
+                { name: "create", text: "Add new Payment Term" }
+            ],
+                autoSync: true,
+                resizable: true,
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} payment terms", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No payment terms to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "payment terms per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+                    columns: [
+                    //    { field: "payment_term_id", hidden: true },
+                    //    { field: "Master_payment_description", title: "Payment Description", attributes: { style: "text-align:left;" }, filterable: { multi: true, search: true }, editor: PaymentTermsDropDownEditor, template: "#=data.Master_payment_description#" },
+                    //    {
+                    //        command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                    //            { name: "destroy", text: " " }], title: "Action", width: "100px" }
+                    //],
+                        {
+                            command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " }, visible: function () {
+                                var StatusId =@Model.status_id;return StatusId == "1"}  },
+                            { name: "destroy", text: " ", iconClass: "k-icon k-i-delete" , visible: function () {
+                                var StatusId =@Model.status_id;return StatusId == "1"} }], title: "Action", width: "100px"
+                        },
+                         { field: "payment_term_id", title: "" ,hidden: true },
+                        { field: "paymentdescription", title: "Payment Description", attributes: { style: "text-align:left;" }, filterable: false, editor: PaymentTermsDropDownEditor, template: "#=paymentdescription.Master_payment_description#" },
+
+                    ],
+                    editable: "inline"
+                });
+    }
+
+
+    function PrintPreview() {
+        debugger;
+
+
+        wnd.center().open();
+        $("#yes").click(function () {
+            debugger
+            @*location.href = '@Url.Action("PrintPreview", "Quotation")?Id=' + ProjectId + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + true;*@
+            window.open('@Url.Action("PrintPreview", "Quotation")?Id=' + ProjectId + "&TaskId=00000000-0000-0000-0000-000000000000&Price=" + true, "socialPopupWindow",
+               "location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+            wnd.close();
+        });
+        $("#no").click(function () {
+            debugger
+            @*location.href = '@Url.Action("PrintPreview", "Quotation")?Id=' + ProjectId + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + false;*@
+            window.open('@Url.Action("PrintPreview", "Quotation")?Id=' + ProjectId + "&TaskId=00000000-0000-0000-0000-000000000000&Price=" + false, "socialPopupWindow",
+               "location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+            wnd.close();
+        });
+    }
+
+    function UpsertProjectQuotationHistory() {
+        debugger;
+        var status_id =@Model.status_id;
+        var Discount_Amount = parseFloat($("#discount").val());
+        var SubTotal = $("#sub_total_amount").text().replace('$', '');
+        var Gst_amount=$("#gst_amount").text().replace('$', '');
+        var GrandTotal = $("#grand_total_amount").text().replace('$', '');
+        var Total_afterDiscount = $("#total_afterDiscount").text();
+        var GstPercentage =  @Model.gst_percentage;
+
+        var project_id = ProjectId;
+        var project_number = '@Model.project_number';
+        var project_name = $('#project_name').val();
+       // var TotalAmount = $('#total_amount').val().replace('$', '');
+        var Customer_Id = $("#Customer_Id").val();
+        if (Customer_Id == "" || Customer_Id == null || Customer_Id == "0") {
+            Customer_Id = '@Model.customer_id';
+        }
+        var SalesmenId = $('#SalesmenId').val();
+        if (SalesmenId == "" || SalesmenId == null || SalesmenId == "0") {
+            SalesmenId = '@Model.salesmen_id';
+        }
+        var saleman_commission = @Model.saleman_commission;
+        debugger;
+        var contract_date = $('#date_range').data('daterangepicker').startDate;
+       // var contract_date = $("#date_range").data("kendoDatePicker").value();
+        debugger
+        var Values = {
+            project_id: project_id,
+            project_number: project_number,
+            project_name: project_name,
+            name1: Customer_Id,
+            salesmen_name: SalesmenId,
+            Customer_id: Customer_Id,
+            salesmen_id: SalesmenId,
+            saleman_commission: saleman_commission,
+            contract_date: contract_date,
+            status_id: status_id,
+            contract_amount: SubTotal,
+            gst_percentage: GstPercentage,
+            gst_amount: Gst_amount,
+            discount: Discount_Amount,
+            total_amount: GrandTotal
+        };
+       // List.push(Values);
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpsertProjectQuotation_History", "Quotation")',
+             data: { "JsonQuotation": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.data.Result;
+                   var Errormessage = data.data.Errormessage;
+                    if (Result >0) {
+                       notify(Errormessage, "success");
+                    }
+                    else {
+                        notify(Errormessage, "error");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });
+
+    }
+
+
+
+    //Tooltips For Kendogrid Action Btn
+
+    $("#QuotationGrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Item";
+        }
+    });
+    $("#QuotationGrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Item Details";
+        }
+    });
+    $("#QuotationGrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Item";
+        }
+    });
+    $("#QuotationGrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Item";
+        }
+    });
+
+    $("#PackageGrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Item";
+        }
+    });
+    $("#PackageGrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Item Details";
+        }
+    });
+    $("#PackageGrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Item";
+        }
+    });
+    $("#PackageGrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Item";
+        }
+    });
+
+    //Tooltips For Kendogrid Action Btn payment terms
+
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Terms";
+        }
+    });
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Terms";
+        }
+    });
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Terms";
+        }
+    });
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Terms";
+        }
+    });
+    $(".allow_decimal").on("input", function (evt) {
+        debugger
+        var self = $(this);
+        self.val(self.val().replace(/[^0-9\,$]/g, ''));
+        if ((evt.which != 46 || self.val().indexOf('.') != -1) && (evt.which < 48 || evt.which > 57)) {
+            evt.preventDefault();
+        }
+    });
+
+		$("#discount").focus(function () {
+            $(this).select();
+        });
+
+</script>
+
+

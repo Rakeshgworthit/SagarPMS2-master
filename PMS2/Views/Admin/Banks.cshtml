@@ -1,0 +1,104 @@
+﻿@using MVCGrid.Web
+@{
+    ViewBag.Title = "Banks";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-6">
+                <h3 class="animated fadeInLeft text-primary">Banks</h3>
+            </div>
+            <div class="col-md-6 col-6">
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    <button type="button" onclick="openModelpop('/Admin/LoadAddEditBank', 'id', 0);" class='btn btn-primary pull-right'>
+                        <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add</span>
+                    </button>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="responsive-table">
+                    @if (User.IsInRole("SuperAdmin"))
+                    {
+                        @Html.MVCGrid("Banks")
+                    }
+                    else
+                    {
+
+                        @Html.MVCGrid("BanksView")
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(function () {
+        //debugger
+        var val = '@ViewBag.Message';
+        var cls ='@ViewBag.cls';
+        if (val) {
+            notify(val, cls);
+        }
+        //console.log("ready!");
+    });
+    function SaveBankForm()
+    {
+        var form = $('#frmBank');
+        $.validator.unobtrusive.parse(form);
+        if (form.valid()) {
+            $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                type: "POST",
+                url: "/Admin/SaveBank", // the URL of the controller action method
+                data: {
+                    id: $('#frmBank').find("#id").val(),
+                    bank_name: $('#frmBank').find("#bank_name").val(),
+                    account_number: $('#frmBank').find("#account_number").val(),
+                    branch_code: $('#frmBank').find("#branch_code").val(),
+                    payment_instructions: $('#frmBank').find("#payment_instructions").val(),
+                    additional_remarks: $('#frmBank').find("#additional_remarks").val(),
+                    address1: $('#frmBank').find("#address1").val(),
+                    address2: $('#frmBank').find("#address2").val(),
+                    address3: $('#frmBank').find("#address3").val(),
+                    address4: $('#frmBank').find("#address4").val(),
+                    zip_code: $('#frmBank').find("#zip_code").val(),
+                    email: $('#frmBank').find("#email").val(),
+                    website: $('#frmBank').find("#website").val(),
+                    phone: $('#frmBank').find("#phone").val(),
+                    mobile: $('#frmBank').find("#mobile").val(),
+                    contact_person: $('#frmBank').find("#contact_person").val(),
+                    isactive: $('#frmBank').find("#isactive").val(),
+                    branch_id: $('#frmBank').find("#branch_id").val()
+                }, // optional data
+                success: function (result) {
+                    $.loader('close');
+                    if (result.cls == "error") {
+                        notify(result.msg, result.cls);
+                    } else {
+                        $("#btnCloseBank").click();
+                        loadGrid();
+                        notify(result.msg, result.cls);
+                    }
+                },
+                error: function (req, status, error) {
+                    $.loader('close');
+                    notify(error, "error");
+                }
+            });
+        }
+    }
+
+    function loadGrid() {
+        MVCGrid.reloadGrid('Banks');
+    }
+</script>
+

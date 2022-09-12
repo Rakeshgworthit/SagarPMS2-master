@@ -1,0 +1,93 @@
+﻿@model PMS.Models.PaymentsViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+@*<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>*@
+<script src="~/Scripts/jquery.sumoselect.js"></script>
+<link href="~/Content/css/dropdownliststyle.css" rel="stylesheet" />
+<style>
+    .SumoSelect {
+        display: contents;
+        position: relative;
+        outline: none;
+    }
+</style>
+<div class="modal-header">
+    <h4 class="modal-title">Bulk SMS</h4>
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+</div>
+
+<div class="modal-body">
+    <form class="form-horizontal" id="frmSupplierSMS" name="frmSupplierSMS">
+             
+                
+            <div class="form-group ">
+                <div class="row">
+                <label class="control-label col-sm-3" >Select suppliers to send SMS</label>
+
+                <div class="col-sm-9">
+                    <div>
+                        @Html.DropDownListFor(m => m.supplier_id, new SelectList(Model.supplierList, "Value", "Text"), new { @multiple = "multiple", @placeholder = "Please select country", @class = "form-control SlectBox" })
+                    </div>
+                </div>
+            </div>         
+                </div>
+             
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button id="btnSave" type="button" name="btnSave" class="btn btn-primary" onclick="SendSMS();">Send SMS</button>
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>
+<script>
+    $(document).ready(function () {
+        window.asd = $('.SlectBox').SumoSelect({ csvDispCount: 2 });
+    });
+    function SendSMS() {
+        debugger;
+        var obj = [],
+            items = '';
+        // $('.SlectBox option:selected').each(function () {
+        $.each($(".SlectBox option:selected"), function () {
+            obj.push($(this).val());
+        });
+        $("#btnClose").click();
+        for (var i = 0; i < obj.length; i++) {
+            items += ',' + obj[i]
+        };
+        if (obj.length > 10) {
+            notify("You can send sms to 10 suppliers at a time.", "error");
+        }
+
+        else if (items != "") {
+
+            $.ajax({
+                type: "POST",
+                url: "/Payments/LoadSupplier", // the URL of the controller action method
+                data: "supplierIds=" + items, // optional data
+                success: function (result) {
+                    debugger;
+                    //$.loader('close');
+                    //if (result.cls == "error") {
+                    //    notify(result.msg, result.cls);
+                    openModelpop('/Payments/LoadSMS', 'collectionDate', '');
+
+                },
+                error: function (req, status, error) {
+                    // do something with error
+                    $.loader('close');
+                    notify(error, "error");
+                }
+
+
+            });
+        }
+        else {
+            notify("Please select supplier.", "error");
+        }
+    }
+</script> 

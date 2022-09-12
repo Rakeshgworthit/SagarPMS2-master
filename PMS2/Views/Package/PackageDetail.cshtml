@@ -1,0 +1,1865 @@
+﻿@model PMS.Models.PackageDetail
+@{
+    ViewBag.Title = "PackageDetail";
+}
+<style>
+</style>
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-8">
+                <h3 class="animated fadeInLeft text-primary">Package Detail</h3>
+            </div>
+            <div class="col-md-6 col-4 ">
+                <button type="button" onclick="PackageList();" class='btn btn-primary pull-right'>
+                    @*<i class="fa fa-plus" aria-hidden="true"></i>*@<span>Packages List</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-2 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Plan</span></label>
+                    @*<label class="control-label"><span class="data_inline">@Model.plan_name</span></label>*@
+                    <div>
+                        <select name="PlanId" id="PlanId" class="form-control" required="required">
+                            <option selected value=@Model.plan_id>@Model.plan_name</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Package</span></label>
+                    @*<label class="control-label"><span class="data_inline">@Model.package_name</span></label>*@
+                    <div>
+                        <select name="PackageTypeId" id="PackageTypeId" class="form-control" required="required">
+                            <option selected value=@Model.package_type_id>@Model.package_name</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-6 ">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Floor</span></label>
+                    @*<label class="control-label"><span class="data_inline">@Model.floor_name</span></label>*@
+                    <div>
+                        <select name="FloorId" id="FloorId" class="form-control" required="required">
+                            <option selected value=@Model.floor_id>@Model.floor_name</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Amount</span></label>
+                    @*<label class="control-label"><span class="data_inline"><strong>$@Model.amount.ToString("#,##0.00")</strong></span></label>*@
+                    <input id="total_amount" name="total_amount" class="form-control" value="$@Model.total_amount.ToString("#,##0.00")" maxlength="100" disabled />
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-2 form-group">
+                <label class="control-label ml-2" for="project_name"><span class="data_inline_label" style="">Code </span></label>
+                <input id="project_name" name="project_name" class="form-control" value="@Model.package_cd" maxlength="100" readonly />
+            </div>
+            <div class="col-md-4 form-group">
+                <label for="from_date" class="control-label text-right "><span class="data_inline_label">Valid From</span></label>
+
+                @*<label class="control-label"><span class="data_inline">@Model.fromDate </span></label>
+                &nbsp;&nbsp;<label><b>To</b></label>&nbsp;&nbsp;<label for="from_date" class="control-label"><span class="data_inline"> @Model.toDate</span></label>*@
+                @*<input id="from_date" name="from_date" class="form-control" value="@Model.fromDate To @Model.toDate" maxlength="100" />*@
+                <div class="input-group">
+                    <input type="text" id="date_range" name="date_range" class="form-control date_form_control" maxlength="28" readonly />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-5 mt-27">
+                <input type="checkbox" id="chkIsGlobal" checked="@Model.isGlobalpkg" />&nbsp;&nbsp;&nbsp;<label for="from_date" class="control-label text-right "><span class="data_inline_label">Is Global Package</span></label>
+                <button type="button" class="btn btn-primary" onclick="UpdatePackageDetails()">Update</button>
+                <button type="button" class="btn btn-primary" onclick="CancelPackageDetails()">Clear</button>
+                <button type="button" id="print_preview" onclick="PrintPreview();" class='btn btn-success'>
+                    <i class="fa fa-print"></i><span class="ml-2">Print</span>
+                </button>
+                @*<button class="k-button" id="btnUpdate" onclick="UpdatePackageDetails()">Update</button>
+        <button class="k-button" id="btnCancel">Cancel</button>*@
+            </div>
+
+            @*<div class="col-md-4 my-md-auto my-3  text-md-center">
+                <button class="k-button" id="expand">Expand All</button>
+                <button class="k-button" id="collapse">Collapse All</button>
+            </div>*@
+
+        </div>
+
+        <input type="hidden" id="PackageId" class="form-control col-8" value="@ViewBag.PackageId" />
+        <input type="hidden" id="ParentTaskId" name="ParentTaskId" class="form-control" />
+        <div id="accordion" class="accordion">
+        </div>
+
+        <br />
+        <div class="row justify-content-end ">
+            <div class="col-md-4 mr-4">
+                <table class="table task_total_amount_tables">
+                    <tbody>
+                        @*<tr>
+                            <td align="right"><p class="task_total_amount_titles">Less Discount :</p></td>
+                            <td>
+                                <p class="task_total_amount_details">
+                                    <input type="number" id="discount" name="discount" class="form-control" value="@Model.discount_amount.ToString("#,##0.00")" maxlength="10" />
+                                </p>
+                            </td>
+                        </tr>*@
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Sub Total :</p></td>
+                            <td align="right">
+
+                                <p class="task_total_amount_details">
+                                    <label id="sub_total_amount" name="sub_total_amount">
+                                        $@Model.amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">
+
+                                <p class="task_total_amount_titles">
+                                    <label class="task_total_amount_titles" id="gst_percentage" name="gst_percentage">
+                                        @Model.gst_percentage % GST :
+                                    </label>
+                                </p>
+                            </td>
+                            <td align="right">
+
+                                <p class="task_total_amount_details">
+                                    <label id="gst_amount" name="gst_amount">
+                                        $@Model.gst_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Grand Total :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    @*<span><i class="fa fa-dollar mr-2"></i></span>*@ <label id="grand_total_amount" name="grand_total_amount">
+                                        $@Model.total_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <label class="control-label mt-3" for="from_date"><span class="data_inline_label">Payment Terms</span></label>
+        <div id="TermsGrid" class="accordion">
+        </div>
+        <br />
+        <div class="row">
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Created By</label>
+                            <div class="created_updated_card_content" id="createdBy">@Model.created_by</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Created On</label>
+                            <div class="created_updated_card_content" id="created_date">@Model.created_date</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Updated By</label>
+                            <div class="created_updated_card_content" id="modified_by">@Model.modified_by</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="col-lg-3 col-md-6 my-2">
+                <div class="card created_updated_card">
+                    <div class="card-body py-2">
+                        <div>
+                            <label>Updated on</label>
+                            <div class="created_updated_card_content" id="modified_date">@Model.modified_date</div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modalWindow">
+    <h6> You want to print quantity column?</h6>
+    <button id="yes" class="btn btn-primary pull-right ml-2 mb-2">Yes</button>
+    <button id="no" class="btn btn-primary pull-right ml-2 mb-2">No</button>
+</div>
+
+<script>
+
+    var PackageId = $('#PackageId').val();
+    var TaskId = '00000000-0000-0000-0000-000000000000';
+    //$("#discount").blur(function () {
+    //    CalculateGSTTotalAmountAfterDiscount();
+    //});
+
+    wnd = $("#modalWindow").kendoWindow({
+        title: "Package Confirmation",
+        modal: true,
+        visible: false,
+        resizable: false,
+        width: 300
+    }).data("kendoWindow");
+    function CalculateGSTTotalAmountAfterDiscount() {
+        debugger;
+        var SubTotal =@Model.total_amount;
+        //var GSTPrcntge =
+        //var gstamt =
+        //var GrandTotal=
+        var discount = parseFloat($("#discount").val());
+        var sub_total_amount = parseFloat($("#SubTotal").text())
+        var tolalamount = sub_total_amount - discount;
+        var gstPercentage = parseFloat($("#gst_percentage").text().replace("% GST", ""));
+
+        var gPer = 0;
+        if (gstPercentage > 0) {
+            gPer = gstPercentage;
+        }
+        var gstp = parseFloat(gPer / 100) + 1;
+        if (String(tolalamount).length > 0 && String(gstp).length > 0) {
+            var CAmount = parseFloat(tolalamount / gstp).toFixed(2);
+            var GST = parseFloat(tolalamount - CAmount).toFixed(2);
+            if (String(GST) == "NaN") {
+                GST = "0.00";
+            }
+            if (String(CAmount) == "NaN") {
+                CAmount = "0.00";
+            }
+            $("#gst_amount").text(GST);
+            $("#grand_total_amount").text(CAmount)
+        }
+
+
+    }
+    function CancelPackageDetails() {
+      //  debugger;
+        window.location = '@Url.Action("PackageDetail", "Package")?PackageId=' + PackageId;
+    }
+    function UpdatePackageDetails() {
+      //  debugger;
+        var PlanId = $('#PlanId').val();
+        var package_type_id = $('#PackageTypeId').val();
+        var FloorId = $('#FloorId').val();
+        var PackageCd = '@Model.package_cd';
+        var TotalAmount = $('#total_amount').val().replace('$','');
+        var valid_from = $('#date_range').data('daterangepicker').startDate;
+        var valid_to = $('#date_range').data('daterangepicker').endDate;
+
+        //Console Print of date
+        //console.log(valid_from);
+        //console.log(valid_to);
+
+
+        var Values = {
+            package_id: PackageId,
+            package_cd: PackageCd,
+            plan: { plan_id: PlanId },
+            package: { package_type_id: package_type_id },
+            floor: { floor_id: FloorId },
+            valid_from: valid_from,
+            valid_to: valid_to,
+            total_amount: TotalAmount,
+            isactive: 1
+        };
+       // List.push(Values);
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreatePackage", "Package")',
+             data: { "JsonPackage": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.data.Result;
+                    var Errormessage = data.data.Errormessage;
+                    if (Result >0) {
+                        notify(Errormessage, "success");
+                    }
+                    else {
+                        notify(Errormessage, "error");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });
+
+    }
+    function PackageList() {
+        window.location = '@Url.Action("Packages", "Package")';
+    }
+    var seconds = 0;
+    function Timer() {
+        debugger;
+        seconds += 1;
+        $(".timer").html(seconds);
+        timerPrint = setTimeout(Timer, 100);
+        console.log(seconds);
+    }
+    $(document).ready(function () {
+       // Timer();
+            BindPlan();
+            BindFloor();
+        BindPackageType();
+        var Date =@Model.fromDate
+         $('#date_range').daterangepicker({
+
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 6 Months': [moment().subtract(6, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 1 Year': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+
+            },
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        $('#date_range').data('daterangepicker').setStartDate('@Model.fromDate');
+        $('#date_range').data('daterangepicker').setEndDate('@Model.toDate');
+        $('#date_range + .input-group-append').click(function () {
+            $('#date_range').trigger("focus");
+        });
+      // $('#date_range').data('daterangepicker').value();
+        //var datePicker = $("#StartDate").data("kendoDatePicker");
+        //var todayDate = new Date();
+        //datePicker.value(todayDate);
+        //datePicker.trigger("change");
+                var element = $("#accordion").kendoGrid({
+                    dataSource: {
+                       transport: {
+                            @*read: {
+                               // url: '@Url.Action("GetPackageTasksItem", "Package")',
+                               url: '@Url.Action("GetPackageTasksItem", "Package")?PackageId=' + PackageId + '&TaskId=' + TaskId,
+                                        type: "GET",
+                                        dataType: "json"
+                            },*@
+                           read: function (options) {
+                                $.ajax({
+                                   url: '@Url.Action("GetPackageTasksItem", "Package")?PackageId=' + PackageId + '&TaskId=' + TaskId,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                     //   debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                      //  debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                           create: function (options) {
+                               // debugger
+                                $.ajax({
+                                   url: '@Url.Action("UpsertPackageTasks", "Package")?PackageId=' + PackageId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonPackage: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        //debugger
+                                        $("#accordion").data('kendoGrid').dataSource.read();
+                                        $("#accordion").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                       // debugger
+                                        /*kendo.alert(result.data.Errormessage);*/
+                                        notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                           update: {
+                               url: '@Url.Action("UpsertPackageTasks", "Package")?PackageId=' + PackageId,
+                                type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#accordion").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                url: '@Url.Action("", "Package")',
+                                type: "POST",
+                                dataType: "json"
+                            },
+                            @*create: {
+                                url: '@Url.Action("UpsertPackageTasks", "Package")?PackageId=' + PackageId,
+                                type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#accordion").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 6,
+                        //serverPaging: true,
+                        //serverSorting: true,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                //id: "PackageTask_id",//Task_Id
+                                id: "Task_Id",
+                                fields: {
+                                   // Task_Id: { hidden : true },
+                                    Task: { defaultValue: { Task_Id: 0, Task_Name: "Select Task" }},
+                                    PackageTask_id: { hidden: true },
+                                }
+                            }
+                        }
+                    },
+                    /*height: 600,*/
+                    // sortable: true,
+                    pageable: true,
+                /* toolbar: ["create"],*/
+                    toolbar: [
+                        { name: "create", text: "Add new Package Task" },
+
+                        {
+                            template: '<a onclick="collapse()" class="k-button" style="float:right">Collapse All</a>'
+                        },{
+                            template: '<a onclick="expand()" class="k-button" style="float:right">Expand All</a>'
+                        }
+                    ],
+                    detailInit: detailInit,
+                    dataBound: function () {
+                        this.expandRow(this.tbody.find("tr.k-master-row").first());
+                    },
+                    /*resizable: true,*/
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} tasks", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No tasks to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "tasks per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+                    columns: [
+                       // { field: "Task_Id", title: "Task Id", hidden: true },
+                    /*{ field: "Task_Name", title: " ", attributes: { style: "text-align:left;font-size: 22px;" }, editor: GetPackageTasksListItems, template: "#=data.Task_Name#" },*/
+                        { field: "Task", title: " ", attributes: { style: "text-align:left;font-size: 20px;" }, editor: GetPackageTasksListItems, template: "#=Task.Task_Name#" },
+                        { field: "PackageTask_id", title: "PackageTask id", hidden: true },
+                        //{
+                        //    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                        //        { name: "destroy", text: " " }], title: "Action", width: "100px" }
+                    ],
+                    editable: "inline"
+                });
+
+        BindTermsGrid();
+           // GetPaymentTerms();
+               // debugger;
+            });
+
+    function detailInit(e) {
+          debugger
+        $("<div id='packagechildGrid'/>").appendTo(e.detailCell).kendoGrid({
+                dataSource: {
+                        transport: {
+                        read: function (options) {
+                                if (e.data.Task.Task_Id == "0" || e.data.Task.Task_Id == 0) {
+
+                                }
+                                else {
+                                    $.ajax({
+                                        url: '@Url.Action("GetPackageTasksItemDetails", "Package")?PackageId=' + PackageId + '&TaskId=' + e.data.Task.Task_Id,
+                                        type: "GET",
+                                        dataType: "json",
+                                        success: function (result) {
+                                            //  debugger
+                                            options.success(result);
+                                        },
+                                        error: function (result) {
+                                            // debugger
+                                            options.error(result);
+                                        }
+                                    });
+                                }
+                        },
+                        update: function (options) {
+                            debugger
+                            if (options.data.models[0].UOM === null || options.data.models[0].UOM === undefined) {
+                                options.data.models[0].UOM = { uom_id: 0, uom_description: "-- Select --" }
+                            }
+                            if (options.data.models[0].BillingUOM.description === "Standard") {
+                               
+                                if (options.data.models[0].UOM.uom_id == 0) {
+                                    notify("Please Select UOM", "error");
+                                    $('div.k-loading-mask').css('display', 'none');
+                                    return false;
+                                }
+                            }
+                            if ((options.data.models[0].UOM.uom_description !== "Lumpsum")) {
+                                options.data.models[0].Amount = options.data.models[0].Price * options.data.models[0].Qty;
+                            }
+                            if (options.data.models[0].Item.item_id === undefined && options.data.models[0].Item.item_description === undefined) {
+                                options.data.models[0].Item = { item_id: "", item_description: options.data.models[0].Item }
+                            }
+                            if (options.data.models[0].Item.item_id === 0) {
+                                options.data.models[0].Item.item_id = "";
+                            }
+                                $.ajax({
+                                    url: '@Url.Action("UpsertPackageDetails", "Package")?PackageId=' + PackageId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + escape(e.data.Task.Task_Name),
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonPackageDetails: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#accordion").data('kendoGrid').dataSource.read();
+                                        $("#accordion").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                            $('#total_amount').val(formatCurrency(result.data.Amount));
+                                            $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                            $('#gst_percentage').text(result.data.gst_percentage + '% GST :');
+                                            $('#gst_amount').text(formatCurrency(result.data.gst_amount));
+                                            $('#grand_total_amount').text(formatCurrency(result.data.Amount));
+
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                       // debugger
+                                        options.error(result);
+                                    }
+                                });
+
+                            },
+                        @*update: {
+                            url: '@Url.Action("UpsertPackageDetails", "Package")?PackageId=' + PackageId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + e.data.Task.Task_Name,
+                                        type: "POST",
+                                 dataType: "json",
+                                 complete: function (e) {
+                                     $("#accordion").data("kendoGrid").dataSource.read();
+                                     $("#accordion").data('kendoGrid').refresh();
+                                 }
+                            },*@
+                          destroy: function (options) {
+                             //  debugger
+                              var Package_Det_Id = options.data.models[0].Package_Det_Id;
+                                $.ajax({
+                                    url: '@Url.Action("deletepackageDetails", "Package")?package_det_id=' + Package_Det_Id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                     //   debugger
+                                        $("#accordion").data('kendoGrid').dataSource.read();
+                                        $("#accordion").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                            $('#total_amount').val(formatCurrency(result.data.Amount));
+                                            $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                            $('#gst_percentage').text(result.data.gst_percentage + '% GST :');
+                                            $('#gst_amount').text(formatCurrency(result.data.gst_amount));
+                                            $('#grand_total_amount').text(formatCurrency(result.data.Amount));
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                       // debugger
+                                        options.error(result);
+                                    }
+                                });
+
+                            },
+                        create: function (options) {
+                            debugger
+                            if (options.data.models[0].UOM === null || options.data.models[0].UOM === undefined) {
+                                options.data.models[0].UOM = { uom_id: 0, uom_description: "-- Select --" }
+                            }
+                            if (options.data.models[0].BillingUOM.description === "Standard") {
+                                if (options.data.models[0].UOM.uom_id == 0) {
+                                    notify("Please Select UOM", "error");
+                                    $('div.k-loading-mask').css('display', 'none');
+                                    return false;
+                                }
+                            }
+                            if ((options.data.models[0].UOM.uom_description !== "Lumpsum")) {
+                                options.data.models[0].Amount = options.data.models[0].Price * options.data.models[0].Qty;
+                            }
+                            if (options.data.models[0].Item.item_id === undefined && options.data.models[0].Item.item_description === undefined) {
+                                options.data.models[0].Item = { item_id: "", item_description: options.data.models[0].Item}
+                                //options.data.models[0].Item.item_id = 0;
+                                //options.data.models[0].Item.item_description = options.data.models[0].Item;
+                            }
+
+                            if (e.data.Task.Task_Id == 0) {
+                                notify("Please Select Task", "error");
+                                $('div.k-loading-mask').css('display', 'none');
+                                // options.error(result);
+                            }
+                            else {
+
+                                  debugger
+                                $.ajax({
+                                    url: '@Url.Action("UpsertPackageDetails", "Package")?PackageId=' + PackageId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + escape(e.data.Task.Task_Name),
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonPackageDetails: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#accordion").data('kendoGrid').dataSource.read();
+                                        $("#accordion").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                            $('#total_amount').val(formatCurrency(result.data.Amount));
+                                            $('#sub_total_amount').text(formatCurrency(result.data.SubTotal));
+                                            $('#gst_percentage').text(result.data.gst_percentage + '% GST :');
+                                            $('#gst_amount').text(formatCurrency(result.data.gst_amount));
+                                            $('#grand_total_amount').text(formatCurrency(result.data.Amount));
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+
+                                    },
+                                    error: function (result) {
+                                        //   debugger
+                                        options.error(result);
+                                    }
+                                });
+                            }
+
+                        },
+                            // save: function (data) {
+                            //    debugger
+                            //    data.model.set("Amount", data.model.Price * data.model.Qty);
+                            //},
+
+                        @*create: {
+                            url: '@Url.Action("UpsertPackageDetails", "Package")?PackageId=' + PackageId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + e.data.Task.Task_Name,
+
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#accordion").data("kendoGrid").dataSource.read();
+                                    $("#accordion").data('kendoGrid').refresh();
+                                }
+                            },*@
+
+                        parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        //serverPaging: true,
+                        //serverSorting: true,
+                        //serverFiltering: true,
+                        batch: true,
+                        pageSize: 10,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "Package_Id",
+                                fields: {
+                                    Package_Id: { editable: false },
+                                    Package_Det_Id: { editable: false },
+                                    Task_Id: { defaultValue: e.data.Task.Task_Id ,editable: false },
+                                    Category: {
+                                        defaultValue: { category_Id: 1, category_name: "No Category" }, validation: { required: true } },
+                                    Item: { defaultValue: { item_id: null, item_description: "" }, validation: { required: true } },
+                                    BillingUOM: { defaultValue: { status_lookup_id: 1, description: "Standard" }, validation: { required: true } },
+                                    Qty: { validation: { required: true, min: 0, maxlength:8}, type: "number" },
+                                    UOM: { defaultValue: { uom_id: 0, uom_description: "-- Select --" }, validation: { required: true } },
+                                    Price: { validation: { required: true, min: 0, maxlength: 20 }, type: "number" },
+                                    item_remarks: { validation: { required: false, max: 100 } },
+                                    Amount: { validation: { required: true, maxlength: 30 }, type: "number" },
+                                }
+                            }
+                        },
+                        aggregate: [
+                            { field: "Price", aggregate: "sum" },
+                            { field: "Amount", aggregate: "sum" }
+                        ]
+                        //filter: { field: "CategoryName", operator: "eq", value: e.data.CategoryName }
+                    },
+                    scrollable: true,
+                    sortable: true,
+                    pageable: true,
+                    navigatable: true,
+                /*  toolbar: ["create"],*/
+                    toolbar: [
+                        { name: "create", text: "Add new Item" }
+                    ],
+                    autoSync: true,
+                    resizable: true,
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500]
+                    },
+                    //dataBound: function () {
+                    //    for (var i = 0; i < this.columns.length; i++) {
+                    //        this.autoFitColumn(i);
+                    //    }
+                    //},
+                    columns: [
+                        //{ field: "Package_Id", hidden: true },
+                        //{ field: "Package_Det_Id", hidden: true },
+                        //{ field: "Task_Id", hidden: true },
+                        {
+                            command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                                { name: "destroy", text: " ", iconClass: "k-icon k-i-delete"  }], title: "Action", width: "100px"
+                        },
+                        {
+                            field: "Category", width: "100px", title: "Category", attributes: { style: "text-align:left;", filterable: { multi: true, search: true } },
+                            editor: CategoryDropDownEditor, template: "#=Category.category_name#"},
+                        { field: "Item", title: "Item Description", width: "340px", attributes: { style: "text-align:left;" }, editor: ItemDropDownEditor, template: "#=Item.item_description#"},
+                        { field: "BillingUOM", title: "Billing UOM", width: "100px", attributes: { style: "text-align:left;" }, editor: BillingUOMDropDownEditor, template: "#=BillingUOM.description#" },
+                        //{ field: "Price", title: "Price ($)", width: "70px",  format: "{0:c}",footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" }},
+                        //{ field: "Qty", width: "70px", title: "Quantity", nullable: true },
+                    /* { field: "Price", title: "Unit Price", format: "{0:c}", width: "120px" },*/
+
+                        { field: "Qty", width: "100px", },
+                        { field: "UOM", title: "UOM", width: "100px", attributes: { style: "text-align:left;" }, editor: UOMDropDownEditor, template: "#=UOM.uom_description#" },
+                        { field: "Price", width: "100px", title: "Price ($)", format: "{0:c}", footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" } },
+                        { field: "item_remarks", title: "Remarks", width: "100px",  attributes: { style: "text-align:left;" } },
+                         {
+                            field: "Amount", width: "100px", title: "Amount", format: "{0:c}", footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" },
+
+                        /*{ field: "Amount", title: "Amount", format: "{0:c}", width: "100px",*/
+                            //editor: function (cont, options) {
+                            //    debugger
+
+                            //    $("<span class='totalSpan'>" + options.model.Amount + " &dollar;</span>").appendTo(cont);
+                            //},
+
+
+
+                        },
+
+
+
+                    ],
+                    editable: "inline",
+                   // edit: onGridEditing,
+                    edit: function (e) {
+                      //  debugger;
+                        var priceEditor = e.container.find("input[name=Price]").data("kendoNumericTextBox");
+                        var quantityEditor = e.container.find("input[name=Qty]").data("kendoNumericTextBox");
+
+                        var amountEditor = e.container.find("input[name=Amount]").data("kendoNumericTextBox");
+                        var uomEditor = e.container.find("input[name=UOM]").data("kendoDropDownList");
+						//var uomEditor = e.container.find("input[name=BillingUOM]").data("kendoDropDownList");
+                        var billinguomValue = e.container.find("[data-container-for='BillingUOM'] .k-input").text();
+						var uomValue = e.container.find("[data-container-for='UOM'] .k-input").text();
+
+
+						if (billinguomValue == "FOC" || billinguomValue == "Inclusive" || billinguomValue == "Complementary") {
+                            priceEditor.enable(false);
+                            quantityEditor.enable(false);
+                            amountEditor.enable(false);
+							uomEditor.enable(false);
+                        }
+						if (uomValue == "Lumpsum") {
+							priceEditor.enable(false);
+							quantityEditor.enable(false);
+							//amountEditor.enable(true);
+                        }
+
+                        priceEditor.bind("change", function (e) {
+                            var price = this.value();
+                            var quantity = quantityEditor.value();
+
+							amountEditor.value(price * quantity);
+
+                            //var totalSpan = this.element.closest("tr").find(".totalSpan");
+                            //totalSpan.html(price * quantity);
+
+                        });
+
+                        quantityEditor.bind("change", function (e) {
+                            var price = priceEditor.value();
+                            var quantity = this.value();
+
+                            amountEditor.value(price * quantity);
+
+                            //var totalSpan = this.element.closest("tr").find(".totalSpan");
+                            //totalSpan.html(price * quantity);
+                        });
+                        @*var detailGridWrapper = this.wrapper;
+                        var parentRow = detailGridWrapper.closest("tr.k-detail-row").prev("tr");
+                        var parentGrid = parentRow.closest("[data-role=grid]").data("kendoGrid");
+                        debugger
+                        var parentModel = parentGrid.dataItem(parentRow);
+
+                        var ParentTaskId = parentModel.Task.Task_Id;
+                        var ParentTaskName = parentModel.Task.Task_Name;
+                        debugger
+                        var a = this;
+                        a.dataSource.transport.create.url = '@Url.Action("UpsertPackageDetails", "Package")?PackageId=' + PackageId + '&TaskId=' + ParentTaskId + '&TaskName=' + ParentTaskName;*@
+                    },
+                    complete: function (e) {
+                       // debugger
+                    /*e.data("kendoGrid").dataSource.read();*/
+                        $("#accordion").data("kendoGrid").dataSource.read();
+                        $("#accordion").data('kendoGrid').refresh();
+                                }
+                });
+    }
+    function onGridEditing(arg) {
+        arg.container.find("input[name='item_remarks']").attr('maxlength', '100');
+    }
+     function BindPlan() {
+         var selectedPlanId = $("#PlanId").val();
+         var selectedPlantext = $("#PlanId").text();
+        $.get('@Url.Action("PlanDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                /*items.push("<option value=" + 0 + ">" + "ALL" + "</option>");*/
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].plan_id + ">" + list.data[i].plan_name + "</option>");
+                }
+              //  items.push("<option selected value=" + selectedPlanId + ">" + selectedPlantext + "</option>");
+                $("#PlanId").html(items.join(' '));
+                $('#PlanId').select2();
+                $('#PlanId').val(selectedPlanId).trigger('change');
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#PlanId").html(items.join(' '));
+                $('#PlanId').select2();
+            }
+        });
+
+    }
+
+       function BindFloor() {
+           var selectedFloor = $("#FloorId").val();
+           var selectedFloortext = $("#FloorId").text();
+        $.get('@Url.Action("FloorDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                /*items.push("<option value=" + 0 + ">" + "ALL" + "</option>");*/
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].floor_id + ">" + list.data[i].floor_name + "</option>");
+                }
+               // items.push("<option selected value=" + selectedFloor + ">" + selectedFloortext+ "</option>");
+                $("#FloorId").html(items.join(' '));
+                $('#FloorId').select2();
+                $('#FloorId').val(selectedFloor).trigger('change');
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#FloorId").html(items.join(' '));
+                $('#FloorId').select2();
+            }
+        });
+
+    }
+
+    function BindPackageType() {
+       // debugger;
+        var selectedpackageType = $("#PackageTypeId").val();
+        var selectedpackageTypetext = $("#PackageTypeId").text();
+        $.get('@Url.Action("PackageDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                /*items.push("<option value=" + 0 + ">" + "ALL" + "</option>");*/
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].package_type_id + ">" + list.data[i].package_name + "</option>");
+                }
+               // items.push("<option selected value=" + selectedpackageType + ">" + selectedpackageTypetext+"</option>");
+                $("#PackageTypeId").html(items.join(' '));
+                $('#PackageTypeId').select2();
+                $('#PackageTypeId').val(selectedpackageType).trigger('change');
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#PackageTypeId").html(items.join(' '));
+                $('#PackageTypeId').select2();
+            }
+        });
+
+    }
+
+    function CategoryDropDownEditor(container, options) {
+                    $('<input  required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter:"contains",
+                            autoBind: false,
+                            optionLabel: "Select Category",
+                            dataTextField: "category_name",
+                            dataValueField: "category_Id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("CategoryDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "category_name", dir: "asc" },
+                            },
+                            noDataTemplate: $("#CategoryTemplate").html()
+                        });
+           }
+
+    function ItemDropDownEditor(container, options) {
+        // debugger
+
+        var ParentTaskId = $('#ParentTaskId').val();
+        var task_id = options.model.Task_Id;
+        var id;
+        if (ParentTaskId == "" && task_id != 0) {
+            id = task_id;
+        }
+        else {
+            id = ParentTaskId;
+        }
+       // var task_id = "00000000-0000-0000-0000-000000000000";
+        $('<input maxlength="250" required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        // .kendoDropDownList({
+                         .kendoComboBox({
+                            filter: "contains",
+                            autoBind: false,
+                            optionLabel: "Select Item Description",
+                            dataTextField: "item_description",
+                            dataValueField: "item_id",
+                            select: onSelectItem,
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("ItemDropDownList", "Master")?TaskId=' + id,
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "item_description", dir: "asc" },
+                            }
+                        });
+    }
+
+    function onSelectItem(e) {
+        debugger
+        //Added for disabling price and Qty when it is lumpsum in UOm Default
+        var detailGridWrapper = this.wrapper;
+        var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+        var price = parentTR.find("td[data-container-for='Price'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+        var qty = parentTR.find("td[data-container-for='Qty'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+        var uomDesc = parentTR.find("td[data-container-for='UOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+        var Amount = parentTR.find("td[data-container-for='Amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+        var BillingUOM = parentTR.find("td[data-container-for='BillingUOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+        //uomDesc.enable(true);
+        //Amount.enable(true);
+        //BillingUOM.select(0);
+        if (e.dataItem === undefined) {
+            /*options.data.models[0].Item = { item_id: 0, item_description: options.data.models[0].Item }*/
+        }
+        else {
+        var ItemId = e.dataItem.item_id;
+            GetItemDetails(e, ItemId, price, qty);
+        }
+    };
+
+    function UOMDropDownEditor(container, options) {
+                    $('<input name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter:"contains",
+                            autoBind: false,
+                            optionLabel: "Select UOM",
+                            dataTextField: "uom_description",
+                            dataValueField: "uom_id",
+							select: onSelectUOM,
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("UOMDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "uom_description", dir: "asc" },
+                            },
+                           // noDataTemplate: $("#UOMTemplate").html()
+                        });
+    }
+
+	function onSelectUOM(e) {
+		//debugger
+		var detailGridWrapper = this.wrapper;
+		var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+		var value = e.dataItem.uom_description;
+
+		var price = parentTR.find("td[data-container-for='Price'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		var qty = parentTR.find("td[data-container-for='Qty'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		//var uomDesc = parentTR.find("td[data-container-for='UOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+		var amount = parentTR.find("td[data-container-for='Amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+
+		if (value == "Lumpsum") {
+			price.enable(false);
+			qty.enable(false);
+			//uomDesc.enable(false);
+			amount.enable(true);
+
+			//to get total row values in a grid
+			var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+			var row = e.sender.element.closest("tr");
+			var dataItem = grid.dataItem(row);
+			//debugger
+			//console.log(dataItem);
+			dataItem.set('Price', 0);
+            dataItem.set('Qty', 0);
+            dataItem.set('Amount', 0);
+
+        } else {
+            //var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+            //var row = e.sender.element.closest("tr");
+            //var dataItem = grid.dataItem(row);
+
+            //var ItemId = dataItem.Item.item_id;
+            //GetItemDetails(e, ItemId);
+			price.enable(true);
+			qty.enable(true);
+			//uomDesc.enable(true);
+			amount.enable(true);
+		}
+
+	};
+
+    function BillingUOMDropDownEditor(container, options) {
+        var LookUpColumnId = 1;
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+               // optionLabel: "Select BillingUOM",
+                dataTextField: "description",
+                dataValueField: "status_lookup_id",
+               // select: onselect,
+				//change: onSelectUOM,
+				select: onSelectBillingUOM,
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("Bind_StatusLookUp", "Master")?LookUpColumnId='+LookUpColumnId,
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    },
+                    sort: { field: "description", dir: "asc" },
+                }
+            });
+    }
+
+
+	function onSelectBillingUOM(e) {
+       // debugger
+		var detailGridWrapper = this.wrapper;
+		var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+        var value = e.dataItem.description;
+
+		var price = parentTR.find("td[data-container-for='Price'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		var qty = parentTR.find("td[data-container-for='Qty'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		var uomDesc = parentTR.find("td[data-container-for='UOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+		var amount = parentTR.find("td[data-container-for='Amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+
+		if (value == "FOC" || value == "Inclusive" || value == "Complementary") {
+			price.enable(false);
+			qty.enable(false);
+            uomDesc.enable(false);
+			amount.readonly();
+
+            //to get total row values in a grid
+            var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+            var row = e.sender.element.closest("tr");
+            var dataItem = grid.dataItem(row);
+          //  debugger
+           // console.log(dataItem);
+            dataItem.set('Price', 0);
+            dataItem.set('Qty', 0);
+            dataItem.UOM.set('uom_description', '');
+            dataItem.UOM.set('uom_id', 0);
+			dataItem.set('Amount', 0);
+
+			//qty.value('');
+			//price.value('');
+            uomDesc.value('');
+
+
+			//parentTR.find("td[data-container-for='Amount'] .totalSpan").html('');
+        } else {
+            debugger
+            //to get total row values in a grid
+            var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+            var row = e.sender.element.closest("tr");
+            var dataItem = grid.dataItem(row);
+            // debugger
+            //console.log(dataItem);
+            //debugger
+            var ItemId = dataItem.Item.item_id;
+            GetItemDetails(e,ItemId);
+			price.enable(true);
+			qty.enable(true);
+            uomDesc.enable(true);
+			amount.enable(true);
+		}
+
+    };
+
+    function GetItemDetails(e, ItemId, price, qty) {
+        $.ajax({
+            url: '@Url.Action("GetItemByItemId", "Master")?ItemId=' + ItemId,
+            type: "POST",
+            dataType: "json",
+            //data: { JsonPackageDetails: JSON.stringify(options.data.models[0]) },
+            success: function (result) {
+                debugger
+                //to get total row values in a grid
+                var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+                var row = e.sender.element.closest("tr");
+                var dataItem = grid.dataItem(row);
+                dataItem.set('Price', result.data.Items[0].price);
+                dataItem.set('Qty', result.data.Items[0].default_qty);
+                dataItem.set('Amount', result.data.Items[0].price * result.data.Items[0].default_qty);
+                dataItem.set('UOM', result.data.Items[0].UOM);
+                if (result.data.Items[0].UOM.uom_description == "Lumpsum") {
+                    price.enable(false);
+                    qty.enable(false);
+                    dataItem.set('Price', 0);
+                    dataItem.set('Qty', 0);
+                } else {
+                    price.enable(true);
+                    qty.enable(true);
+                }
+
+                //var uomDesc = parentTR.find("td[data-container-for='UOM'] input[data-role='dropdownlist']").data("kendoDropDownList");
+                //uomDesc.value(result.data.Items[0].uom.uom_id);
+            },
+            error: function (result) {
+                //   debugger
+
+            }
+        });
+    }
+
+    function BindTermsGrid(){
+        $("#TermsGrid").kendoGrid({
+                    dataSource: {
+                   transport: {
+                            read: function (options) {
+                                $.ajax({
+                                   url: '@Url.Action("GetPackagepaymentterms", "Package")?PackageId=' + PackageId,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                     //   debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+//debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id === undefined && options.data.models[0].paymentdescription.Master_payment_description === undefined) {
+                                    options.data.models[0].paymentdescription = { Master_payment_term_id: "", Master_payment_description: options.data.models[0].paymentdescription }
+                                } else {
+
+                                }
+                                if (options.data.models[0].paymentdescription.Master_payment_description == '')          {
+                                    notify("Please Enter/Select Payment Terms", "error");
+                                    $('div.k-loading-mask').css('display', 'none');
+
+                                } else {
+
+                                $.ajax({
+                                   url: '@Url.Action("UpsertPackagePaymentTerms", "Package")?PackageId=' + PackageId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonPackage: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                      //  debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                    //    debugger
+                                        options.error(result);
+                                    }
+                                });
+                                }
+                            },
+                            update: function (options) {
+                                debugger
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id === undefined && options.data.models[0].paymentdescription.Master_payment_description === undefined) {
+                                    options.data.models[0].paymentdescription = { Master_payment_term_id: "", Master_payment_description: options.data.models[0].paymentdescription }
+                                }
+                                if (options.data.models[0].paymentdescription.Master_payment_term_id === 0) {
+                                    options.data.models[0].paymentdescription.Master_payment_term_id = "";
+                                }
+                                $.ajax({
+                                    url: '@Url.Action("UpsertPackagePaymentTerms", "Package")?PackageId=' + PackageId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonPackage: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                      //  debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        //kendo.alert(result.data.Errormessage);
+                                        //options.success(result);
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                      //  debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                                 destroy: function (options) {
+                               // debugger
+                                     var payment_term_id = options.data.models[0].payment_term_id;
+                                $.ajax({
+                                    url: '@Url.Action("DeletePackagePaymentTermsByID", "Package")?Payment_term_id=' + payment_term_id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                     //   debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                       // debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            @*read: {
+                               url: '@Url.Action("GetPackagepaymentterms", "Package")?PackageId=' + PackageId,
+                                        type: "GET",
+                                        dataType: "json"
+                            },
+                            update: {
+                                url: '@Url.Action("UpsertPackagePaymentTerms", "Package")?PackageId=' + PackageId,
+                                        type: "POST",
+                                 dataType: "json",
+                                complete: function (e) {
+                                    $("#TermsGrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                 url: '@Url.Action("", "Package")',
+                                        type: "POST",
+                                dataType: "json"
+                            },
+                            create: {
+                                url: '@Url.Action("UpsertPackagePaymentTerms", "Package")?PackageId=' + PackageId,
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#TermsGrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 6,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "payment_term_id",
+                                fields: {
+                                    payment_term_id: { hidden: true },//editable: false, nullable: true
+                                    paymentdescription: { defaultValue: { Master_payment_term_id: 0, Master_payment_description: "" } },
+                                }
+                            }
+                        }
+               },
+               filterable: true,
+                scrollable: false,
+                sortable: true,
+                pageable: true,
+                navigatable: true,
+           /* toolbar: ["create"],*/
+               toolbar: [
+                   { name: "create", text: "Add new Payment Term" }
+               ],
+                autoSync: true,
+                resizable: true,
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} payment terms", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No payment terms to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "payment terms per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+            columns: [
+                {
+                    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                        { name: "destroy", text: " ", iconClass: "k-icon k-i-delete"  }], title: "Action", width: "100px"
+                },
+                       // { field: "payment_term_id", title: "Id", filterable: { multi: true, search: true }},
+                        { field: "payment_term_id", title: "" ,hidden: true },
+                        { field: "paymentdescription", title: "Payment Description", attributes: { style: "text-align:left;" }, filterable: false, editor: PaymentTermsDropDownEditor, template: "#=paymentdescription.Master_payment_description#" },
+
+                    ],
+                    editable: "inline"
+                });
+    }
+
+    function PaymentTermsDropDownEditor(container, options) {
+        $('<input maxlength="250" required name="' + options.field + '"/>')
+            .appendTo(container)
+           // .kendoDropDownList({
+            .kendoComboBox({
+                filter: "contains",
+                autoBind: false,
+                //optionLabel: "Select Payment Description",
+                dataTextField: "Master_payment_description",
+                dataValueField: "Master_payment_term_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("BindPackageMasterPaymentTerms", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    },
+                    sort: { field: "Master_payment_description", dir: "asc" },
+                },
+                //noDataTemplate: $("#PaymentTermTemplate").html()
+            });
+    }
+
+    function GetPackageTasksListItems(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter:"contains",
+                            autoBind: false,
+                            optionLabel: "Select Task",
+                            dataTextField: "Task_Name",
+                            dataValueField: "Task_Id",
+                            select: onSelect,
+                            /*change: onChange,*/
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("GetPackageTasksListItem", "Package")?PackageId=' + PackageId + '&TaskId=' + TaskId,
+                                            @*url: '@Url.Action("GetPackageTasksListItem", "Package")?    PackageId=' + PackageId + '&TaskId=' + TaskId,*@
+                                            type: "GET",
+                                            dataType: "json",
+                                           /* contentType: "application/json; charset=utf-8"*/
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "Task_Name", dir: "asc" },
+                            },
+                            noDataTemplate: $("#TaskTemplate").html()
+                        });
+    }
+
+    function onChange(e) {
+      // debugger
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        $("#ParentTaskId").val(item.Task_Id)
+
+    };
+
+    function onSelect(e) {
+       debugger
+        /*if ("kendoConsole" in window) {*/
+            if (e.dataItem) {
+               // ParentTaskId = e.dataItem.Task_Id;
+                $("#ParentTaskId").val(e.dataItem.Task_Id);
+                //validation.reset();
+                $("#packagechildGrid").data("kendoGrid").cancelRow("tr:eq(1)");
+            }
+        /*}*/
+    };
+
+   // $('#expand').click(function (e) {
+    function expand(e) {
+        var grid = $("#accordion").data("kendoGrid");
+        $(".k-master-row").each(function (index) {
+            grid.expandRow(this);
+        });
+    }
+   // })
+
+   // $('#collapse').click(function (e) {
+
+        function collapse(e) {
+            var grid = $("#accordion").data("kendoGrid");
+            $(".k-master-row").each(function (index) {
+                grid.collapseRow(this);
+            });
+        }
+   // })
+
+    @*function GetPaymentTerms() {
+
+        $.get('@Url.Action("GetPackagepaymentterms", "Package")',{ PackageId :PackageId}, function (list) {
+            if (list != null) {
+                debugger;
+                    var items = [];
+                items.push("<ul class=\"list-unstyled\">");
+                    var i;
+                    for (i = 0; i < list.data.length; i++) {
+                        items.push("<li>" + list.data[i].payment_description + "</li>");
+                    }
+                    items.push("</ul>");
+                $("#NotesDiv").html(items.join(' '));
+                }
+                else {
+                    var items = [];
+                $("#NotesDiv").html(items.join(' '));
+                }
+            });
+    }*@
+</script>
+<script type="text/javascript">
+    //$(function () {
+    //    $("#ddlModels").change(function () {
+    //        if ($(this).val() == 1) {
+    //            $("#txtOther").removeAttr("disabled");
+    //            $("#txtOther").focus();
+    //        } else {
+    //            $("#txtOther").attr("disabled", "disabled");
+    //        }
+    //    });
+    //});
+    //function onSelect(e) {
+    //    if ($((e.dataItem.status_lookup_id).val() == 1) {
+    //        $("#Price").removeAttr("disabled");
+    //        $("#Price").focus();
+    //    } else {
+    //        $("#Price").attr("disabled", "disabled");
+    //    }
+    //}
+
+</script>
+<script id="CategoryTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewCategory('#: instance.filterInput.val() #' )">Add new Category</button>
+</script>
+<script id="UOMTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewUOM('#: instance.filterInput.val() #' )">Add new UOM</button>
+</script>
+<script id="TaskTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewTask('#: instance.filterInput.val() #' )">Add new Task</button>
+</script>
+<script id="PaymentTermTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    <button class="k-button" onclick="addNewPaymentTerm('#: instance.filterInput.val() #' )">Add new Payment Term</button>
+</script>
+<script>
+
+    function addNewTask(name) {
+        var List = new Array();
+        debugger;
+        var Values = {
+            task_id: "00000000-0000-0000-0000-000000000000",
+           // task_cd: "",
+            task_name:name,
+            task_description:name,
+            isactive:1
+        };
+        List.push(Values);
+        var JsonValues = JSON.stringify(List);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewTask", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+    function addNewUOM(name) {
+        var List = new Array();
+        //debugger;
+        var Values = {
+            uom_id: 0,
+           // uom_cd: "",
+            uom_description:name,
+            isactive:1
+        };
+        List.push(Values);
+        var JsonValues = JSON.stringify(List);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewUOM", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+    function addNewCategory(name) {
+        var List = new Array();
+        //debugger;
+        var Values = {
+            category_Id: 0,
+          //  category_cd: 7,
+            category_description:name,
+            category_name: name,
+            isactive:1
+        };
+        List.push(Values);
+        var JsonValues = JSON.stringify(List);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewCategory", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+    function addNewPaymentTerm(name) {
+       // var List = new Array();
+      //  debugger;
+        if (name == "" || name == null) {
+            notify("Please enter Payment Description", "error");
+            return false;
+        }
+        var Values = {
+            master_payment_termid: 0,
+            description:name,
+        };
+      //  List.push(Values);
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("CreateNewMasterPaymentTerms", "Master")',
+             data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }
+
+    function PrintPreview() {
+        debugger;
+
+
+        wnd.center().open();
+        $("#yes").click(function () {
+            debugger
+         @*//   location.href = '@Url.Action("PrintPreview", "Package")?Id=' + PackageId + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + true;*@
+            window.open('@Url.Action("PrintPreview", "Package")?Id=' + PackageId + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + true, "socialPopupWindow",
+					"location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+            wnd.close();
+        });
+        $("#no").click(function () {
+            debugger
+          @*//  location.href = '@Url.Action("PrintPreview", "Package")?Id=' + PackageId + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + false;*@
+            window.open('@Url.Action("PrintPreview", "Package")?Id=' + PackageId + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + false, "socialPopupWindow",
+					"location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+            wnd.close();
+        });
+    }
+    //Tooltips For Kendogrid Action Btn
+
+    $("#accordion").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Item";
+        }
+    });
+    $("#accordion").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Item Details";
+        }
+    });
+    $("#accordion").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Item";
+        }
+    });
+    $("#accordion").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Item";
+        }
+    });
+
+
+    //Tooltips For Kendogrid Action Btn payment terms
+
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Terms";
+        }
+    });
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Terms";
+        }
+    });
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Terms";
+        }
+    });
+    $("#TermsGrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Terms";
+        }
+    });
+
+
+
+
+</script>

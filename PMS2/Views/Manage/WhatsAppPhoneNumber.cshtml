@@ -1,0 +1,182 @@
+﻿@{
+    Layout = null;
+}
+<!-- Modal content-->
+<div class="modal-content" id="modalcontent">
+    <div class="modal-header">
+        <h4 class="modal-title">Confirm Phone Number</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="frmCustomer" name="frmCustomer">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <div class="row justify-content-center">
+                            <div class="col-md-4">
+                                <label class="control-label float-right" for="customFile" style="text-align:right;font-size: 14px">Mobile Number: </label>
+                            </div>
+                            <div class="col-md-8">
+                                <input type="text" class="form-control col-md-4 float-left" id="txtPhoneNumber" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="OnClickSendWhatsappSMS();">Send WhatsApp SMS</button>
+        <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+    </div>
+</div>
+
+
+
+<script>
+    $(document).ready(function () {
+        GetPhoneNumber();
+    });
+
+    function GetPhoneNumber(){
+       $.ajax({
+           url: '/Manage/GetPhoneNumber',
+                    type: "GET",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    success: function (result) {
+                        debugger
+                        
+                        if (result.data != null && result.data != undefined && result.data != "") {
+                            $('#txtPhoneNumber').val(result.data);
+                            $('#txtPhoneNumber').attr("disabled", true)
+                        }
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+    }
+
+    function OnClickSendWhatsappSMS() {
+        debugger;
+        $.loader({ content: "<table><tr><td><h5>Sending Whatsapp SMS</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+        //var phoneNumber = $('#txtPhoneNumber').val();
+        //var mobileVal = /([0-9]{10})|(\([0-9]{3}\)\s+[0-9]{3}\-[0-9]{4});
+        //if (!mobileVal.test(phoneNumber)) {
+        //    return alert("The phone number is not a valid.")
+        //}
+        $.ajax({
+            type: "POST",
+            url: "/Quotation/SendWhatsappSMS", // the URL of the controller action method
+            data: { "JsonValues": null },
+            dataType: 'Json',
+            success: function (data) {
+                debugger;
+                $.loader('close');
+                var Errormessage = data.data.Errormessage;
+                if (Errormessage == "The whatsapp sms has been sent.") {
+                    notify(Errormessage, "success");
+                }
+                else
+                    notify(Errormessage, "error");
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.loader('close');
+                notify("Fail", "error");
+                notify(jqXHR, "error");
+            }
+        });
+    }
+
+    function GetExcelFileData() {
+        debugger;
+        if ($("#uplExcelFile").val() != null && $("#uplExcelFile").val() != '') {
+            var fileUpload = $("#uplExcelFile").get(0);
+            var files = fileUpload.files;
+            var fileData = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                fileData.append(files[i].name, files[i]);
+            }
+            fileData.append('username', 'admin');
+            if (validate_fileupload(files[0].name)) {
+                $.ajax({
+                    url: '/Quotation/UploadFiles',
+                    type: "POST",
+                    contentType: false, // Not to set any content header
+                    processData: false, // Not to process data
+                    data: fileData,
+                    success: function (result) {
+                        debugger
+                        if (result != null) {
+                            if (validate_fileupload(result)) {
+                                $.ajax({
+                                    type: 'POST',
+                                    url: '@Url.Action("AddQuotationFromExcel", "Quotation")',
+                                    data: { "filePath": result },
+                                    dataType: 'Json',
+                                    success: function (data) {
+                                        debugger;
+                                        var Result = data.data.Result;
+                                        var Errormessage = data.data.Errormessage;
+                                        if (Result == "1") {
+                                            var IsClose = window.location.pathname.indexOf("QuotationDetail");
+                                            if (IsClose >= 0) {
+                                                var base_url = window.location.origin;
+                                                if (!alert(Errormessage)) {
+                                                    window.location.href = base_url + "/Quotation/Quotation";
+                                                }
+                                            }
+                                            else {
+                                                notify(Errormessage, 'success');
+                                            }
+                                        }
+                                        else {
+                                            notify(Errormessage, 'error');
+                                        }
+                                        $("#uplExcelFile").val('');
+                                    },
+                                    error: function (jqXHR, textStatus, errorThrown) {
+                                        notify("Fail", "error");
+                                        notify(jqXHR, "error");
+                                    }
+                                });
+                            }
+                            else {
+                                notify('Please upload excel file only.', 'error');
+                            }
+                        }
+                        else {
+                            notify('Please select excel file.', 'error');
+                        }
+                    },
+                    error: function (err) {
+                        alert(err.statusText);
+                    }
+                });
+            }
+            else {
+                notify('Please upload excel file only(ex: abc.xlsx).', 'error');
+            }
+        }
+        else {
+            notify('Please upload excel file.', 'error');
+        }
+
+    }
+
+    function validate_fileupload(fileName) {
+        var allowed_extensions = new Array("xlsx");
+        var file_extension = fileName.split('.').pop().toLowerCase();
+
+        for (var i = 0; i <= allowed_extensions.length; i++) {
+            if (allowed_extensions[i] == file_extension) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+</script>

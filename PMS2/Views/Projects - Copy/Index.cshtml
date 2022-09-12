@@ -1,0 +1,83 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.ProjectViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="col-md-6">
+            <h3 class="animated fadeInLeft text-primary">Projects</h3>
+        </div>
+        <div class="col-md-6" style="margin-top:10px;">
+            <button type="button" onclick="openModelpop('/Projects/_LoadProject','id',0);" class='btn btn-primary pull-right'>
+                <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add</span>
+            </button>
+        </div>
+    </div>
+</div>
+<div class="col-md-12 padding-0">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="responsive-table"><input type="hidden" id="branch_id" name="branch_id" value="@PMS.Common.SessionManagement.SelectedBranchID" />
+                    @Html.MVCGrid("MyProjects", new { hdnUID = Model.UID, brId= PMS.Common.SessionManagement.SelectedBranchID })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SaveForm() {        
+        var form = $('#frmProject');
+        $.validator.unobtrusive.parse(form);       
+        if (form.valid()) {
+
+            $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                type: "POST",
+                url: "/Projects/SaveProject", // the URL of the controller action method
+                data: {
+                    id: $("#id").val(),
+                    contract_date: $("#contract_date").val(),
+                    project_number: $("#project_number").val(),
+                    project_name: $("#project_name").val(),
+                    project_start_date: $("#project_start_date").val(),
+                    project_end_date: $("#project_end_date").val(),
+                    salesmen_id: $("#salesmen_id").val(),
+                    branch_id: $("#branch_id").val(),
+                    customer_id: $("#customer_id").val(),
+                    contract_amount: $("#contract_amount").val(),
+                    gst_amount: $("#gst_amount").val(),
+                    total_amount: $("#total_amount").val(),
+                    bank_id: $("#bank_id").val(),
+                    status_id: $("#status_id").val(),
+                    remarks: $("#remarks").val(),
+                    isactive: $("#isactive").val()
+                }, // optional data
+                success: function (result) {
+                    $.loader('close');
+                    if (result.cls == "error") {
+                        notify(result.msg, result.cls);
+                    } else {
+                        $("#btnClose").click();
+                        loadGrid();
+                        notify(result.msg, result.cls);
+                    }
+                },
+                error: function (req, status, error) {
+                    $.loader('close');
+                    notify(error, "error");
+                }
+            });
+        }
+    }
+
+    function loadGrid() {
+        MVCGrid.reloadGrid('MyProjects');
+    }
+
+</script>

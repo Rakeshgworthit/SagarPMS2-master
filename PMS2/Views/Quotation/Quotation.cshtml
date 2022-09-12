@@ -1,0 +1,1092 @@
+﻿@model PMS.Models.Quotation
+@{
+    ViewBag.Title = "Quotation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+</style>
+<div class="modal" tabindex="-1" id="ModelForCopyProjectdetailID" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Clone Quotation Details</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="ClearProject()">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row ">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <label for="salesman" class="col-form-label control-label text-primary col-md-3 text-md-right">Salesmen :</label>
+                            <div class="col-md-9 clone_select2_dropdown">
+
+                                <select name="SalesmenId_new" id="SalesmenId_new" class="form-control select2 " required="required" onchange="FetchSalesmenDetails();">
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="  row">
+
+                            <label for="commission" class="col-form-label control-label text-primary text-md-right col-md-5">Commission :</label>
+                            <div class="input-group col-md-7">
+                                <input type="text" class="form-control" id="Commission" name="Commission" readonly>
+                                <div class="input-group-append">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-7">
+                        <div class=" row">
+
+                            <label for="Customer" class="col-form-label control-label  text-primary col-md-3 text-md-right">Customer :</label>
+                            <div class="input-group col-md-7 col-8 clone_select2_dropdown">
+                                <select name="Customer_Id" id="Customer_Id" class="form-control select2 w-100" required="required" onchange="FetchCustomerDetails();">
+                                    <option value="">-- Select --</option>
+                                </select>
+
+
+                            </div>
+                            @*<div class="input-group-append col-md-2 col-4">
+                                    <button type="button" onclick="ADDCustomer()" class="btn btn-primary  mr-2">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" onclick="UpdateCustomer()" class="btn btn-primary ">
+                                        <i class="fa fa-edit" aria-hidden="true"></i>
+                                    </button>
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class=" row">
+                            <label for="date" class="col-form-label control-label text-md-right text-primary col-md-5">Status :</label>
+                            <div class="col-md-7">
+                                <select name="StatusId_new" id="StatusId_new" class="form-control select2" required="required" disabled>
+                                    <option value="">-- Select --</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <label for="Email" class="col-form-label control-label text-primary text-md-right col-md-3">Email :</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control " placeholder="Email" id="CustomerEmail" name="CustomerEmail" maxlength="50" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class=" row ">
+                            <label for="date" class="col-form-label control-label text-primary text-md-right col-md-5">Quotation Date :</label>
+                            <div class="input-group col-md-7">
+                                <input type="text" id="date_range_new" class="form-control date_form_control" value="" placeholder="Select Date" maxlength="10" readonly />
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-7">
+                        <div class="row">
+                            <label for="Enquiry" class="col-form-label control-label text-primary text-md-right col-md-3">Source Enquiry:</label>
+                            <div class="col-md-4">
+                                <input type="text" class="form-control" id="SourceEnquiry" name="SourceEnquiry" maxlength="50" disabled>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class=" row ">
+                            <label for="Quotation" class="col-form-label control-label text-md-right text-primary col-md-5">Quotation Type :</label>
+                            <div class="col-md-7">
+                                <input type="text" maxlength="50" class="form-control " placeholder="Quotation" id="QuotationType" name="QuotationType">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mt-2">
+                    <div class="col-md-7">
+                        <div class=" row">
+
+                            <label for=" " class="col-form-label control-label text-md-right  text-primary col-md-3">Address/Site :</label>
+                            <div class="col-md-9">
+                                <textarea class="form-control" id="Address" name="Address" maxlength="100" disabled></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="row">
+                            <label for="Remarks" class="col-form-label control-label text-md-right text-primary col-md-5">Remarks :</label>
+                            <div class="col-md-7">
+                                <textarea class="form-control" id="Remarks" name="Remarks" maxlength="100"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" id="save_header" onclick="CreateProjectWithDetails()">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal" onclick="ClearProject()">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="ExistingProjectId" class="form-control col-8" />
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-6">
+                <h4 class="animated fadeInLeft text-primary">Quotation List</h4>
+            </div>
+            <div class="col-md-6 col-6 ">
+                <button type="button" onclick="AddQuotation();" class='btn btn-primary pull-right mb-2 ml-2'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add New Quotation</span>
+                </button>
+                <button type="button" onclick="openModelpop('/Quotation/_FileUpload','id',0);" class='btn btn-primary pull-right mb-2'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Import From Excel</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="row" >
+          
+            <div class="col-md-4">
+                <label class="control-label" for="date_rangelbl">Date Range</label>
+                <div class="input-group">
+                    <input type="text" id="date_range" name="date_range" class="form-control date_form_control" maxlength="21" readonly />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>
+            @*<div class="col-md-2 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label" for="Statuslbl">Status</label>
+                    <div>
+                        <select name="StatusId" id="StatusId" class="form-control select2" required="required">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label" for="Salesmenlbl">Salesmen</label>
+                    <div>
+                        <select name="SalesmenId" id="SalesmenId" class="form-control select2" required="required">
+                            <option value="">-- Select --</option>
+                        </select>
+                    </div>
+                </div>
+            </div>*@
+            @*<div class="col-md-2 col-sm-6 col-10">
+                <div class="form-group">
+                    <label class="control-label" for="SearchStringlbl">Search</label>
+                    <input id="SearchString" name="SearchString" class="form-control" placeholder="Search Here" maxlength="50" onchange="SearchQuotation();" />
+                </div>
+            </div>*@
+            <div class="col-md-1 col-sm-2 col-2">
+                <div class="form-group">
+                    <button type="button" class="btn btn-primary btn-sm mt-srh-btn" onclick="SearchQuotation();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                </div>
+            </div>
+        </div>
+        
+    </div>
+</div>
+
+
+<div class="col-md-12 padding-0">
+    <div class="col-md-12">
+
+        <div class="responsive-table">
+
+            <div id="Quotationgrid"></div>
+        </div>
+    </div>
+</div>
+
+<div id="modalWindow">
+    @*<h2>Are you sure to Delete?</h2>*@
+    <h6> You want to print Unit Price column?</h6>
+    @*<span class="k-label">Reason For Deletion</span> <input id="txtReasonForChange" class="k-textbox" />*@
+    <button id="yes" class="btn btn-primary pull-right ml-2 mb-2">Yes</button>
+    <button id="no" class="btn btn-primary pull-right ml-2 mb-2">No</button>
+    @*<span id="validationRFC" class="k-label alert-danger"></span>*@
+</div>
+
+<script>
+    function singleDatePicker() {
+        $('#date_range_new + .input-group-append').click(function () {
+            $('#date_range_new').trigger("focus");
+        });
+
+        $('#date_range_new').daterangepicker({
+            "singleDatePicker": true,
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range_new').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+
+        $('#date_range_new').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+    }
+    $(document).ready(function () {
+       // BindProjectStatus();
+       // BindSalesMan();
+        singleDatePicker();
+        BindCustomer();
+        $('#date_range').daterangepicker({
+                "autoUpdateInput": true,
+            "autoApply": true,
+            "showDropdowns": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+            ranges: {
+                    'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 6 Months': [moment().subtract(6, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+                'Last 1 Year': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+            },
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+            });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+            });
+
+            //Nithin Start Added Defaultly 1 month from present date in DateRangePicker
+            var present_date = new Date();
+
+            var previous_date = present_date.setMonth(present_date.getMonth() - 1);
+        $('#date_range').data('daterangepicker').setStartDate(present_date);
+        $('#date_range').data('daterangepicker').setEndDate(previous_date);
+            //Nithin End Added Defaultly 1 month from present date in DateRangePicker
+
+
+        BindProjectStatus();
+        BindSalesMan();
+        /*jQuery(document).ready(function () {*/
+        //});
+        //Nithin datepicker
+        $('#date_range + .input-group-append').click(function () {
+            $('#date_range').trigger("focus");
+            });
+
+            wnd = $("#modalWindow").kendoWindow({
+            title: "Price Confirmation",
+            modal: true,
+            visible: false,
+            resizable: false,
+            width: 300
+            }).data("kendoWindow");
+
+            // debugger
+
+            // var from_date = $('#date_range').data('daterangepicker').startDate;
+            // var to_date = $('#date_range').data('daterangepicker').endDate;
+            //var last_week_date = $('#date_range').data('daterangepicker').endDate;
+
+            //var todayDate = new Date();
+            //var StartDate = add(-1);
+            //$('#date_range').data('daterangepicker').setStartDate('03/01/2014');
+            //$('#date_range').data('daterangepicker').setEndDate('03/31/2014');
+            //$(function () {
+            //    $("#date_range").data('daterangepicker')({
+            //        defaultDate: "+1m"
+            //    });
+            //});
+
+    });
+    function BindSalesMan() {
+
+        $.get('@Url.Action("BindSalesmen", "Master")', function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].id + ">" + list.data[i].salesmen_name + "</option>");
+                }
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+
+                $("#SalesmenId_new").html(items.join(' '));
+                $('#SalesmenId_new').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+
+                $("#SalesmenId_new").html(items.join(' '));
+                $('#SalesmenId_new').select2();
+            }
+            debugger
+            var role = '@Model.role';
+            if (role == "Salesman") {
+                $("#SalesmenId").val('@Model.id').trigger('change');
+                $('#SalesmenId').prop('disabled', true);
+
+                $("#SalesmenId_new").val('@Model.id').trigger('change');//for popup
+                $('#SalesmenId_new').prop('disabled', true);
+            }
+            else {
+                $('#SalesmenId').prop('disabled', false);
+
+                $('#SalesmenId_new').prop('disabled', false);
+            }
+            BindGrid();
+        });
+
+    }
+
+    function BindProjectStatus() {
+        var Type = 1;
+        $.get('@Url.Action("BindProjectStatus", "Quotation")?Type='+Type, function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].projectStatusid + ">" + list.data[i].projectStatus + "</option>");
+                }
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+                var items1 = [];
+                items1.push("<option value=" + list.data[0].projectStatusid + ">" + list.data[0].projectStatus + "</option>");
+                $("#StatusId_new").html(items1.join(' '));
+                $('#StatusId_new').select2();
+
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+
+                $("#StatusId_new").html(items.join(' '));
+                $('#StatusId_new').select2();
+            }
+        });
+
+    }
+
+    function BindGrid() {
+        debugger
+        kendo.ui.Grid.fn.onAddClearFilter = function () {
+            debugger
+            var grid = this;
+            grid.wrapper.find(".k-grid-add").on("click", function (e) {
+                //console.log('onaddclearfilter');
+                //send to first page if it's not already
+                if (grid.pager) grid.pager.page(1);
+                //clear the filter
+                if (grid.dataSource) grid.dataSource.filter([]);
+            });
+        }
+        //var from_date = $('#date_range').data('daterangepicker').startDate;
+        //var to_date = $('#date_range').data('daterangepicker').endDate;
+        var Values = {
+            fromdate: $('#date_range').data('daterangepicker').startDate,
+            todate: $('#date_range').data('daterangepicker').endDate,
+            //fromdate: $('#from_date').val(),
+            //todate:  $('#to_date').val(),
+            projectStatus: $('#StatusId').val(),
+            salesMenId: $('#SalesmenId').val(),
+            searchText: $('#SearchString').val(),
+        };
+        var JsonValues = JSON.stringify(Values);
+
+        dataSource = new kendo.data.DataSource({
+            transport: {
+                read: function (options) {
+                    $.ajax({
+                        url: '@Url.Action("QuotationsList", "Quotation")?JsonValues=' + JsonValues,
+                        type: "GET",
+                        dataType: "json",
+                        success: function (result) {
+                            debugger
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            debugger
+                            options.error(result);
+                        }
+                    });
+                },
+                create: function (options) {
+                    debugger
+                    $.ajax({
+                        url: '@Url.Action("UpsertProjectQuotation", "Quotation")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { JsonQuotation: JSON.stringify(options.data.models[0]) },
+                        success: function (result) {
+                            debugger
+                            $("#Quotationgrid").data('kendoGrid').dataSource.read();
+                            $("#Quotationgrid").data('kendoGrid').refresh();
+                            if (result.data.Result > 0) {
+                                notify(result.data.Errormessage, "success");
+                            }
+                            else {
+                                notify(result.data.Errormessage, "error");
+                            }
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            debugger
+                            options.error(result);
+                        }
+                    });
+                },
+                update: function (options) {
+                    debugger
+                    $.ajax({
+                        url: '@Url.Action("UpsertProjectQuotation", "Quotation")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { JsonQuotation: JSON.stringify(options.data.models[0]) },
+                        success: function (result) {
+                            debugger
+                            $("#Quotationgrid").data('kendoGrid').dataSource.read();
+                            $("#Quotationgrid").data('kendoGrid').refresh();
+                            if (result.data.Result > 0) {
+                                notify(result.data.Errormessage, "success");
+                            }
+                            else {
+                                notify(result.data.Errormessage, "error");
+                            }
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            debugger
+                            options.error(result);
+                        }
+                    });
+                },
+                destroy: function (options) {
+                    debugger
+                    var ProjectId = options.data.models[0].project_id;
+                    $.ajax({
+                        url: '@Url.Action("DeleteProjectQuotation", "Quotation")?ProjectId=' + ProjectId,
+                        type: "POST",
+                        dataType: "json",
+                        data: {},
+                        success: function (result) {
+                            debugger
+                            $("#Quotationgrid").data('kendoGrid').dataSource.read();
+                            $("#Quotationgrid").data('kendoGrid').refresh();
+                            if (result.data.Result > 0) {
+                                notify(result.data.Errormessage, "success");
+                            }
+                            else {
+                                notify(result.data.Errormessage, "error");
+                            }
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            debugger
+                            options.error(result);
+                        }
+                    });
+                },
+                parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return { models: kendo.stringify(options.models) };
+                    }
+                }
+            },
+            batch: true,
+            pageSize: 15,
+            //serverPaging: true,
+            //serverSorting: true,
+            //serverFiltering: true,
+            //serverGrouping: true,
+            //serverAggregates: true ,
+            //serverPaging: true,
+            //pageable:{ refresh: true },
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "project_id",
+                                fields: {
+                                    id: { editable: false },
+                                    project_id: { editable: false },
+                                    project_number: { editable: false, nullable: true },
+                                    project_name: { validation: { required: true} },
+                                    contract_date: { validation: { required: true }, type: "date" },
+                                    Customer: { type: "object", defaultValue: { Customer_id: 0, name1: "-- Select --" }},
+                                    Salesmen: { type: "object", defaultValue: { id: 0, salesmen_name: "-- Select --" } },
+                                    contract_amount: { validation: { required: true }, type: "number" },
+                                    total_amount: { validation: { required: true }, type: "number" },
+                                    CreatedUpdated: { validation: { required: false }, editable: false },
+                                    Status: { type: "object", defaultValue: { status_lookup_id: 0, description: "-- Select --" } },
+                                }
+                            }
+                        }
+
+                    });
+
+        var Quotationgrid = $("#Quotationgrid").kendoGrid({
+                    dataSource: dataSource,
+                    navigatable: true,
+                    pageable: true,
+            toolbar: [{ name: "excel", text: "Export to Excel " }, /*{ name: "search" }, { template: '   <a type="button" class="k-button" style="float:right;" onclick="return  clearAllFilters()" >Clear All Filters</a>' }],*/
+            { name: "search" }, { template: '   <a type="button" class="k-button" style="float:right;" onclick="return  clearAllFilters()" >Clear All Filters</a>' }],
+            //toolbar: [
+            //    { name: "create", text: "add new quotation" }
+            //],
+            excel: {
+                fileName: "Quotation List.xlsx",
+               allPages: true,
+            },
+            filterable: true,
+
+            sortable: true,
+            autoSync: true,
+            reorderable:true,
+                    resizable: true,
+                    pageable: {
+                        pageSize: 15,
+                        buttonCount: 15,
+                        pageSizes: [5, 15, 30, 60, 100, 500],
+                        refresh: true,
+                        messages: {
+                            display: "{0} - {1} of {2} Quotations", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No Quotations to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "Quotations per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+            },
+            edit: onGridEditing,
+            columns: [
+               
+                        //{ field: "id", hidden: true },
+                        { field: "project_id", hidden: true },
+                { field: "project_number", width: "100px", title: "Quote No", filterable: { multi: true, search: true }, editable: false },
+                { field: "contract_date", width: "110px", title: "Quote Date", format: "{0:dd-MMM-yyyy}", filterable: { multi: true ,search: true, template: "betweenFilter" } },
+                { field: "Salesmen.salesmen_name", width: "110px", title: "Salesmen", attributes: { style: "text-align:left;" }, editor: BindSalesManDropDownEditor, template: "#=Salesmen.salesmen_name#", filterable: { multi: true, search: true } },
+                { field: "Customer.name1", width: "130px", title: "Customer", editor: BindCustomerDropDownEditor, template: "#=Customer.name1#", filterable: { multi: true, search: true } },
+
+                        { field: "project_name", width: "140px", title: "Address/Site", filterable: { multi: true, search: true }},
+
+
+                { field: "contract_amount", title: "Amount($)", width: "120px", format: "{0:c}", attributes: { style: "text-align:right;" }, filterable: { multi: true, search: true }, hidden: true },
+                { field: "total_amount", title: "Quote Amt($)", width: "120px", format: "{0:c}", attributes: { style: "text-align:right;" }, filterable: { multi: true, search: true } },
+                { field: "Status.description", width: "110px", title: "Quote Status", attributes: { style: "text-align:left;" }, editor: BillingUOMDropDownEditor, template: "#=Status.description#", filterable: { multi: true, search: true } },
+                {
+                    field: "CreatedUpdated", width: "160px", title: "Created/Updated", filterable: false, editable: false, encoded: false
+                },
+                {
+                    command: [
+                        /*{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },*/
+                        { name: "editdetails", text: " ", iconClass: "k-icon k-i-pencil", click: QuotationDetail }, { name: "copy", text: " ", iconClass: "k-icon k-i-copy", click: CopyProjectDetails }, { name: "Print", text: "", iconClass: "k-icon k-i-print", click: PrintPreview }, { name: "destroy", text: " ", iconClass: "k-icon k-i-delete" }], title: "Action", width: "96px"
+                },
+                       ],
+                    editable: "inline"
+        }).data("kendoGrid");
+        Quotationgrid.onAddClearFilter();
+    }
+    function onGridEditing(arg) {
+        arg.container.find("input[name='project_number']").attr('maxlength', '150');
+        arg.container.find("input[name='project_name']").attr('maxlength', '250');
+    }
+     function BillingUOMDropDownEditor(container, options) {
+        var LookUpColumnId = 1;
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                optionLabel: "Select BillingUOM",
+                dataTextField: "description",
+                dataValueField: "status_lookup_id",
+               // select: onselect,
+				//change: onSelectUOM,
+				//select: onSelectBillingUOM,
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("Bind_StatusLookUp", "Master")?LookUpColumnId='+LookUpColumnId,
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                }
+            });
+    }
+    function BindSalesManDropDownEditor(container, options) {
+    /* $('<input required name="' + options.field + '"/>')*/
+        $('<input data-bind="value:Salesmen"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                autoBind: false,
+                filter: "contains",
+                //optionLabel: "Select Salesman",
+                dataTextField: "salesmen_name",
+                dataValueField: "id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("BindSalesmen", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                },
+                noDataTemplate: $("#SalesmenTemplate").html()
+            });
+    }
+
+    function BindCustomerDropDownEditor(container, options) {
+    /*$('<input required name="' + options.field + '" id="ddlCustomer"/>')*/
+        $('<input data-bind="value:Customer"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                //optionLabel: "Select Customer",
+                dataTextField: "name1",
+                dataValueField: "Customer_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("BindCustomer", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                },
+                noDataTemplate: $("#CustomerTemplate").html()
+            });
+    }
+
+    function Search() {
+        var alphanumers = /^[\w\s]+$/;
+        if (!alphanumers.test($("#SearchStringmyprojects").val()) && $("#SearchStringmyprojects").val() != '') {
+            notify("Search can have only alphabets and numbers.", "error");
+            return false;
+        }
+    }
+
+
+
+    //function BindDate() {
+    //    $("#from_date").datepicker({
+    //        changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+    //        onSelect: function (date) {
+    //            var dt2 = $('#to_date');
+    //            var startDate = $(this).datepicker('getDate');
+    //            var minDate = $(this).datepicker('getDate');
+    //            dt2.datepicker('option', 'minDate', minDate);
+    //        }
+    //    });
+    //    $("#to_date").datepicker({
+    //        changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+    //        onSelect: function (date) {
+    //            var dt1 = $('#from_date');
+    //            var startDate = $(this).datepicker('getDate');
+    //            var maxDate = $(this).datepicker('getDate');
+    //            dt1.datepicker('option', 'maxDate', maxDate);
+    //        }
+    //    });
+
+    //    $('#from_date').removeAttr("data-val-date");
+    //    $('#to_date').removeAttr("data-val-date");
+
+    //}
+
+    function SearchQuotation() {
+            BindGrid();
+    }
+
+    function QuotationDetail(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);          // get the date of this row
+        console.log(item);
+        window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + item.project_id + '&ShowHide=' + true;
+    }
+
+    function AddQuotation() {
+        window.location = '@Url.Action("NewQuotation", "Quotation")';
+    }
+
+    function AddQuotationFromExcel() {
+        openModelpop('/Quotation/_LoadCustomer', 'id', 0);
+         @*$.ajax({
+                type: 'POST',
+                url: '@Url.Action("AddQuotationFromExcel", "Quotation")',
+                data: {  },
+                dataType: 'Json',
+                success: function (data) {
+                    //debugger;
+                    var Result = data.data.Result;
+                    var Errormessage = data.data.Errormessage;
+                    notify(data.dat)
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });*@
+    }
+
+    function PrintPreview(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        wnd.center().open();
+        $("#yes").click(function () {
+            debugger
+            window.open('@Url.Action("PrintPreview", "Quotation")?Id=' + item.project_id + "&TaskId=00000000-0000-0000-0000-000000000000&Price=" + true, "socialPopupWindow",
+               "location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+             // window.open('@Url.Action("PrintPreview", "Quotation")?Id=' + item.project_id + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + true)
+            //location.href = '@Url.Action("PrintPreview", "Quotation")?Id=' + item.project_id + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + true;
+              wnd.close();
+        });
+        $("#no").click(function () {
+            debugger
+           // location.href =
+           // window.open('@Url.Action("PrintPreview", "Quotation")?Id=' + item.project_id + "&TaskId=00000000-0000-0000-0000-000000000000&Qty=" + false);
+            window.open('@Url.Action("PrintPreview", "Quotation")?Id=' + item.project_id + "&TaskId=00000000-0000-0000-0000-000000000000&Price=" + false, "socialPopupWindow",
+               "location=no,width=1000,height=600,scrollbars=yes,top=100,left=100,resizable = no");
+            wnd.close();
+        });
+       // wnd.close();
+        //openModelpop('/Contract/PrintPreview', 'id', item.project_id);
+        @*'@Url.Action("PrintPreview", "Quotation")?Id=' + item.project_id + "&TaskId=00000000-0000-0000-0000-000000000000";*@
+    @*window.location.href = '@Url.Action("PrintPreview", "Quotation")?Id=' + item.project_id + "&TaskId=00000000-0000-0000-0000-000000000000";*@
+         @*$.ajax({
+                                     url: '@Url.Action("PrintPreview", "Quotation")',
+                                    type: "GET",
+                                    //dataType: "json",
+                                   // data: { JsonQuotation: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+
+                                    },
+                                    error: function (result) {
+                                        debugger
+
+                                    }
+                                });*@
+    }
+    //Nithin Added to clear all filterrs
+    function clearAllFilters() {
+        $("#Quotationgrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");
+    }
+    function CopyProjectDetails(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var ProjectId = item.project_id;
+        $('#ExistingProjectId').val(ProjectId);
+        $('#ModelForCopyProjectdetailID').modal('show');
+    }
+    function ClearProject() {
+        debugger
+        $("#SalesmenId_new").select2("val", "0");
+        $("#Customer_Id").select2("val", "0");
+        $('#Commission').val("0");
+        $('#QuotationType').val();
+        $('#Address').val('');
+        $('#Remarks').val('');
+        $('#save_header').prop('disabled', false);
+        $('#CustomerEmail').val('');
+        $('#SourceEnquiry').val('');
+    }
+    function CreateProjectWithDetails() {
+        debugger;
+        var project_name = $('#Address').val();
+        var SalesmenId = $('#SalesmenId_new').val();
+        if (SalesmenId == "" || SalesmenId == null || SalesmenId == "0") {
+            notify("Please select Salesmen", "error");
+            return false;
+        }
+        var Customer_Id = $('#Customer_Id').val();
+        if (Customer_Id == "" || Customer_Id == null || Customer_Id == "0") {
+            notify("Please select Customer", "error");
+            return false;
+        }
+        var saleman_commission = $('#Commission').val() === "" ? 0 : $('#Commission').val();
+        var contract_date = $('#date_range_new').data('daterangepicker').startDate;
+        var ExistingProjectId = $('#ExistingProjectId').val();
+
+        var Values = {
+            project_name: project_name,
+            name1: Customer_Id,
+            salesmen_name: SalesmenId,
+            Customer_id: Customer_Id,
+            salesmen_id: SalesmenId,
+            saleman_commission: saleman_commission,
+            contract_date: contract_date,
+           // total_amount: TotalAmount,
+            status_id: $('#StatusId_new').val(),
+            Email: $('#Email').val(),
+            reason: $('#QuotationType').val(),
+            Address: $('#Address').val(),
+            Remarks: $('#Remarks').val(),
+           // bank_id: $('#Bank_id').val(),
+            ExistingProjectId: ExistingProjectId
+        };
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpsertProjectQuotation_Clone", "Quotation")',
+             data: { "JsonQuotation": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                //debugger;
+                    var Result = data.data.Result;
+                    var ProjectId = data.data.Id;
+                    var Errormessage = data.data.Errormessage;
+                    if (Result > 0) {
+                        $('#save_header').prop('disabled', true);
+                        ClearProject();
+                        $('#ModelForCopyProjectdetailID').modal('hide');
+                        window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + ProjectId + '&ShowHide=' + true;
+                        notify(Errormessage, "success");
+                    }
+                    else {
+                        notify(Errormessage, "error");
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });
+    }
+    function FetchSalesmenDetails() {
+        //debugger;
+
+        var SalesmenId = $('#SalesmenId_new').val();
+        $.get('@Url.Action("GetSalesmenDetailsById", "Quotation")?Salesmen_Id=' + SalesmenId, function (list) {
+            //debugger;
+
+          if (list != null) {
+              var Commission = list.data[0].saleman_commission;
+                $('#Commission').val(Commission);
+            }
+            else {
+                $('#Commission').val('');
+            }
+        });
+    }
+    function FetchCustomerDetails() {
+        //debugger;
+        var Customer_Id = $('#Customer_Id').val();
+        $.get('@Url.Action("GetCustomerDetailsById", "Quotation")?customer_id=' + Customer_Id, function (list) {
+            //debugger
+            if (list != null) {
+                var Email = list.data[0].email;
+                var Address = list.data[0].address;
+                var Source_Name = list.data[0].Source_Name;
+                $('#CustomerEmail').val(Email);
+                $('#Address').val(Address);
+                $('#SourceEnquiry').val(Source_Name);
+
+            }
+            else {
+                $('#CustomerEmail').val('');
+                $('#Address').val('');
+                $('#SourceEnquiry').val('');
+            }
+        });
+    }
+    function BindCustomer() {
+
+        $.get('@Url.Action("BindCustomer", "Master")', function (list) {
+            /*//debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "--Select Customer--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].Customer_id + ">" + list.data[i].name1 + "</option>");
+                }
+                $("#Customer_Id").html(items.join(' '));
+                $('#Customer_Id').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#Customer_Id").html(items.join(' '));
+                $('#Customer_Id').select2();
+            }
+        });
+
+    }
+    function UpdateCustomer() {
+        var Customer_Id = $('#Customer_Id').val();
+        if (Customer_Id == 0) {
+            notify("Please select customer.", "error");
+        }
+        else {
+            openModelpop('/Customer/_LoadCustomer', 'id', Customer_Id);
+            BindCustomer();
+        }
+    }
+    function ADDCustomer() {
+        //debugger;
+        openModelpop('/Customer/_LoadCustomer', 'id', 0);
+        BindCustomer();
+    }
+
+
+    //Tooltips For Kendogrid Action Btn
+
+    $("#Quotationgrid").kendoTooltip({
+        filter: ".k-grid-copy",
+        autoHide: true,
+        position: "top",
+        content: function (e) {
+            return "Quotation Clone";
+        }
+    });
+    $("#Quotationgrid").kendoTooltip({
+        filter: ".k-grid-editdetails",
+        autoHide: true,
+        position: "top",
+        content: function (e) {
+            return "Edit Quotation Details";
+        }
+    });
+    $("#Quotationgrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Delete Quotation";
+        }
+    });
+    $("#Quotationgrid").kendoTooltip({
+        filter: ".k-grid-Print",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Print Quotation";
+        }
+    });
+    //$("#Quotationgrid").kendoTooltip({
+    //    filter: "td",
+    //    autoHide: true,
+    //    animation: {
+    //        close: {
+    //            effects: "fade:out",
+    //            duration: 1000
+    //        }
+    //    },
+    //    //position: "center",
+    //    content: function (e) {
+    //        debugger
+    //        return e.target[0].innerText;
+    //    }
+    //});
+
+
+</script>
+
+<script id="CustomerTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    @*<button class="k-button" onclick="addNew()">Add new item</button>*@
+    <button type="button" onclick="openModelpop('/Customer/_LoadCustomer','id',0);" class='k-button'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:5px;">Add New Customer</span>
+                </button>
+</script>
+
+<script id="SalesmenTemplate" type="text/x-kendo-tmpl">
+    <div>
+        No data found. Do you want to add new item - '#: instance.filterInput.val() #' ?
+    </div>
+    <br />
+    @*<button class="k-button" onclick="addNew()">Add new item</button>*@
+
+    <button type="button" onclick="openModelpop('/Admin/SalesmenLoadAddEdit', 'id', 0);" class='k-button'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:5px;">Add New Salesmen</span>
+                </button>
+
+</script>
+

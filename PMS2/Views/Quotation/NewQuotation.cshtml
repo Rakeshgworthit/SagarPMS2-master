@@ -1,0 +1,1213 @@
+﻿@model PMS.Models.Quotation
+@{
+    ViewBag.Title = "NewQuotation";
+}
+<style>
+    .date_form_control:disabled, .date_form_control[readonly] {
+        background-color: #ffffff;
+        opacity: 1;
+    }
+
+    .k-switch-on .k-switch-handle, .k-switch-off .k-switch-handle {
+        border-color: #1c84c6;
+        color: #1c84c6;
+        background-color: #1c84c6;
+        background-image: url(textures/highlight.png);
+        background-image: none,linear-gradient(to bottom,rgba(255,255,255,.25) 0,rgba(255,255,255,0) 100%);
+    }
+
+    .k-switch-on .k-switch-container {
+        border-color: #bbb;
+        color: #1c84c6;
+        background-color: #fff;
+    }
+
+    .k-switch-on.k-state-hover .k-switch-handle, .k-switch-on:hover .k-switch-handle {
+        border-color: #1c84c6;
+        color: #1c84c6;
+        background-color: #1c84c6;
+        background-image: url(textures/highlight.png);
+        background-image: none,linear-gradient(to bottom,rgba(255,255,255,.4) 0,rgba(255,255,255,0) 100%);
+    }
+
+    .k-switch-on.k-state-hover .k-switch-container, .k-switch-on:hover .k-switch-container {
+        border-color: #959595;
+        color: #1c84c6;
+        background-color: #fff;
+    }
+
+
+    .k-switch {
+        font-size: 16px !important;
+    }
+
+    .k-icon-x {
+        font-size: 22px;
+    }
+
+    .k-switch-on {
+        background-color: green !important;
+    }
+
+    .card_style {
+        border-radius: 8px;
+        box-shadow: 0px 0px 6px #80808075;
+    }
+
+    .k-switch-on.k-state-focused .k-switch-container, .k-switch-on:focus .k-switch-container {
+        border-color: #1c84c6;
+        color: #1c84c6;
+        background-color: #fff;
+    }
+
+    .k-switch-on.k-state-focused .k-switch-handle, .k-switch-on:focus .k-switch-handle {
+        border-color: #1c84c6;
+        color: #1c84c6;
+        background-color: #1c84c6;
+        background-image: url(textures/highlight.png);
+        background-image: none,linear-gradient(to bottom,rgba(255,255,255,.25) 0,rgba(255,255,255,0) 100%);
+    }
+</style>
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        @*<div class="col-md-6">
+                <h3 class="animated fadeInLeft text-primary">New Quotation</h3>
+            </div>*@
+        <div class="row">
+            <div class="col-md-6 col-9">
+                <h3 class="animated fadeInLeft text-primary">New Quotation</h3>
+            </div>
+            <div class="col-md-6 col-3 ">
+                <button type="button" onclick="QuotationList();" class='btn btn-primary pull-right'>
+                    @*<i class="fa fa-plus" aria-hidden="true"></i>*@<span>Quotation List</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="card card_style">
+            <div class="card-body">
+
+                <form class="form-horizontal" id="frmQuotation" name="frmQuotation">
+                    <div class="row ">
+                        <div class="col-md-7">
+                            <div class="row">
+                                <label for="salesman" class="col-form-label control-label text-primary col-md-3 text-md-right">Salesmen :</label>
+                                <div class="col-md-7">
+                                    <div>
+                                        <select name="SalesmenId" id="SalesmenId" class="form-control select2 " required="required" onchange="FetchSalesmenDetails();">
+                                            <option value="">-- Select --</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="  row">
+
+                                <label for="commission" class="col-form-label control-label text-primary text-md-right col-md-5">Commission :</label>
+                                <div class="input-group col-md-7">
+                                    <input type="text" class="form-control" id="Commission" name="Commission" readonly>
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                </div>
+
+                                @*<input type="date" class="form-control " placeholder="date" id="QuotationDate" name="QuotationDate" value=" @ViewBag.date">*@
+                            </div>
+                            @*<div class="input-group date">
+                                    <label for="date" class="col-form-label control-label text-right text-primary mr-2">Quotation Date :</label>
+                                    <input id="date" asp-for="QuotationDate" value="@DateTime.Now.ToString("dd/MM/yyyy")" class="form-control pull-right datepicker" type="text" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>*@
+                            @*<div class="form-group">
+                                    <label class="control-label" for="from_date">Date From:</label>
+                                    <input id="from_date" name="from_date" class="form-control" placeholder="From Date" value="@Convert.ToDateTime(Model.from_date).ToString("dd/MM/yyyy")" />
+
+                                </div>*@
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-7">
+                            <div class=" row">
+
+                                <label for="Customer" class="col-form-label control-label  text-primary col-md-3 text-md-right">Customer :</label>
+                                <div class="input-group col-md-7 col-8">
+                                    <select name="Customer_Id" id="Customer_Id" class="form-control select2 w-50" required="required" onchange="FetchCustomerDetails();">
+                                        <option value="">-- Select --</option>
+                                    </select>
+
+
+                                </div>
+                                <div class="input-group-append col-md-2 col-4">
+                                    <button type="button" onclick="ADDCustomer()" class="btn btn-primary  mr-2">
+                                        <i class="fa fa-plus" aria-hidden="true"></i>
+                                    </button>
+                                    <button type="button" onclick="UpdateCustomer()" class="btn btn-primary ">
+                                        <i class="fa fa-edit" aria-hidden="true"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class=" row">
+                                <label for="date" class="col-form-label control-label text-md-right text-primary col-md-5">Status :</label>
+                                <div class="col-md-7">
+                                    <select name="StatusId" id="StatusId" class="form-control select2" required="required" disabled>
+                                        <option value="">-- Select --</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-md-7">
+                            <div class="row">
+                                <label for="Email" class="col-form-label control-label text-primary text-md-right col-md-3">Email :</label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control " placeholder="Email" id="CustomerEmail" name="CustomerEmail" maxlength="50" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class=" row ">
+                                <label for="date" class="col-form-label control-label text-primary text-md-right col-md-5">Quotation Date :</label>
+                                <div class="input-group col-md-7">
+                                    <input type="text" id="date_range" class="form-control date_form_control" value="" placeholder="Select Date" maxlength="10" readonly />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-2">
+                        <div class="col-md-7">
+                            <div class="row">
+                                <label for="Enquiry" class="col-form-label control-label text-primary text-md-right col-md-3">Source Enquiry:</label>
+                                <div class="col-md-4">
+                                    <input type="text" class="form-control" id="SourceEnquiry" name="SourceEnquiry" maxlength="50" disabled>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class=" row ">
+                                <label for="Quotation" class="col-form-label control-label text-md-right text-primary col-md-5">Quotation Type :</label>
+                                <div class="col-md-7">
+                                    <input type="text" maxlength="50" class="form-control " placeholder="Quotation" id="QuotationType" name="QuotationType">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="row mt-2">
+                        <div class="col-md-7">
+                            <div class=" row">
+
+                                <label for=" " class="col-form-label control-label text-md-right  text-primary col-md-3">Address/Site :</label>
+                                <div class="col-md-9">
+                                    <textarea class="form-control" id="Address" name="Address" maxlength="100" disabled></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            <div class="row">
+                                <label for="Remarks" class="col-form-label control-label text-md-right text-primary col-md-5">Remarks :</label>
+                                <div class="col-md-7">
+                                    <textarea class="form-control" id="Remarks" name="Remarks" maxlength="100"></textarea>
+                                </div>
+                                @*<label for="date" class="col-form-label control-label  text-md-right text-primary col-md-5">Bank :</label>
+                                    <div class="col-md-7">
+                                        <select name="Bank_id" id="Bank_id" class="form-control select2" required="required">
+                                            <option value="">-- Select --</option>
+                                        </select>
+                                    </div>*@
+
+                            </div>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+        <input type="hidden" id="PackageId" class="form-control " />
+        <input type="hidden" id="PackageName" class="form-control " />
+        <input type="hidden" id="ProjectId" class="form-control " />
+        <div class="card mt-3 mb-2 card_style">
+            <div class="card-body">
+                <div class="row ">
+                    @*<div class="col-md-2  mt-3">
+                            <h5>Select package :</h5>
+                        </div>*@
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label " for="plan_name"><span class="data_inline_label">Plan</span></label>
+                            @*<label class="control-label"><span class="data_inline">@Model.plan_name</span></label>*@
+                            <div>
+                                <select name="PlanId" id="PlanId" class="form-control" required="required">
+                                    @*<option selected value=@Model.plan_id>@Model.plan_name</option>*@
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <label class="control-label " for="package_name"><span class="data_inline_label">Package</span></label>
+                            <div>
+                                <select name="PackageTypeId" id="PackageTypeId" class="form-control" required="required">
+                                    @*<option selected value=@Model.package_type_id>@Model.package_name</option>*@
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 ">
+                        <div class="form-group">
+                            <label class="control-label" for="floor_name"><span class="data_inline_label">Floor</span></label>
+                            <div>
+                                <select name="FloorId" id="FloorId" class="form-control" required="required">
+                                    @*<option selected value=@Model.floor_id>@Model.floor_name</option>*@
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-10 mt-27">
+                        <input id="SearchPackage" name="SearchPackage" class="form-control" placeholder="Search Package" @*onblur="Search();"*@ maxlength="30" />
+                    </div>
+                    <div class="col-md-1 col-2 mt-27">
+                        <button class="btn btn-primary" onclick="GetQuotationForSearchPackage();"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-right">
+                        @*<label class="control-label" ><span class="data_inline_label  pt-3 pr-1">Switch Layout : </span></label>*@
+                        <input type="checkbox" id="packages-switch-switch" aria-label="Packages Card Switch" checked="checked" />
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="row mt-3 k-justify-content-center" id="PackageList" style="display:none">
+
+
+            @*<div class="owl-slider">
+                <div class="owl-carousel" id="PackageList">
+                    <div class="item">*@
+            <div class="col-md-4 col-lg-3">
+                <div class="card packages_list_card  mx-2 my-2">
+                    <div class="card-body text-center">
+                        @*<div><i class="fa fa-check custom_check_icon"></i></div>*@
+                        <h5 class="plan_name">Blank</h5>
+                        <hr class="package_card_hr">
+                        <h4 class="text_amount"><strong>$</strong></h4>
+                        <hr>
+                        <div class="mt-3 mb-3 package_details_card row align-content-center">
+                            <h5 class="package_name col-md-12">Custom</h5>
+                            <h5 class="floor_name col-md-12">New</h5>
+                        </div>
+                        <button type="button" id="btnBlank" class="btn btn_primary_selected" onclick="BlankSelectClick();">Select</button>
+                    </div>
+                </div>
+            </div>
+            @*<div class="item">
+                    <div class="card packages_list_card ">
+                        <div class="card-body text-center">
+                            <div><i class="fa fa-check custom_check_icon"></i></div>
+                            <h5>The Ultimate	</h5>
+                            <hr class="package_card_hr">
+                            <h4 class="text_amount"><strong>$400</strong></h4>
+                            <hr>
+                            <div class="mt-3 mb-3">
+                                <h5 class="package_name">Custom</h5>
+                                <h5 class="floor_name">New</h5>
+                            </div>
+                            <button type="button" class="btn btn_primary_selected">Select</button>
+                        </div>
+                    </div>
+                </div>*@
+        </div>
+        <div class="row">
+            <div class="col-md-12 ">
+                <div class="owl-slider">
+                    <div class="owl-carousel" id="PackageList_carousel">
+                        <div class="item">
+                            <div class="card packages_list_card ">
+                                <div class="card-body text-center">
+                                    @*<div><i class="fa fa-check custom_check_icon"></i></div>*@
+                                    <h5 class="plan_name">Blank</h5>
+                                    <hr class="package_card_hr">
+                                    <h4 class="text_amount"><strong>$</strong></h4>
+                                    <hr>
+                                    <div class="mt-3 mb-3 package_details_card row align-content-center">
+                                        <h5 class="package_name col-md-12">Custom</h5>
+                                        <h5 class="floor_name col-md-12">New</h5>
+                                    </div>
+                                    <button type="button" id="btnBlank" class="btn btn_primary_selected" onclick="BlankSelectClick();">Select</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*</div>
+
+                </div>
+            </div>*@
+    </div>
+
+</div>
+@*<div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-9">
+
+            </div>
+            <div class="col-md-6 col-3 ">
+                <button type="button" onclick="UpsertQuotationFromPackage();" class='btn btn-primary pull-right'>
+                    <span>Next</span>
+                </button>
+            </div>
+        </div>
+    </div>*@@*<div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-9">
+
+            </div>
+            <div class="col-md-6 col-3 ">
+                <button type="button" onclick="UpsertQuotationFromPackage();" class='btn btn-primary pull-right'>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </div>*@
+
+    <script>
+
+    //Nithin Added for package Cards Switch Layout
+    $("#packages-switch-switch").kendoSwitch({
+
+        messages: {
+            checked: "<span class='k-icon k-i-images k-icon-x'></span>",
+            unchecked: "<i class='k-icon k-i-list-unordered k-icon-x'></i>",
+
+        },
+
+        change: function (e) {
+            debugger
+            if (e.checked) {
+                $('#SearchPackage').val('');
+                BindPackageList_new()
+
+                console.log("Checked");
+            } else {
+                $('#SearchPackage').val('');
+                GetQuotationForSearchPackage();
+                console.log("UnChecked");
+            }
+         //   console.log("event :: change (" + (e.checked ? "checked" : "unchecked") + ")");
+        }
+    });
+
+    function UpdateCustomer() {
+        var Customer_Id = $('#Customer_Id').val();
+        if (Customer_Id == 0) {
+            notify("Please select customer.", "error");
+        }
+        else {
+        openModelpop('/Customer/_LoadCustomer', 'id', Customer_Id);
+          BindCustomer();
+        }
+    }
+    function ADDCustomer() {
+        //debugger;
+        var form = $('#frmQuotation');
+        $.validator.unobtrusive.parse(form);
+        //if (form.valid()) {
+            openModelpop('/Customer/_LoadCustomer', 'id', 0);
+            //BindCustomer();
+       // }
+        //$("#ModelForm").html("");
+        //$.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+
+        //$.ajax({
+        //    type: "POST",
+        //    url: "/Customer/_LoadCustomer", // the URL of the controller action method
+        //    data: {
+        //        Id: 0
+        //    }, // optional data
+        //    success: function (result) {
+        //        //debugger;
+        //        $("#ModelForm").html(result);
+        //        $.loader('close');
+        //        BindCustomer();
+        //    },
+        //    error: function (req, status, error) {
+        //        // do something with error
+        //    }
+        //});
+        //$("#myModal").modal('show');
+
+    }
+
+        function FillCustomerDropdown(obj,msg,cls) {
+            debugger;
+            $("#Customer_Id").html("");
+            var options = $("#Customer_Id");
+        $.getJSON("/Home/GetCustomerList/", function (response) {
+            $.each(response, function () {
+                options.append($("<option />").val(this.Value).text(this.Text));
+            });
+
+            $("#Customer_Id").val(obj);
+            FetchCustomerDetails();
+            if (cls == "error") {
+                notify(msg, cls);
+            }
+            else {
+                notify(msg, cls);
+            }
+        });
+    }
+
+    function FetchSalesmenDetails() {
+        //debugger;
+
+        var SalesmenId= $('#SalesmenId').val();
+        $.get('@Url.Action("GetSalesmenDetailsById", "Quotation")?Salesmen_Id=' + SalesmenId, function (list) {
+            //debugger;
+
+          if (list != null) {
+              var Commission = list.data[0].saleman_commission;
+                $('#Commission').val(Commission);
+            }
+            else {
+                $('#Commission').val('');
+            }
+        });
+    }
+    function FetchCustomerDetails() {
+        //debugger;
+        var Customer_Id = $('#Customer_Id').val();
+        $.get('@Url.Action("GetCustomerDetailsById", "Quotation")?customer_id=' + Customer_Id, function (list) {
+            //debugger
+            if (list != null) {
+                var Email = list.data[0].email;
+                var Address = list.data[0].address;
+                var Source_Name = list.data[0].Source_Name;
+                $('#CustomerEmail').val(Email);
+                $('#Address').val(Address);
+                $('#SourceEnquiry').val(Source_Name);
+
+            }
+            else {
+                $('#CustomerEmail').val('');
+                $('#Address').val('');
+                $('#SourceEnquiry').val('');
+            }
+        });
+    }
+
+    $(document).ready(function () {
+
+
+        BindProjectStatus();
+
+        BindSalesMan();
+
+        BindCustomer();
+        GetQuotationForSearchPackage();
+        BindPackageList();
+        BindBanks();
+
+        BindPlan();
+        BindFloor();
+        BindPackageType();
+        //Nithin datepicker
+        $('#date_range + .input-group-append').click(function () {
+            $('#date_range').trigger("focus");
+        });
+
+        $('#date_range').daterangepicker({
+            "singleDatePicker": true,
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+            //ranges: {
+            //    'Today': [moment(), moment()],
+            //    'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+            //    'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+            //    'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+            //    'This Month': [moment().startOf('month'), moment().endOf('month')],
+            //    'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            //},
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+    });
+    function BindBanks() {
+
+
+        $.get('@Url.Action("BindBanks", "Master")', function (list) {
+            /*//debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "--Select Bank--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].bank_id + ">" + list.data[i].bank_name + "</option>");
+                }
+                $("#Bank_id").html(items.join(' '));
+                $('#Bank_id').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#Bank_id").html(items.join(' '));
+                $('#Bank_id').select2();
+            }
+        });
+
+    }
+    function BindPackageList() {
+        debugger
+        // $('#PackagesList').empty();
+        $('#PackageList div').html('');
+        $('#PackageList').css('display', 'none');
+        //var owl = $('.owl-carousel').data('owl.carousel');
+        //owl.onResize();
+       $('#PackageList_carousel').css('display', 'block');
+       $('.owl-carousel').trigger('refresh.owl.carousel');
+      //  $('#PackageList_carousel').owlCarousel('update');
+        $('.owl-carousel').owlCarousel({
+            //loop: true,
+            nav: true,
+            margin: 30,
+            navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+            responsive: {
+                0: {
+                    items: 1
+                },
+                600: {
+                    items: 2
+                },
+                960: {
+                    items: 3
+                },
+                1200: {
+                    items: 4
+                }
+            }
+        });
+        Pace.restart();
+        Pace.track(function () {
+            debugger;
+            var plan_id = $('#PlanId').val();
+            if (plan_id == null || plan_id == "0") {
+                plan_id = 0;
+            }
+            debugger
+            var package_type_id = $('#PackageTypeId').val();
+            if (package_type_id == null || package_type_id == "0") {
+                package_type_id = 0;
+            }
+            debugger
+            var floor_id = $('#FloorId').val();
+            if (floor_id == null || floor_id == "0") {
+                floor_id = 0;
+            }
+            debugger
+            var Values = {
+
+                PackageId: $('#PackageId').val(),
+                plan_id: plan_id,
+                package_type_id: package_type_id,
+                floor_id: floor_id,
+                minamount: 0,
+                maxamount: 0,
+                search: $('#SearchPackage').val(),
+            };
+                var JsonValues = JSON.stringify(Values);
+           $.ajax({
+                type: 'GET',
+            //    url: '@Url.Action("PackagesList", "Package")',
+               url:  '@Url.Action("GetQuotationForSearchPackage", "Package")?JsonValues=' + JsonValues,
+             data: {},
+                dataType: 'Json',
+               success: function (list) {
+                //debugger;
+                    debugger
+            if (list != null) {
+                debugger
+               // var items;
+             //   $('#PackageList').html("");
+                var i;
+                for (i = 0; i < list.data.Items.length; i++) {
+                    debugger
+                   // /*items.push(*/
+                    //$("#PackageList").append(
+
+
+
+
+                        $('#PackageList_carousel').trigger('add.owl.carousel',[
+                            "<div class=\"item\">" +
+                            "<div class=\"card packages_list_card \">" +
+                            "<div class=\"card-body text-center\">" +
+                            //"<div><i class=\"fa fa-check custom_check_icon\"></i></div>" +
+                            "<h5>" + list.data.Items[i].plan_name  + "</h5>" +
+                            "<hr class=\"package_card_hr\">" +
+                            "<h4 class=\"text_amount\"><strong>" + formatCurrency(list.data.Items[i].total_amount) + "</strong></h4>" +
+                            "<hr>" +
+                            " <div class=\"mt-3 mb-3 package_details_card row align-content-center\">" +
+                            "<h5 class=\"package_name  col-md-12\">" + list.data.Items[i].package_name + "</h5>" +
+                            "<h5 class=\"floor_name  col-md-12\">" + list.data.Items[i].floor_name + "</h5>" +
+                            "</div>" +
+                            "<button type=\"button\" class=\"btn btn_primary_selected\" onclick=\"Select(\'" + list.data.Items[i].package_name + "\',\'" + list.data.Items[i].package_id + "\')\">Select</button>" +
+                            "</div>" +
+                            "</div>" +
+                            "</div>"]
+                    ) .trigger('refresh.owl.carousel');
+                }
+              // $("#PackageList").html(items.join(' '));
+            }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });
+        });
+    }
+     function BindPackageList_new() {
+        debugger
+        $('#PackageList div').html('');
+        $('#PackageList').css('display', 'none');
+       $('#PackageList_carousel').css('display', 'block');
+       $('.owl-carousel').trigger('refresh.owl.carousel');
+        $('.owl-carousel').owlCarousel({
+            nav: true,
+            margin: 30,
+            navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+            responsive: {
+                0: {
+                    items: 1
+                },
+                600: {
+                    items: 2
+                },
+                960: {
+                    items: 3
+                },
+                1200: {
+                    items: 4
+                }
+            }
+        });
+
+    }
+    function BindCustomer() {
+
+        $.get('@Url.Action("BindCustomer", "Master")', function (list) {
+            /*//debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "--Select Customer--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].Customer_id + ">" + list.data[i].name1 + "</option>");
+                }
+                $("#Customer_Id").html(items.join(' '));
+                $('#Customer_Id').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#Customer_Id").html(items.join(' '));
+                $('#Customer_Id').select2();
+            }
+        });
+
+    }
+
+         function BindSalesMan() {
+
+        $.get('@Url.Action("BindSalesmenForQuotation", "Quotation")', function (list) {
+            /*//debugger*/
+            debugger;
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "--Select Salesmen--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].id + ">" + list.data[i].salesmen_name + "</option>");
+                }
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+            var role = '@Model.role';
+            if (role == "Salesman") {
+                $("#SalesmenId").val('@Model.id').trigger('change');
+                $('#SalesmenId').prop('disabled', false);
+            }
+            else {
+                $('#SalesmenId').prop('disabled', false);
+            }
+        });
+
+    }
+
+    function BindProjectStatus() {
+
+        $.get('@Url.Action("BindProjectStatus", "Quotation")', function (list) {
+            /*//debugger*/
+            if (list != null) {
+                var items = [];
+                /*items.push("<option value=" + 0 + ">" + "ALL" + "</option>");*/
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].projectStatusid + ">" + list.data[i].projectStatus + "</option>");
+                }
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+               // $('#ProjectStatusId').select2();
+                //$("#ProjectStatusId").select2({
+                //    //placeholder: "Select a programming language",
+                //    allowClear: true
+                //});
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#StatusId").html(items.join(' '));
+                $('#StatusId').select2();
+            }
+        });
+
+    }
+    var owl = $('.owl-carousel');
+    owl.owlCarousel({
+        //loop: true,
+        nav: true,
+        margin: 30,
+        navText: ['<i class="fa fa-angle-left"></i>', '<i class="fa fa-angle-right"></i>'],
+        responsive: {
+            0: {
+                items: 1
+            },
+            600: {
+                items: 2
+            },
+            960: {
+                items: 3
+            },
+            1200: {
+                items: 4
+            }
+        }
+    });
+    owl.on('mousewheel', '.owl-stage', function (e) {
+        if (e.deltaY > 0) {
+            owl.trigger('next.owl');
+        } else {
+            owl.trigger('prev.owl');
+        }
+        e.preventDefault();
+    });
+
+    function Search() {
+        // //debugger;
+        var alphanumers = /^[\w\s]+$/;
+        if (!alphanumers.test($("#SearchPackage").val()) && $("#SearchPackage").val() != '') {
+            notify("Search can have only alphabets and numbers.", "error");
+            return false;
+
+        }
+        //else {
+        //GetQuotationForSearchPackage();
+        //}
+
+    }
+
+    function BlankSelectClick() {
+    debugger;
+        // branch_id: '@PMS.Common.SessionManagement.SelectedBranchID',
+        var project_id = '00000000-0000-0000-0000-000000000000';
+        var project_number = "0";
+        var project_name = $('#Address').val();
+        var TotalAmount = "0";//$('#total_amount').val();
+        var SalesmenId = $('#SalesmenId').val();
+        if (SalesmenId == "" || SalesmenId == null || SalesmenId == "0") {
+            notify("Please select Salesmen", "error");
+            return false;
+        }
+        var Customer_Id = $('#Customer_Id').val();
+        if (Customer_Id == "" || Customer_Id == null || Customer_Id == "0") {
+            notify("Please select Customer", "error");
+            return false;
+        }
+        var saleman_commission = $('#Commission').val() === "" ? 0 : $('#Commission').val();
+        var contract_date = $('#date_range').data('daterangepicker').startDate;
+
+        var Values = {
+            project_id: project_id,
+            project_number: project_number,
+            project_name: project_name,
+            name1: Customer_Id,
+            salesmen_name: SalesmenId,
+            Customer_id: Customer_Id,
+            salesmen_id: SalesmenId,
+            saleman_commission: saleman_commission,
+            contract_date: contract_date,
+            total_amount: TotalAmount,
+            status_id: $('#StatusId').val(),
+            Email: $('#Email').val(),
+            Address: $('#Address').val(),
+            Remarks: $('#Remarks').val(),
+            bank_id: $('#Bank_id').val(),
+            reason: $('#QuotationType').val(),
+        };
+        var JsonValues = JSON.stringify(Values);
+         $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpsertProjectQuotation", "Quotation")',
+             data: { "JsonQuotation": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                //debugger;
+                    var Result = data.data.Result;
+                    var ProjectId = data.data.Id;
+                    var Errormessage = data.data.Errormessage;
+                    if (Result == "1") {
+                        window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + ProjectId + '&ShowHide=' + true;
+                        notify(Errormessage, "success");
+                    }
+                    else {
+                        notify(Errormessage, "error");
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+         });
+    }
+
+
+    function Select(PackageName, PackageId) {
+        //debugger
+        var hdnProjectId = $('#ProjectId').val();
+        var SalesmenId = $('#SalesmenId').val();
+        if (SalesmenId == "" || SalesmenId == null || SalesmenId == "0") {
+            notify("Please select Salesmen", "error");
+            return false;
+        }
+        var Customer_Id = $('#Customer_Id').val();
+        if (Customer_Id == "" || Customer_Id == null || Customer_Id == "0") {
+            notify("Please select Customer", "error");
+            return false;
+        }
+        var Values = {
+            SalesMenid: SalesmenId,//$('#SalesmenId').val(),
+            PackageId: PackageId,
+            Project_number: "0",//$('#ProjectNumber').val(),
+            project_name: $('#Address').val(),
+            branch_id: '@PMS.Common.SessionManagement.SelectedBranchID',
+            customer_id: Customer_Id,//$('#Customer_Id').val(),
+            StatusId: $('#StatusId').val(),
+            Email: $('#Email').val(),
+            reason: $('#QuotationType').val(),
+            Address: $('#Address').val(),
+            Remarks: $('#Remarks').val(),
+            bank_id: $('#Bank_id').val(),
+            quotationForwardDate: $('#date_range').data('daterangepicker').startDate, //$('#QuotationDate').val(),
+            saleman_commission: $('#Commission').val() === "" ? 0: $('#Commission').val()
+        };
+        var JsonValues = JSON.stringify(Values);
+        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpsertQuotationFromPackage", "Quotation")',
+            data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+            success: function (data) {
+                debugger;
+                var Result = data.data.result;
+                var ProjectId = data.data.projectId;
+                var Errormessage = data.data.Errormessage;
+                    if (Result == "1") {
+                        window.location = '@Url.Action("QuotationDetail", "Quotation")?ProjectId=' + ProjectId + '&ShowHide=' + true;
+                        notify(Errormessage, "success");
+                    }
+                    else {
+                        notify(Errormessage, "error");
+                       // alert(Errormessage);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+            });
+    }
+
+    @*function UpsertQuotationFromPackage()
+    {
+        //<input type="hidden" id="branch_id" name="branch_id" value="@PMS.Common.SessionManagement.SelectedBranchID" />
+        // SessionManagement.SelectedBranchID  -- Code Controller
+        var Values = {
+            SalesMenid: $('#SalesmenId').val(),
+            PackageId: $('#PackageId').val(),
+            Project_number:"1",
+            project_name: $('#Address').val(),
+            branch_id: '@PMS.Common.SessionManagement.SelectedBranchID',
+            customer_id: $('#Customer_Id').val(),
+            StatusId: $('#StatusId').val(),
+            Email: $('#Email').val(),
+            QuotationType: $('#QuotationType').val(),
+            Address: $('#Address').val(),
+            Remarks: $('#Remarks').val(),
+            bank_id: $('#Bank_id').val(),
+            quotationForwardDate: $('#QuotationDate').val(),
+            saleman_commission: $('#Commission').val()
+        };
+        var JsonValues = JSON.stringify(Values);
+        $.ajax({
+                type: 'POST',
+                url: '@Url.Action("UpsertQuotationFromPackage", "Quotation")',
+            data: { "JsonValues": JsonValues },
+                dataType: 'Json',
+                success: function (data) {
+                    var Result = data.Result;
+                    if (Result == "1") {
+                        //toastr.success("GST Save Successfully");
+                    }
+                    else {
+
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert('Fail');
+                    alert(jqXHR);
+                }
+            });
+    }*@
+    //function reinit() {
+    //    var el = $('.frame_wrapper .options-list');
+    //    el.trigger('destroy.owl.carousel');
+    //    //el.owlCarousel({ ...});
+    //}
+    function GetQuotationForSearchPackage() {
+
+        $('#PackageList_carousel').css('display', 'none');
+        //$("#packages-switch-switch").toggle();
+        $('#PackageList').css('display', 'flex');
+        $('#PackageList_carousel').owlCarousel('destroy');
+        //debugger;
+
+        //$('#PackageList div').empty();
+        //$owl.trigger('destroy.owl.carousel');
+        ////$("#my-carousel").html(newHtmlContent);
+        ////myCarouselStart();
+        //var $owl = $('.owl-carousel').owlCarousel({
+        //    //items: 1,
+        //    // loop: true
+        //});
+
+        //$owl.trigger('refresh.owl.carousel');
+        debugger;
+        var plan_id = $('#PlanId').val();
+        if (plan_id == null || plan_id == "0") {
+            plan_id = 0;
+        }
+        debugger
+        var package_type_id = $('#PackageTypeId').val();
+        if (package_type_id == null || package_type_id == "0") {
+            package_type_id = 0;
+        }
+        debugger
+        var floor_id = $('#FloorId').val();
+        if (floor_id == null || floor_id == "0") {
+            floor_id = 0;
+        }
+        debugger
+        var Values = {
+
+            PackageId: $('#PackageId').val(),
+            plan_id: plan_id,//$('#PlanId').val();
+            package_type_id: package_type_id,//$('#PackageTypeId').val(),
+            floor_id: floor_id,//$('#FloorId').val(),
+           // plan_id: 0,//$('#plan_id').val(),
+            minamount:0,// $('#minamount').val(),
+            maxamount:0,// $('#maxamount').val(),
+            search: $('#SearchPackage').val(),
+        };
+        Pace.track(function () {
+        var JsonValues = JSON.stringify(Values);
+        $.get('@Url.Action("GetQuotationForSearchPackage", "Package")?JsonValues=' + JsonValues, function (list) {
+            //debugger
+            debugger
+           // if (list != null) {
+            if (list.data.TotalCount != 0) {
+
+                debugger
+               // $("#PackageList").html("");
+
+                $('#PackageList').html(
+                    "<div class=\"col-md-4 col-lg-3\">" +
+                    "<div class=\"card packages_list_card  my-2\">" +
+                    "<div class=\"card-body text-center\">" +
+                    //"<div><i class=\"fa fa-check custom_check_icon\"></i></div>" +
+                    "<h5> Blank </h5>" +
+                    "<hr class=\"package_card_hr\">" +
+                    "<h4 class=\"text_amount\"><strong>$</strong></h4>" +
+                    "<hr>" +
+                    " <div class=\"mt-3 mb-3 package_details_card row align-content-center\">" +
+                    "<h5 class=\"package_name  col-md-12\">Custom</h5>" +
+                    "<h5 class=\"floor_name  col-md-12\">New</h5>" +
+                    "</div>" +
+                    "<button type=\"button\" class=\"btn btn_primary_selected\" id=\"btnBlank\" onclick=\"BlankSelectClick();\">Select</button>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>" +
+                    "</div>"
+                )
+
+
+                for (var i = 0; i < list.data.Items.length; i++) {
+
+
+                    $('#PackageList').append(
+                        "<div class=\"col-md-4 col-lg-3\">" +
+                        "<div class=\"card packages_list_card my-2 \">" +
+                        "<div class=\"card-body text-center\">" +
+                        //"<div><i class=\"fa fa-check custom_check_icon\"></i></div>" +
+                        "<h5>" + list.data.Items[i].plan_name + "</h5>" +
+                        "<hr class=\"package_card_hr\">" +
+                        "<h4 class=\"text_amount\"><strong>" + formatCurrency(list.data.Items[i].total_amount) + "</strong></h4>" +
+                        "<hr>" +
+                        " <div class=\"mt-3 mb-3 package_details_card row align-content-center\">" +
+                        "<h5 class=\"package_name  col-md-12\">" + list.data.Items[i].package_name + "</h5>" +
+                        "<h5 class=\"floor_name  col-md-12\">" + list.data.Items[i].floor_name + "</h5>" +
+                        "</div>" +
+                        "<button type=\"button\" class=\"btn btn_primary_selected\" onclick=\"Select(\'" + list.data.Items[i].package_name + "\',\'" + list.data.Items[i].package_id + "\')\">Select</button>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>" +
+                        "</div>"
+                    )
+                }
+
+                //$('#PackageList').trigger("refresh.owl.carousel");
+                //$owl.trigger('refresh.owl.carousel');
+                //$('#PackageList').trigger("replace.owl.carousel");
+                // $("#PackageList").html(items.join(' '));
+            }
+            else {
+                debugger
+                notify("Please select proper Package Details.", "error");
+            }
+        });
+        });
+    }
+
+    function QuotationList() {
+        window.location = '@Url.Action("Quotation", "Quotation")';
+    }
+
+    function BindPlan() {
+        $.get('@Url.Action("PlanDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select Plan" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].plan_id + ">" + list.data[i].plan_name + "</option>");
+                }
+                $("#PlanId").html(items.join(' '));
+                $('#PlanId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#PlanId").html(items.join(' '));
+                $('#PlanId').select2();
+            }
+        });
+
+    }
+
+       function BindFloor() {
+        $.get('@Url.Action("FloorDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select Floor" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].floor_id + ">" + list.data[i].floor_name + "</option>");
+                }
+                $("#FloorId").html(items.join(' '));
+                $('#FloorId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#FloorId").html(items.join(' '));
+                $('#FloorId').select2();
+            }
+        });
+
+    }
+
+    function BindPackageType() {
+        debugger;
+        $.get('@Url.Action("PackageDropDownList", "Master")', function (list) {
+            /*debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "Select Package" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].package_type_id + ">" + list.data[i].package_name + "</option>");
+                }
+                $("#PackageTypeId").html(items.join(' '));
+                $('#PackageTypeId').select2();
+            }
+            else {
+                var items = [];
+               // items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#PackageTypeId").html(items.join(' '));
+                $('#PackageTypeId').select2();
+            }
+        });
+
+    }
+
+    </script>

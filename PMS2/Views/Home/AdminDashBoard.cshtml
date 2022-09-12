@@ -1,0 +1,29 @@
+﻿
+@{
+    ViewBag.Title = "AdminDashBoard";
+}
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-xs-6">
+                <h3 class="animated fadeInLeft text-primary">Accounts Sales Dashboard</h3>
+            </div>
+            <div class="col-md-6 col-xs-6" style="margin-top:10px;">
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    @*<button type="button" onclick="openModelpop('/Admin/BranchLoadAddEdit', 'id', 0);" class='btn btn-primary pull-right'>
+                        <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">AP Dashboard</span>
+                    </button>*@
+                <h4><a href="" class="pull-right"><u><span style="padding-left:10px;">AP Dashboard</span></u> </a></h4>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="row">
+    <div class="col-md-3">
+       </u>v
+    </div>
+     </div>

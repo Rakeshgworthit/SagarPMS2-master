@@ -1,0 +1,150 @@
+﻿@model PMS.Models.ProjectViewModel
+@{
+    Layout = null;
+}
+
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Add/Edit Project</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="frmProject" name="frmProject">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="customer_name">Project Number:</label>
+                    <div class="col-sm-8">
+                        @Html.HiddenFor(o => o.id)
+                    @Html.TextBoxFor(o => o.project_number, new { @class = "form-control",@tabindex="1" })
+                    @Html.ValidationMessageFor(o => o.project_number, "", new { @class = "text-error" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="pwd">Project Name:</label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(o => o.project_name, new { @class = "form-control", @tabindex = "3" })
+                    @Html.ValidationMessageFor(o => o.project_name, "", new { @class = "text-error" })
+                </div>
+            </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="pwd">Customer:</label>
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(o => o.customer_id, Model.CustomerList, new { @class = "form-control", @tabindex = "5" })
+                    </div>
+                </div>
+          
+
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">Start Date:</label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(o => o.project_start_date, "{0:MM/dd/yyyy}", new { @class = "form-control", @tabindex = "7" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">Contact Amount:</label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(o => o.contract_amount, new { @class = "form-control amount", @tabindex = "9" })
+                    @Html.ValidationMessageFor(o => o.contract_amount, "", new { @class = "text-error" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">Gst Amount:</label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(o => o.gst_amount, new { @class = "form-control amount", @tabindex = "11" })
+                    @Html.ValidationMessageFor(o => o.gst_amount, "", new { @class = "text-error" })
+                </div>
+            </div>            
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">Salesmen:</label>
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(o => o.salesmen_id, Model.SalesmenList, new { @class = "form-control", @tabindex = "2" })
+                </div>
+            </div>
+            @*<div class="form-group">
+                <label class="control-label col-sm-4" for="pwd">Branch:</label>
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(o => o.branch_id, Model.BranchList, new { @class = "form-control", @tabindex = "4" })
+                    @Html.ValidationMessageFor(o => o.branch_id, "", new { @class = "text-error" })
+                </div>
+            </div>*@
+
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="pwd">Contract Date:</label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(o => o.contract_date, "{0:MM/dd/yyyy}", new { @class = "form-control", @tabindex = "4" })
+                    @Html.ValidationMessageFor(o => o.contract_date, "", new { @class = "text-error" })
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">Bank:</label>
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(o => o.bank_id, Model.BankList, new { @class = "form-control", @tabindex = "6" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">End Date:</label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(o => o.project_end_date, "{0:MM/dd/yyyy}", new { @class = "form-control", @tabindex = "8" })
+                </div>
+            </div>          
+           
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">Total Amount:</label>
+                <div class="col-sm-8">
+                    @Html.TextBoxFor(o => o.total_amount, new { @class = "form-control amount", @tabindex = "10" })
+                    @Html.ValidationMessageFor(o => o.total_amount, "", new { @class = "text-error" })
+                </div>
+            </div>    
+            <div class="form-group">
+                <label class="control-label col-sm-4" for="email">Status:</label>
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(o => o.status_id, Model.StatusList, new { @class = "form-control", @tabindex = "12" })
+                </div>
+            </div>           
+            @Html.HiddenFor(o => o.isactive)
+            @*<div class="form-group">
+                <label class="control-label col-sm-4" for="email">Is Active:</label>
+                <div class="col-sm-8">
+                    @Html.DropDownListFor(o => o.isactive, Model.ActiveInactiveList, new { @class = "form-control" })
+                </div>
+            </div>*@
+            
+        </div>
+
+            </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="form-group">
+                    <label class="control-label col-sm-2" for="email">Remarks:</label>
+                    <div class="col-sm-10">
+                        @Html.TextAreaFor(o => o.remarks, new { @class = "form-control", @tabindex = "14" })
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</form>
+</div>
+<div class="modal-footer">
+    <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveForm();">Save</button>
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>   
+
+
+<script>
+    $(function () {
+        $("#contract_date").datepicker({changeMonth: true, changeYear: true, dateFormat: "mm/dd/yy" });
+        $("#project_start_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "mm/dd/yy" });
+        $("#project_end_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "mm/dd/yy" });
+
+        // $('#contract_date').removeAttr("data-val-date");
+    });
+</script>
+

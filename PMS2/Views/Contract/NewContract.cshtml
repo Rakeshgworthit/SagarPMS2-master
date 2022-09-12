@@ -1,0 +1,682 @@
+﻿ @*@{
+        ViewBag.Title = "NewContract";
+    }
+
+    <div class="panel box-shadow-none content-header">
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-md-6 col-9">
+                    <h3 class="animated fadeInLeft text-primary">New Contract</h3>
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+@model PMS.Models.ProjectViewModel
+@{
+    //Layout = null;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .fileupload_design, .k-dropzone {
+        background: linear-gradient(to right, rgba(223,231,248,0), rgba(223,231,248,1));
+        border: 2px dotted black;
+        border-radius: 8px;
+        min-height: 80px;
+        text-align: center;
+    }
+</style>
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-7">
+                @if(Model.id>0)
+                {
+                <h3 class="animated fadeInLeft text-primary">Edit Contract - [@Model.project_number]</h3>
+                }
+                else
+                {
+                <h3 class="animated fadeInLeft text-primary">New Contract</h3>
+                }
+            </div>
+            <div class="col-md-6 col-5 ">
+                <button type="button" onclick="ContractList();" class='btn btn-primary pull-right'>
+                    <span>Contract List</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <form class="form-horizontal" id="frmProject" name="frmProject">
+                    <div class="row">
+                        <div class="col-md-7">
+
+                            <div class="row">
+                                <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="project_number">Salesmen:</label>
+                                <div class="col-md-7">
+                                    @Html.HiddenFor(o => o.id)
+                                    @Html.DropDownListFor(o => o.salesmen_id, Model.SalesmenList, new { @class = "form-control", @tabindex = "1" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="Customer">Customer:</label>
+                                <div class="input-group col-md-7">
+                                    @Html.DropDownListFor(o => o.customer_id, Model.CustomerList, new { @class = "form-control", @tabindex = "2" })
+
+                                    @if (Model.id == 0)
+                                    {
+                                        <div class="input-group-append col-md-2 col-4">
+                                            <button type="button" onclick="ADDCustomer()" class="btn btn-primary  mr-2">
+                                                <i class="fa fa-plus" aria-hidden="true"></i>
+                                            </button>
+                                            <button type="button" onclick="UpdateCustomer()" class="btn btn-primary ">
+                                                <i class="fa fa-edit" aria-hidden="true"></i>
+                                            </button>
+                                        </div>
+                                    }
+                                    @Html.ValidationMessageFor(o => o.customer_id, "", new { @class = "text-error" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="address">Address/Site:</label>
+                                <div class="col-md-7">
+                                    @Html.TextBoxFor(o => o.project_name, new { @class = "form-control", @tabindex = "3" })
+                                    @Html.ValidationMessageFor(o => o.project_name, "", new { @class = "text-error" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="ReferenceNo">Contract Number:</label>
+                                <div class="col-md-7">
+                                    @Html.TextBoxFor(o => o.ReferenceNo, new { @class = "form-control", @tabindex = "4" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="contract_date">Contract Date:</label>
+                                <div class="input-group col-md-7">
+                                    <input type="text" id="date_range" class="form-control" value="@Model.contract_date" tabindex="5" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="start_date">Start Date:</label>
+                                <div class="input-group col-md-7">
+                                    <input type="text" id="date_range_startdate" class="form-control" value="@Model.project_start_date" tabindex="6" />
+                                    <div class="input-group-append">
+                                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-3" for="email">Remarks:</label>
+                                <div class="col-md-7">
+                                    @Html.TextAreaFor(o => o.remarks, new { @class = "form-control", @tabindex = "7" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-5">
+                            @*<div class="row">
+                                    <label class="col-form-label control-label text-primary text-md-right col-md-6" for="salesman">Salesmen:</label>
+                                    <div class="col-md-6">
+                                        @Html.DropDownListFor(o => o.salesmen_id, Model.SalesmenList, new { @class = "form-control", @tabindex = "2" })
+                                    </div>
+                                </div>*@
+                            <div class="row">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-6" for="commission">Commission:</label>
+                                <div class="input-group col-md-6">
+                                    @Html.TextBoxFor(o => o.saleman_commission, new { @class = "form-control amount", @tabindex = "8" })
+                                    <div class="input-group-append">
+                                        <span class="input-group-text">%</span>
+                                    </div>
+                                    @Html.ValidationMessageFor(o => o.saleman_commission, "", new { @class = "text-error" })
+                                </div>
+
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-6" for="email">Status:</label>
+                                <div class="col-md-6">
+                                    @Html.DropDownListFor(o => o.status_id, Model.StatusList, new { @class = "form-control", @tabindex = "9" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-6" for="email">Bank:</label>
+                                <div class="col-md-6">
+                                    @Html.DropDownListFor(o => o.bank_id, Model.BankList, new { @class = "form-control", @tabindex = "10" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-6" for="email">Invoice Amount with GST:</label>
+                                <div class="col-md-6">
+                                    @Html.TextBoxFor(o => o.total_amount, "{0:0.00}", new { @class = "form-control amount", @tabindex = "11" })
+                                    @Html.ValidationMessageFor(o => o.total_amount, "", new { @class = "text-error" })
+                                </div>
+                            </div>
+                            @*<div class="row mt-2">
+                                    <label class="col-form-label control-label text-primary text-md-right col-md-6 " style="align-items:baseline" for="gst">GST Percentage: <br /> <span style="font-size:x-small">(Please Input value as "0" or "7" )</span> </label>
+                                    <div class="input-group col-md-6">
+                                        @Html.TextBoxFor(o => o.gst_percentage, "{0}", new { @class = "form-control amount", @tabindex = "12", @maxlength = 1 })
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                        @Html.ValidationMessageFor(o => o.gst_percentage, "", new { @class = "text-error" })
+                                    </div>
+                                </div>*@
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-6 " style="align-items:baseline" for="gst">GST Percentage:</label>
+                                <div class="input-group col-md-6">
+                                    @Html.DropDownListFor(o => o.gst_percentage, Model.GSTList, new { @class = "form-control amount", @tabindex = "12", @maxlength = 1 })
+                                    @*<div class="input-group-append">
+                                            <span class="input-group-text">%</span>
+                                        </div>*@
+                                    @Html.ValidationMessageFor(o => o.gst_percentage, "", new { @class = "text-error" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-6" for="gst_amount">Gst Amount:</label>
+                                <div class="col-md-6">
+                                    @Html.TextBoxFor(o => o.gst_amount, "{0:0.00}", new { @class = "form-control amount", @tabindex = "13" })
+                                    @Html.ValidationMessageFor(o => o.gst_amount, "", new { @class = "text-error" })
+                                </div>
+                            </div>
+                            <div class="row mt-2">
+                                <label class="col-form-label control-label text-primary text-md-right col-md-6" for="contract amount">Contract Amount:</label>
+                                <div class="col-md-6">
+                                    @Html.TextBoxFor(o => o.contract_amount, "{0:0.00}", new { @class = "form-control amount", @tabindex = "14" })
+                                    @Html.ValidationMessageFor(o => o.contract_amount, "", new { @class = "text-error" })
+                                </div>
+                                @Html.HiddenFor(o => o.isactive)
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12">
+                        </div>
+                    </div>
+                    @if (Model.id > 0)
+                    {
+                        <div class="row ">
+                            <div class="col-md-12">
+                                <div class="demo-section k-content">
+                                    <input name="files" id="files" type="file" />
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <table class="table" id="DocumentsTable">
+                            <thead>
+                                <tr>
+                                    <th>File Name</th>
+                                    <th>Description</th>
+                                    <th>Uploaded By</th>
+                                    <th>Uploaded Date</th>
+                                    <th></th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.project_document_list.Count == 0)
+                                {
+                                    <tr>
+                                        <td colspan="4"><p class="alert alert-info" role="alert">Record Not Found.</p></td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    foreach (var pdlist in Model.project_document_list)
+                                    {
+                                        if ((pdlist.Uploaded_By_Name) != null)
+                                        {
+                                            <tr>
+                                                <td>@pdlist.file_name</td>
+                                                <td>@Html.Raw(pdlist.file_desc)</td>
+                                                <td>@pdlist.UploadedName</td>
+                                                <td>@pdlist.uploaded_on.ToString("MM/dd/yyyy")</td>
+                                                <td><a target="_blank" title="View document" href="@pdlist.document_path/@pdlist.file_name">View</a></td>
+                                                <td><a target="_self" title="Delete document" onclick="deletedocument(@pdlist.document_id,@pdlist.project_id, '@pdlist.file_name', '@pdlist.document_path')" href="Javascript:void(0)">Delete</a></td>
+                                            </tr>
+                                        }
+                                    }
+
+                                }
+                            </tbody>
+                        </table>
+                    }
+                </form>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class="col-md-12 text-right">
+                @if (@Model.id != 0)
+                {
+                    <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveProject();" tabindex="15">Update</button>
+                }
+                else
+                {
+                    <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveProject();" tabindex="15">Save</button>
+                }
+                <button id="btnClear" name="btnClear" type="button" class="btn btn-secondary" onclick="ClearProject();" tabindex="16">Clear</button>
+            </div>
+        </div>
+
+        <input type="hidden" id="ProjectId" class="form-control " value="@Model.project_id" />
+        <input type="hidden" id="hdnId" class="form-control " value="@Model.id" />
+        <input type="hidden" id="Project_Number" class="form-control " value="@Model.project_number" />
+    </div>
+</div>
+<script>
+
+    $(document).ready(function () {
+
+        DateRangePicker_ContractDate();
+        DateRangePicker_StartDate();
+        var role = '@ViewBag.role';
+        if (role == "Salesman") {
+            $("#SalesmenId").val('@Model.salesmen_id').trigger('change');
+            // $('#SalesmenId').prop('disabled', true);
+
+        }
+        if (@Model.id> 0) {
+            $("#salesmen_id").prop("disabled", true);
+            $("#customer_id").prop("disabled", true);
+        }       
+    });
+
+    function DateRangePicker_ContractDate() {
+        $('#date_range + .input-group-append').click(function () {
+            $('#date_range').trigger("focus");
+        });
+
+        $('#date_range').daterangepicker({
+            "singleDatePicker": true,
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+
+        });
+    }
+
+    function DateRangePicker_StartDate() {
+        $('#date_range_startdate + .input-group-append').click(function () {
+            $('#date_range_startdate').trigger("focus");
+        });
+
+        $('#date_range_startdate').daterangepicker({
+            "singleDatePicker": true,
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range_startdate').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY'));
+        });
+
+        $('#date_range_startdate').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+
+        });
+    }
+
+    $(function () {
+
+        //$("#contract_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy" });
+        //$("#date_range_startdate").datepicker({
+        //    changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy"
+        //});
+
+        //$('#contract_date').removeAttr("data-val-date");
+        //$('#date_range_startdate').removeAttr("data-val-date");
+
+        $("#total_amount").blur(function () {
+            CalculateGSTTotalAmount();
+        });
+        $("#gst_percentage").blur(function () {
+            CalculateGSTTotalAmount();
+        });
+        $("#gst_percentage").keydown(function () {
+            CalculateGSTTotalAmount();
+        });
+        $("#gst_percentage").keyup(function () {
+            CalculateGSTTotalAmount();
+        });
+
+        $("#frmProject").find("#customer_id").change(function () {
+            if (String($("#frmProject").find("#id").val()) == "0" || String($("#frmProject").find("#id").val()) == "") {
+                GetCustomerInfo($(this).val());
+            }
+        });
+
+        $("#frmProject").find("#salesmen_id").change(function () {
+            GetSalemanCommision($(this).val());
+        });       
+    });
+
+    $("#gst_percentage").change(function () {
+        debugger;
+        CalculateGSTTotalAmount();
+    });
+
+    function GetCustomerInfo(customerid) {
+        $("#project_name").val('');
+        $.ajax({
+            type: "GET",
+            url: "/Projects/GetCustomerData", // the URL of the controller action method
+            data: { customerid: customerid },
+            success: function (result) {
+                $("#project_name").val(String(result));
+            },
+            error: function (req, status, error) {
+            }
+        });
+    }
+
+    function CalculateGSTTotalAmount() {
+        var tolalamount = parseFloat($("#total_amount").val());
+
+        var gPer = 0;
+        if ($("#gst_percentage").val() > 0) {
+            gPer = parseFloat($("#gst_percentage").val());
+        }
+        var gstp = parseFloat(gPer / 100) + 1;
+        if (String(tolalamount).length > 0 && String(gstp).length > 0) {
+            var CAmount = parseFloat(tolalamount / gstp).toFixed(2);
+            var GST = parseFloat(tolalamount - CAmount).toFixed(2);
+            if (String(GST) == "NaN") {
+                GST = "0.00";
+            }
+            if (String(CAmount) == "NaN") {
+                CAmount = "0.00";
+            }
+            $("#gst_amount").val(GST);
+            $("#contract_amount").val(CAmount);
+            /*$("#total_amount").focus().val($("#total_amount").val());*/
+        }
+
+
+    }
+
+    function GetSalemanCommision(salemanid) {
+        $("#saleman_commission").val('');
+        $.ajax({
+            type: "GET",
+            url: "/Projects/GetSalemanCommision", // the URL of the controller action method
+            data: { salemanid: salemanid },
+            success: function (result) {
+                $("#saleman_commission").val(String(result));
+            },
+            error: function (req, status, error) {
+            }
+        });
+    }
+
+    function deletedocument(docid, project_id, FileName, FilePath) {
+        var r = confirm("Are you sure want to delete this record?");
+        if (r == true) {
+            $.ajax({
+                url: '/Projects/DeleteDocument',
+                type: "post",
+                data: {
+                    Id: docid,
+                    FilePath: FilePath,
+                    FileName: FileName,
+                    project_id: project_id
+                },
+                success: function (data) {
+                    debugger;
+                    location.reload();
+
+                }
+            });
+        }
+    }
+
+    $("#total_amount").keypress(function () {
+        debugger;
+        $("#total_amount").focus().val($("#total_amount").val());
+    });
+    function ClearProject() {
+        window.location = '@Url.Action("NewContract", "Contract")?id=' + 0;
+    }
+
+    //    var files = [
+    //    {name: "file1.doc", size: 525, extension: ".doc" },
+    //    {name: "file2.jpg", size: 600, extension: ".jpg" },
+    //    {name: "file3.xls", size: 720, extension: ".xls" },
+    //];
+
+    //$("#files").kendoUpload({
+    //        async: {
+    //        saveUrl: "/Contract/Save?Id=" + 0,//D:\Prabandhas
+    //        removeUrl: "Home/Remove",
+    //        autoUpload: true
+    //    },
+    //    dropZone: ".dropZoneElement",
+    //    validation: {
+    //        allowedExtensions: [".png", ".doc", ".xls", ".jpeg", ".pdf"],
+
+    //        //maxFileSize: 900000,
+    //        //minFileSize: 300000
+    //    },
+    //    success: onSuccess,
+    //    showFileList: false,
+    //    files: files
+    //});
+    if (sessionStorage.initialFiles === undefined) {
+        sessionStorage.initialFiles = "[]";
+    }
+
+    var initialFiles = JSON.parse(sessionStorage.initialFiles);
+
+    $("#files").kendoUpload({
+        async: {
+            saveUrl: '/Projects/SaveDocumentNew',
+            autoUpload: true
+        },
+        upload: function (e) {
+            e.data = {
+                project_id: $('#hdnId').val(),
+                IsProject: true,
+                file_desc: "Contract",
+                IdType: 6
+            };
+        }
+
+    });
+
+    $("#files").change(function () {
+        debugger;
+        location.reload();
+
+    });
+
+    function SaveProject() {
+        debugger;
+        var form = $('#frmProject');
+        $.validator.unobtrusive.parse(form);
+        // if (form.valid()) {
+
+        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        var SalesmenId = $('#frmProject').find("#salesmen_id").val();
+        if (SalesmenId == "" || SalesmenId == null || SalesmenId == "0") {
+            notify("Please select Salesmen", "error");
+            $.loader('close');
+            return false;
+        }
+        var Customer_Id = $('#frmProject').find("#customer_id").val();
+        if (Customer_Id == "" || Customer_Id == null || Customer_Id == "0") {
+            notify("Please select Customer", "error");
+            $.loader('close');
+            return false;
+        }
+        //var BankId = $('#frmProject').find("#bank_id").val();
+        //if (BankId == "" || BankId == null || BankId == "0") {
+        //    notify("Please select Bank", "error");
+        //    $.loader('close');
+        //    return false;
+        //}
+        debugger;
+        var saleman_commission = $('#frmProject').find("#saleman_commission").val() === "" ? 0 : $('#frmProject').find("#saleman_commission").val();
+        debugger;
+        var Values = {
+            id: $('#hdnId').val(),
+            project_id: $('#ProjectId').val(),
+            contract_date: $('#date_range').data('daterangepicker').startDate,
+            project_number: $("#Project_Number").val(),
+            project_name: $('#frmProject').find("#project_name").val(),
+            project_start_date: $('#date_range_startdate').data('daterangepicker').startDate,
+            salesmen_id: SalesmenId,//$('#frmProject').find("#salesmen_id").val(),
+            saleman_commission: saleman_commission,// $('#frmProject').find("#saleman_commission").val(),
+            Customer_id: Customer_Id,//$('#frmProject').find("#customer_id").val(),
+            contract_amount: $('#frmProject').find("#contract_amount").val(),
+            gst_percentage: $('#frmProject').find("#gst_percentage").val(),
+            gst_amount: $('#frmProject').find("#gst_amount").val(),
+            total_amount: $('#frmProject').find("#total_amount").val(),
+            bank_id: $('#frmProject').find("#bank_id").val(),
+            status_id: $('#frmProject').find("#status_id").val(),
+            Remarks: $('#frmProject').find("#remarks").val(),
+            ReferenceNo: $("#frmProject").find("#ReferenceNo").val()
+
+        };
+        var JsonValues = JSON.stringify(Values);
+
+        $.ajax({
+            type: "POST",
+            url: "/Contract/Insert_Projects", // the URL of the controller action method
+            data: { "JsonContract": JsonValues },
+            dataType: 'Json',
+            success: function (data) {
+                debugger;
+                $.loader('close');
+                var Result = data.data.Result;
+                var ProjectId = data.data.Id;
+                var Id = data.data.ProjectId;
+                var Errormessage = data.data.Errormessage;
+                if (Result > 0) {
+                    notify(Errormessage, "success");
+                    $('#ProjectId').val(ProjectId);
+                    $('#hdnId').val(Id);
+                    window.location = '@Url.Action("NewContract", "Contract")?id=' + Id;
+
+                }
+                else {
+                    notify(Errormessage, "error");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.loader('close');
+                notify("Fail", "error");
+                notify(jqXHR, "error");
+            }
+        });
+    }
+
+    function ADDCustomer() {
+        //debugger;
+        openModelpop('/Customer/_LoadCustomer', 'id', 0);
+    }
+    function UpdateCustomer() {
+        debugger;
+        var Customer_Id = $('#frmProject').find("#customer_id").val();
+        openModelpop('/Customer/_LoadCustomer', 'id', Customer_Id);
+        GetCustomerInfo(Customer_Id);
+    }
+    function FillCustomerDropdown(obj) {
+        debugger;
+        $("#customer_id").html("");
+        var options = $("#customer_id");
+        $.getJSON("/Home/GetCustomerList/", function (response) {
+            $.each(response, function () {
+                options.append($("<option />").val(this.Value).text(this.Text));
+            });
+            $("#customer_id").val(obj);
+            GetCustomerInfo(obj);
+            $("#customer_id").validator.hide();
+        });
+    }
+
+    function ContractList() {
+        window.location = '@Url.Action("ContractList", "Contract")';
+    }
+    function UploadDocument_Contract() {
+        debugger;
+        var project_id = $('#ProjectId').val();
+        var SalesmenId = $('#frmProject').find("#salesmen_id").val();
+        var Customer_Id = $('#frmProject').find("#customer_id").val();
+        var Customer = Customer_Id.replace(' ', '_');
+        var Salesmen = SalesmenId.replace(' ', '_');
+       // var contract_number = '@Model.project_number'.replace('/','_');
+        var contract_date = new Date($('#date_range').data('daterangepicker').startDate);
+        var ContractYear = contract_date.getFullYear();
+        var FileName = /*contract_number + "-" +*/ Customer + "-" + Salesmen + ".jpg";
+        var DOCUMENT_NAME = "signature";
+        var FILE_TYPE = "jpg";
+        var DOCUMENT_PATH = "/Contracts/" + ContractYear + "/" + FileName;
+        var upload = $("#files").data("kendoUpload"),
+            files = upload.getFiles();
+        var data = "";
+        var Values = {
+            imageData: data,
+            Customer: Customer,
+            Salesmen: Salesmen,
+            contract_number: contract_number,
+            contract_date: contract_date,
+            ContractYear: ContractYear,
+            FileName: FileName,
+            DOCUMENT_NAME: DOCUMENT_NAME,
+            FILE_TYPE: FILE_TYPE,
+            DOCUMENT_PATH: DOCUMENT_PATH,
+            project_id: project_id,
+        };
+        var JsonValues = JSON.stringify(Values);
+
+        $.ajax({
+            url: '@Url.Action("UploadDocument_Contract", "Contract")',
+            type: "POST",
+            dataType: "json",
+            data: { JsonSignature: JsonValues },
+            success: function (result) {
+                debugger
+                if (result.data.Result > 0) {
+
+                }
+                else {
+                    notify(result.data.Errormessage, "error");
+                }
+                options.success(result);
+            },
+            error: function (result) {
+                debugger
+                options.error(result);
+            }
+        });
+    }
+
+</script>
+
+
+

@@ -1,0 +1,593 @@
+﻿@model PMS.Models.SalesmenViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <h4 class="modal-title">Add/Edit Salesmen</h4>
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="frmSalesmen" name="frmSalesmen">
+        <div class="row">
+            <div class="col-md-6">
+                @if (User.IsInRole("SuperAdmin"))
+                {
+                    <div class="form-group">
+                        <div class="row">
+                            <label class="control-label col-sm-4" for="name">Branch:</label>
+                            <div class="col-sm-8">
+                                @Html.DropDownListFor(o => o.branch_Id, Model.BranchList, new { @class = "form-control", @tabindex = "1" })
+                                @Html.ValidationMessageFor(o => o.branch_Id, "", new { @class = "text-error" })
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    @Html.HiddenFor(o => o.branch_Id)
+                }
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Saleman name:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.salesmen_name, new { @class = "form-control", @tabindex = "2" })
+                            @Html.ValidationMessageFor(o => o.salesmen_name, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Address1:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.address1, new { @class = "form-control", @tabindex = "3" })
+                            @Html.ValidationMessageFor(o => o.address1, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Address3:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.address3, new { @class = "form-control", @tabindex = "5" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Zip Code:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.zip_code, new { @class = "form-control", @tabindex = "7" })
+                            @Html.ValidationMessageFor(o => o.zip_code, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Website:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.website, new { @class = "form-control", @tabindex = "9" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Mobile:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.mobile, new { @class = "form-control", @tabindex = "11" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">ICNumber:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.ICNumber, new { @class = "form-control", @tabindex = "13" })
+                            @Html.ValidationMessageFor(o => o.ICNumber, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd"><br /></label>
+                        <div class="col-sm-4" style="padding-right:0px;">
+                            <br />
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Commission:</label>
+                        <div class="input-group col-sm-8">
+                            @Html.TextBoxFor(o => o.saleman_commission, new { @class = "form-control amount", @tabindex = "2" })
+                            <div class="input-group-append">
+                                <span class="input-group-text">%</span>
+                            </div>
+                            @Html.ValidationMessageFor(o => o.saleman_commission, "", new { @class = "text-error" })
+                        </div>
+
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Address2:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.address2, new { @class = "form-control", @tabindex = "4" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Address4:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.address4, new { @class = "form-control", @tabindex = "6" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Email:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.email, new { @class = "form-control", @tabindex = "8" })
+                            @Html.ValidationMessageFor(o => o.email, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Phone:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.phone, new { @class = "form-control", @tabindex = "10" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-offset-2 col-md-10">
+                        <div class="checkbox" style=" padding-inline: 28px;">
+                            @Html.CheckBoxFor(o => o.IsCreateLogin)
+                            <label class="control-label col-sm-4" for="pwd">Create Login:</label>
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">User Name:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.UserName, new { @class = "form-control", @tabindex = "12" })
+                            @Html.ValidationMessageFor(o => o.UserName, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Password:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.Password, new { @class = "form-control", type = "password", @tabindex = "14" })
+                            @Html.ValidationMessageFor(o => o.Password, "", new { @class = "text-danger" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Confirm Password:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.ConfirmPassword, new { @class = "form-control", type = "password", @tabindex = "15" })
+                            @Html.ValidationMessageFor(o => o.ConfirmPassword, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+        @Html.HiddenFor(o => o.id)
+        @Html.HiddenFor(o => o.created_date)
+        @Html.HiddenFor(o => o.created_by)
+        @Html.HiddenFor(o => o.isactive)
+
+
+    </form>
+</div>
+<div class="modal-footer">
+    @if (@Model.id != 0)
+    {
+        @*<button id="btnSave" name="btnSave" type="submit" class="btn btn-primary" onclick="SaveSalesmenForm();">Update</button>*@
+        <button id="btnSignature" name="btnSignature" type="button" class="btn btn-primary" onclick="GetSignatureImage();" data-toggle="modal" data-target="#signature_modal">Sign</button>
+    }    
+    @if (@Model.id != 0)
+    {
+        <button id="btnSave" name="btnSave" type="submit" class="btn btn-primary" onclick="SaveSalesmenForm();">Update</button>
+        @*<button id="btnSave" name="btnSave" type="button" class="btn btn-primary" onclick="GetSignatureImage();" data-toggle="modal" data-target="#signature_modal">Update</button>*@
+    }
+    else
+    {
+        <button id="btnSave" name="btnSave" type="submit" class="btn btn-primary" onclick="SaveSalesmenForm();">Save</button>
+        @*<button id="btnSave" name="btnSave" type="button" class="btn btn-primary" data-toggle="modal" data-target="#signature_modal">Save</button>*@
+    }
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>
+
+
+@*<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#signature_modal">
+        Confirmed
+    </button>*@
+
+<!-- signature Modal -->
+<div class="modal fade" id="signature_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-md" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Salesman Signature </h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+
+                <div class="row" id="sign_wrapper">
+                    <div class="col-lg-12">
+                        <div id="salesman-surface-container">
+                            <h6>Salesman Signature </h6>
+                            <div style=" border: 1px solid black;">
+                                <div class="content-wrapper">
+
+                                    <div id="salesman_surface" style="width: 465px; height: 260px; "></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<button class='export-svg k-button'>Export as SVG</button>*@
+
+
+            </div>
+            <div id="divModalFooter" class="modal-footer">
+                <button type="button" id="btnSignatureClose" class="btn btn-secondary" onclick ="CloseSignature();">Close</button>
+                <button class='btn btn-primary clear' id="btnSignatureClearCanvas">Clear Canvas</button>
+                @*<button class='export-img k-button'>Export as Image</button>*@
+                <button type="button" id="btnSignatureSave" class="btn btn-primary" onclick="SaveSignature(@Model.id,'','');">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@*<script src="https://d3js.org/d3.v4.min.js"></script>*@
+<script>
+
+    function getSignatureForUpdate(id) {
+        debugger
+        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        $.ajax({
+            url: '@Url.Action("GetSalesmenSignaturePath", "Admin")',
+            type: "POST",
+            dataType: "json",
+            data: { salesmenId: parseInt(id) },
+            success: function (data) {
+                debugger
+                $.loader('close');
+                if (data.result != '') {
+                    debugger
+                    var imgPath = data.result;
+                    //d3.selectAll('#salesman_surface svg').remove();
+                    //$("#salesman_surface svg").find("*").not("rect, g").remove();
+                    /*$("#salesman_surface").clear();*/
+                    $("#salesman_surface svg").remove();                   
+                    $('#salesman_surface').append('<div><img src="' + imgPath + '" style="width: 465px; height: 260px; "></div>');
+                    //$('#btnSignatureClose').hide();
+                    $('#btnSignatureClearCanvas').hide();
+                    $('#btnSignatureSave').hide();
+                    $("#divModalFooter").append('<input type="button" value="Delete" id="btnSignatureDelete" class="btn btn-primary" onclick="DeleteSignature();"/>');
+                    //$("#divModalFooter").append('<input type="button" value="Close" id="btnSignClose" class="btn btn-primary" onclick=$("#btnSignatureClose").click() />');
+
+                }
+                else {
+                    notify("Salesmen signature not found", "error");
+                }
+            },
+            error: function (result) {
+                debugger
+                $.loader('close');
+            }
+        });
+        }
+
+    function DeleteSignature() {
+        debugger;
+        var salesmenId = $('#frmSalesmen').find("#id").val();
+        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        $.ajax({
+            url: '@Url.Action("DeleteSalesmenSignature", "Admin")',
+            type: "POST",
+            dataType: "json",
+            data: { salesmenId: parseInt(salesmenId) },
+            success: function (data) {
+                debugger
+                $.loader('close');
+                if (data.result) {
+                    debugger
+                    notify(data.msg, data.cls);
+                    CloseSignature()
+                    //location.reload();
+                    //$("div modal-backdrop fade show").remove();
+                }
+                else {
+                    notify(data.msg, data.cls);
+                }
+
+            },
+            error: function (result) {
+                debugger
+                $.loader('close');
+            }
+        });
+    }
+
+    function GetSignatureImage() {
+        debugger
+        var id = $('#frmSalesmen').find("#id").val();
+        if (id != '') {
+            salesman_surface.clear();
+            getSignatureForUpdate(id);
+        }
+    }
+
+    //IsCreateLogin
+    $(document).ready(function () {
+        //debugger
+        var id = $('#frmSalesmen').find("#id").val()
+        //alert(id);
+        var val = $("#IsCreateLogin").prop('checked');
+
+        var icNumvalue = $("#ICNumber").val();
+        if (icNumvalue != '' || icNumvalue == null) {
+            $("#ICNumber").attr("disabled", "disabled")
+        }
+
+        if (val) {
+            if ($('#frmSalesmen').find("#UserName").val() != null) {
+                $("#IsCreateLogin").attr("disabled", "disabled")
+                $("#UserName").attr("disabled", "disabled")
+                $("#Password").attr("disabled", "disabled")
+                $("#ConfirmPassword").attr("disabled", "disabled")
+            }
+            else {
+                $("#IsCreateLogin").removeAttr("disabled", "disabled")
+                $("#UserName").removeAttr("disabled", "disabled")
+                $("#Password").removeAttr("disabled", "disabled")
+                $("#ConfirmPassword").removeAttr("disabled", "disabled")
+            }
+        }
+        else {
+            $("#UserName").attr("disabled", "disabled")
+            $("#Password").attr("disabled", "disabled")
+            $("#ConfirmPassword").attr("disabled", "disabled")
+        }
+
+        $('#IsCreateLogin').click(function (event) {
+            //EnableDisableDropDowns();
+            var id = $('#frmSalesmen').find("#id").val()
+            //alert(id);
+            var val = $("#IsCreateLogin").prop('checked');
+            //alert(val);
+            if (val) {
+                $("#UserName").removeAttr("disabled", "disabled")
+                $("#Password").removeAttr("disabled", "disabled")
+                $("#ConfirmPassword").removeAttr("disabled", "disabled")
+            }
+            else {
+                $("#UserName").attr("disabled", "disabled")
+                $("#Password").attr("disabled", "disabled")
+                $("#ConfirmPassword").attr("disabled", "disabled")
+            }
+        });
+
+    });
+
+    function SaveSalesmenForm() {
+        debugger;
+        var form = $('#frmSalesmen');
+        $.validator.unobtrusive.parse(form);
+        if (form.valid()) {
+            $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                type: "POST",
+                url: "/Admin/SalesmenSaveUpdate", // the URL of the controller action method
+                data: {
+                    id: $('#frmSalesmen').find("#id").val(),
+                    branch_Id: $('#frmSalesmen').find("#branch_Id").val(),
+                    salesmen_name: $('#frmSalesmen').find("#salesmen_name").val(),
+                    saleman_commission: $('#frmSalesmen').find("#saleman_commission").val(),
+                    address1: $('#frmSalesmen').find("#address1").val(),
+                    address2: $('#frmSalesmen').find("#address2").val(),
+                    address3: $('#frmSalesmen').find("#address3").val(),
+                    address4: $('#frmSalesmen').find("#address4").val(),
+                    zip_code: $('#frmSalesmen').find("#zip_code").val(),
+                    website: $('#frmSalesmen').find("#website").val(),
+                    email: $('#frmSalesmen').find("#email").val(),
+                    phone: $('#frmSalesmen').find("#phone").val(),
+                    mobile: $('#frmSalesmen').find("#mobile").val(),
+                    isactive: $('#frmSalesmen').find("#isactive").val(),
+                    UserName: $('#frmSalesmen').find("#UserName").val(),
+                    ICNumber: $('#frmSalesmen').find("#ICNumber").val(),
+                    Password: $('#frmSalesmen').find("#Password").val(),
+                    IsCreateLogin: $('#frmSalesmen').find("#IsCreateLogin").prop('checked')
+                }, // optional data
+                success: function (result) {
+                    debugger
+                    $.loader('close');
+                    if (result.cls == "error") {
+                        notify(result.msg, result.cls);
+                    } else {
+                        $("#btnClose").click();
+                        //SaveSignature(result.id, result.msg, result.cls);
+                        loadGrid();
+                        //notify(result.msg, result.cls);
+                    }
+                },
+                error: function (req, status, error) {
+                    // do something with error
+                }
+            });
+        }
+    }
+</script>
+
+<script>
+    //KV Added For Digital Signature For Salesman
+    //Salesman Signature
+    var geom = kendo.geometry;
+    var Point = geom.Point;
+    var draw = kendo.drawing;
+    var Path = draw.Path;
+    var path;
+
+    $("#salesman-surface-container").on("mousemove", function (e) {
+        debugger;
+        if (!path) {
+            return;
+        }
+
+        var offset = $(this).offset();
+        var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
+
+        path.lineTo(newPoint);
+    }).on("mousedown", function (e) {
+        path = new Path({
+            stroke: {
+                color: '#E4141B',
+                width: 2,
+                lineCap: "round",
+                lineJoin: "round"
+            }
+        });
+
+        var offset = $(this).offset();
+        var newPoint = new Point(e.pageX - offset.left, e.pageY - offset.top);
+
+        for (var i = 0; i < 1; i++) {
+            path.lineTo(newPoint.clone().translate(i * 1, 0));
+        }
+
+        salesman_surface.draw(path);
+
+    }).on("mouseup", function (e) {
+        path = undefined;
+    });
+
+    //Saving the salesmen signatures in a variable
+    var salesman_surface = draw.Surface.create($("#salesman_surface"));
+    //var customer_surface = draw.Surface.create($("#customer_surface"));
+
+    $(".export-svg").click(function () {
+        debugger
+        // Convert the DOM element to a drawing using kendo.drawing.drawDOM
+        kendo.drawing.drawDOM($("#salesman_surface"))
+            .then(function (group) {
+                // Render the result as a SVG document
+                return kendo.drawing.exportSVG(group);
+            })
+            .done(function (data) {
+                // Save the SVG document
+                kendo.saveAs({
+                    dataURI: data,
+                    fileName: "signature.svg",
+                    proxyURL: "https://demos.telerik.com/kendo-ui/service/export"
+                });
+            });
+    });
+
+
+    //Clearing the signature
+    $(".clear").click(function () {
+        salesman_surface.clear();
+    });
+
+    
+
+    function SaveSignature(salesmenId, msg, cls) {
+        debugger;
+        kendo.drawing.drawDOM($("#salesman_surface"))
+            .then(function (group) {
+                debugger
+
+                // Render the result as a PNG image
+                return kendo.drawing.exportImage(group);
+            })
+            .done(function (data) {
+                debugger
+
+                //var form = $('#frmSalesmen');
+                //$.validator.unobtrusive.parse(form);
+                //if (form.valid()) {
+
+                    var fullYear = new Date().getFullYear().toString();
+                    var fullMonth = new Date().getMonth().toString();
+                    var fullDay = new Date().getDay().toString();
+                    var fullHour = new Date().getHours().toString();
+                    var fullMinutes = new Date().getMinutes().toString();
+                    var fullSeconds = new Date().getSeconds().toString();
+
+                    var uniqueNumber = fullYear + fullMonth + fullDay + fullHour + fullMinutes + fullSeconds;
+
+                    var Salesmen = 'Salesmen';
+                    var SalesmenFileName = Salesmen + "_" + uniqueNumber + ".jpg";
+                    var DOCUMENT_NAME = "signature";
+                    var FILE_TYPE = "jpg";
+                    var SalesmenImage_PATH = "/Salesmen/" + SalesmenFileName;
+                    // var Path = "D:\\Proj\\BTS\\PMS2\\PMS2" + "/Contracts/" + ContractYear;
+                    // kendo.saveAs(Path, FileName);
+                    var Values = {
+                        SalesmanimageData: data,
+                        Salesmen: Salesmen,
+                        SalesmenId: salesmenId,
+                        SalesmenFileName: SalesmenFileName,
+                        DOCUMENT_NAME: DOCUMENT_NAME,
+                        FILE_TYPE: FILE_TYPE,
+                        SalesmenImage_PATH: SalesmenImage_PATH,
+                    };
+                    var JsonValues = JSON.stringify(Values);
+                    $.ajax({
+                        url: '@Url.Action("UploadSignature", "Admin")',
+                        type: "POST",
+                        dataType: "json",
+                        data: { JsonSignature: JsonValues },
+                        success: function (result) {
+                            debugger
+                            if (result.data.Result > 0) {
+                                debugger
+                                notify(msg, cls);
+                                //SaveSalesmenForm();
+                            }
+                            else {
+                                notify(result.data.Errormessage, "error");
+                            }
+                        },
+                        error: function (result) {
+                            debugger
+                        }
+                    });
+                //}
+                //else {
+                //    notify("Please provide salesmens details", "error");
+                //}
+
+            });
+        salesman_surface.clear();
+        $("#signature_modal").modal('hide');
+
+    }
+
+    function CloseSignature() {
+        debugger;
+        salesman_surface.clear();
+        //$("#signature_modal").modal('dispose');
+        $("#signature_modal").modal("hide");
+       
+    }
+</script>

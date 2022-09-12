@@ -1,0 +1,102 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.SupplierViewModel
+@{
+    ViewBag.Title = "Supplier";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-6">
+                <h3 class="animated fadeInLeft text-primary">Supplier</h3>
+            </div>
+            <div class="col-md-6 col-6">
+                <button type="button" onclick="openModelpop('/Supplier/LoadAddEdit', 'id', 0);" class='btn btn-primary pull-right'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="well">
+                    @using (Html.BeginForm("Index", "Supplier", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+                    {
+                    <div class="row">
+                        <div class="col-lg-3 col-md-4 col-xs-10">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Search:&nbsp;</label>
+                                <input id="Suppliersearch" name="Suppliersearch" class="form-control" value="@Model.Suppliersearch" placeholder="Search" />
+                            </div>
+                        </div>
+                        <div class=" col-md-1 col-xs-2">
+                            <button type="submit" class="btn btn-primary btn-sm mt-srh-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                    }
+                </div>
+                <div class="responsive-table">
+                    @Html.MVCGrid("Supplier", new { Suppliersearch = Model.Suppliersearch })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script type="text/javascript">
+
+    $(function () {
+        //debugger
+        var val = '@ViewBag.Message';
+        var cls ='@ViewBag.cls';
+        if (val) {
+            notify(val, cls);
+        }
+        //console.log("ready!");
+    });
+
+    function SaveForm() {
+        var form = $('#frmSupplier');
+        $.validator.unobtrusive.parse(form);
+        if (form.valid()) {
+            $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                type: "POST",
+                url: "/Supplier/SaveUpdate", // the URL of the controller action method
+                data: {
+                    id: $("#id").val(),
+                    supplier_name: $("#supplier_name").val(),
+                    address1: $("#address1").val(),
+                    address2: $("#address2").val(),
+                    address3: $("#address3").val(),
+                    address4: $("#address4").val(),
+                    zip_code: $("#zip_code").val(),
+                    website: $("#website").val(),
+                    contact_person: $("#contact_person").val(),
+                    nric_no: $("#nric_no").val(),
+                    email: $("#email").val(),
+                    phone: $("#phone").val(),
+                    mobile: $("#mobile").val(),
+                    gst_registered: $("#gst_registered").val(),
+                    gst_no: $("#gst_no").val(),
+                    isactive: $("#isactive").val()
+                }, // optional data
+                success: function (result) {
+                    $.loader('close');
+                    $("#btnClose").click();
+                    notify(result.msg, result.cls);
+                    reloadGrid('Supplier');
+                    //notify(result.msg, "info");
+                },
+                error: function (req, status, error) {
+                    // do something with error
+                }
+            });
+        }
+    }
+
+
+
+</script>

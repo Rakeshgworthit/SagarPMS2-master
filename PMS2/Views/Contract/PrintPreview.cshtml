@@ -1,0 +1,65 @@
+﻿@model IEnumerable<PMS.Models.Contract>
+
+@{
+    ViewBag.Title = "PrintPreview";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<form class="form-horizontal" id="frmContract" name="frmContract">
+    <div id="PrintElement">
+        <img src="~/Content/img/avatar.jpg" height="100px" width="150px" />
+        <br /><br /><br />
+        <center>
+            <table>
+                <tr>
+                    <td>Name : </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+
+            <table width="90%" style="margin-left:10px;color:#000000!important;" class="printaddress">
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.task_description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.item_description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Quantity)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.Amount)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.SubTotal)
+                    </th>
+                </tr>
+
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.task_description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.item_description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Quantity)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Amount)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.SubTotal)
+                        </td>
+                    </tr>
+                }
+
+            </table>
+
+        </center>
+    </div>
+</form>

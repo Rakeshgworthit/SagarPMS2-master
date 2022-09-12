@@ -1,0 +1,440 @@
+﻿@{
+    ViewBag.Title = "MasterTasksList";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="col-md-6">
+            <h3 class="animated fadeInLeft text-primary">Master Item's List</h3>
+        </div>
+    </div>
+</div>
+<div class="row mx-3">
+    <div class="col-md-12">
+                <div class="responsive-table">
+                    <div id="Itemgrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        kendo.ui.Grid.fn.onAddClearFilter = function () {
+            debugger
+            var grid = this;
+            grid.wrapper.find(".k-grid-add").on("click", function (e) {
+                //console.log('onaddclearfilter');
+                //send to first page if it's not already
+                if (grid.pager) grid.pager.page(1);
+                //clear the filter
+                if (grid.dataSource) grid.dataSource.filter([]);
+            });
+        }
+                    dataSource = new kendo.data.DataSource({
+                        transport: {
+                             read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("ItemList", "Master")',
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                $.ajax({
+                                     url: '@Url.Action("CreateItem", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonItems: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#Itemgrid").data('kendoGrid').dataSource.read();
+                                        $("#Itemgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);//result
+                                    }
+                                });
+                            },
+                            update: function (options) {
+                                debugger
+                                $.ajax({
+                                     url: '@Url.Action("CreateItem", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonItems: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#Itemgrid").data('kendoGrid').dataSource.read();
+                                        $("#Itemgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                //to clear filter
+                                clearAllFilters();
+                            },
+                             destroy: function (options) {
+                                debugger
+                                 var item_id = options.data.models[0].item_id;
+                                $.ajax({
+                                    url: '@Url.Action("DeleteItemByItemId", "Master")?ItemId=' + item_id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        $("#Itemgrid").data('kendoGrid').dataSource.read();
+                                        $("#Itemgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                 //to clear filter
+                                 clearAllFilters();
+                            },
+                            @*destroy: {
+                                 url: '@Url.Action("DeleteItem", "Master")',
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+
+                                    $("#Itemgrid").data("kendoGrid").dataSource.read();
+                                    $("#Itemgrid").data('kendoGrid').refresh();
+                                }
+                            },*@
+                            @*read: {
+                                 url: '@Url.Action("ItemList", "Master")',
+                                        type: "GET",
+                                        dataType: "json"
+                            },
+                            update: {
+                               url: '@Url.Action("CreateItem", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#Itemgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                 url: '@Url.Action("DeleteItem", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#Itemgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            create: {
+                                url: '@Url.Action("CreateItem", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#Itemgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+
+                        batch: true,
+                        pageSize: 15,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "item_id",
+                                fields: {
+                                    item_id: { editable: false, nullable: true, type: "number" },
+                                    Task: { defaultValue: { Task_Id: 0, Task_Name: "Select Task" }, validation: { required: true } },
+                                    Category: { defaultValue: { category_Id: 1, category_name: "No Category" }, validation: { required: true } },
+                                    item_cd: { validation: { required: true }, editable: false },
+                                    item_description: { validation: { required: true, maxlength: 250 } },
+                                    default_qty: { validation: { required: true, min: 0, maxlength: 8 }, type: "number"  },
+                                    price: { validation: { required: true,min:0, maxlength: 20 }, type: "number"  },
+                                    UOM: { defaultValue: { uom_id: 0, uom_description: "Select UOM" }, validation: { required: true } },
+                                    //uom_description: { validation: { required: true } },
+                                    isactive: { validation: { required: true }, defaultValue: true },
+                                }
+                            }
+                        },
+
+                    });
+
+           var ItemGrid= $("#Itemgrid").kendoGrid({
+                    dataSource: dataSource,
+               navigatable: true,
+               dataBound: function (e) {
+                   $('.k-grid-add').unbind("click");
+               },
+                    pageable: true,
+               toolbar: [{ name: "create", text: "Add New Master Item" }, { name: "excel", text: "Export to Excel " }, { name: "search" }, { template: '   <a type="button" class="k-button" onclick="return  clearAllFilters()" style="float:right" >Clear All Filters</a>' }],
+               excel: {
+                   fileName: "Items List.xlsx",
+                   allPages: true,
+               },
+               //Nithin Added For Filter Ascending Order
+               filterMenuInit: function (e) {
+                   debugger
+                   if (e.field === "Task.Task_Name" || e.field === "package_description" || e.field === "default_qty" || e.field === "price" || e.field == "UOM.uom_description" ) {
+                       var filterMultiCheck = this.thead.find("[data-field=" + e.field + "]").data("kendoFilterMultiCheck")
+                       filterMultiCheck.container.empty();
+                       filterMultiCheck.checkSource.sort({ field: e.field, dir: "asc" });
+
+                       // uncomment the following line to handle any grouping from the original dataSource:
+                       // filterMultiCheck.checkSource.group(null);
+
+                       filterMultiCheck.checkSource.data(filterMultiCheck.checkSource.view().toJSON());
+                       filterMultiCheck.createCheckBoxes();
+                   }
+               },
+               filterable: true,
+               sortable: true,
+               reorderable: true,
+                    autoSync: true,
+                    resizable: true,
+                    pageable: {
+                        pageSize: 15,
+                        buttonCount: 15,
+                        pageSizes: [5, 15, 30, 60, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} master item", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No master item to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "master items per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+               },
+
+               columns: [
+                   {
+                       command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                           { name: "destroy", text: " ", iconClass: "k-icon k-i-delete"  }], title: "Action", width: "100px"
+                   },
+                   { field: "Task", width: "120px", title: "Task", editor: TaskDropDownEditor, template: "#=Task.Task_Name#", filterable: { field: "Task.Task_Name",multi: true, search: true } },
+                   { field: "Category", width: "120px", title: "Category", attributes: { style: "text-align:left;" }, editor: CategoryDropDownEditor, template: "#=Category.category_name#"},
+                   { field: "item_cd", width: "100px", title: "Code", hidden: true },
+                   { field: "item_description", width: "400px", title: "Item Description", filterable: { multi: true, search: true}},
+                   { field: "default_qty", title: "Quantity", width: "100px", filterable: { multi: true, search: true } },
+                   { field: "price", format: "{0:c}", title: "Price", width: "120px", attributes: { style: "text-align:right;" }, filterable: { multi: true, search: true } },
+                   { field: "UOM", title: "UOM", width: "120px", editor: UOMDropDownEditor, template: "#=UOM.uom_description#", filterable: { field: "UOM.uom_description", multi: true, search: true }},
+                        { field: "isactive", title: "is active", hidden: true },
+                   //{ command: ["edit", "destroy"], title: "Action", width: "185px" }
+               ],
+                    editable: "inline"
+           }).data("kendoGrid");
+        ItemGrid.onAddClearFilter();
+
+      function UOMDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                   /*   $('<input required data-bind="value:UOM"/>')*/
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter:"contains",
+                            autoBind: true,
+                           optionLabel: "Select UOM",
+                            dataTextField: "uom_description",
+                            dataValueField: "uom_id",
+                            select: onSelectUOM,
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("UOMDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "uom_description", dir: "asc" },
+
+                            }
+
+                           // noDataTemplate: $("#UOMTemplate").html()
+                        });
+    }
+      function onSelectUOM(e) {
+            debugger
+            var detailGridWrapper = this.wrapper;
+            var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+            var value = e.dataItem.uom_description;
+
+            var price = parentTR.find("td[data-container-for='Price'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+            var qty = parentTR.find("td[data-container-for='Quantity'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+
+
+            if (value == "Lumpsum") {
+                debugger
+                //price.enable(false);
+                //qty.enable(false);
+
+                ////to get total row values in a grid
+                //var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+                //var row = e.sender.element.closest("tr");
+                //var dataItem = grid.dataItem(row);
+                //debugger
+                //dataItem.set('price', 0);
+                //dataItem.set('default_qty', 0);
+
+            } else {
+                //price.enable(true);
+                //qty.enable(true);
+            }
+
+        };
+      function TaskDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+             /*  $('<input required data-bind="value:Task"/>')*/
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter: "contains",
+                            autoBind: true,
+                            optionLabel: "Select Task",
+                            dataTextField: "Task_Name",
+                            dataValueField: "Task_Id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("TaskDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "Task_Name", dir: "asc" },
+                            }
+                        });
+        }
+      function CategoryDropDownEditor(container, options) {
+		$('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                             filter: "contains",
+                            autoBind: false,
+                            optionLabel: "Select Category",
+                            dataTextField: "category_name",
+                            dataValueField: "category_Id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("CategoryDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   //sort: { field: "category_name", dir: "asc" },
+                            },
+                            noDataTemplate: $("#CategoryTemplate").html()
+                        });
+           }
+
+    });
+    //Nithin Added to clear all filterrs
+    function clearAllFilters() {
+        $("#Itemgrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");
+    }
+
+    //Tooltips For Kendogrid Action Btn
+
+    $("#Itemgrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Item";
+        }
+    });
+    $("#Itemgrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Item Details";
+        }
+    });
+    $("#Itemgrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Item";
+        }
+    });
+    $("#Itemgrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Item";
+        }
+    });
+</script>
+
+

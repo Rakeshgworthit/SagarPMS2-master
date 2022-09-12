@@ -1,0 +1,87 @@
+﻿@model PMS.Controllers.SalesMenUserMapping
+@{
+    ViewBag.Title = "SalesMenGenerateLogin";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-xs-6">
+                <h3 class="animated fadeInLeft text-primary">Map users to SalesMan</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div id="exTab3">
+                    <div class="tab-content" id="nav-tabContent">
+                        <div class="row">
+                            <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="project_number">Salesmen:</label>
+                            <div class="col-md-7">
+                                @*@Html.HiddenFor(o => o.id)*@
+                                @Html.DropDownListFor(o => o.slsId, Model.SalesmenList, new { @class = "form-control", @tabindex = "1" })
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                        <br />
+                        <div class="row">
+                            <label class="col-form-label control-label text-primary col-md-3 text-md-right" for="project_number">Users:</label>
+                            <div class="col-md-7">
+                                @*@Html.HiddenFor(o => o.UsersList)*@
+                                @Html.DropDownListFor(o => o.usrId, Model.UsersList, new { @class = "form-control", @tabindex = "2" })
+                            </div>
+                        </div>
+                        <br />
+                        <br />
+                        <div class="row">
+                            <div class="col-md-3 ">
+                                <input type="button" id="btnAddRole" name="btnAddRole" class="btn btn-primary " value="Update" onclick="UpdateUsrSalesMapping();" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        
+    });
+
+    function UpdateUsrSalesMapping() {
+        debugger;
+        //alert('hi');
+        var slsVal = $("#slsId").val();
+        var usrVal = $("#usrId").val();
+        //alert(slsVal);
+        //alert(usrVal);
+        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        $.ajax({
+            type: "POST",
+            url: "/Admin/UpdatesalesMenUserMap",
+            data: {
+                slsId: slsVal,//$("#Id").val(),
+                usrId: usrVal //roleName
+            },
+            success: function (result) {
+                $.loader('close');
+                if (result.cls == "error") {
+                    notify(result.msg, result.cls);
+                } else {
+                    location.reload();
+                }
+            },
+            error: function (req, status, error) {
+                $.loader('close');
+            }
+        });
+    }
+
+</script>

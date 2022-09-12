@@ -1,0 +1,105 @@
+29 Jul 2022 5:10:26 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Contract/NewContract?id=30935
+Method Name: GetProjectDocuments Parameters= 30935
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'GetDocuments' expects parameter '@IdType', which was not supplied.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at PMS.Data_Access.DBSqlCommand.ExecuteDataReader(String commandText) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DBSqlCommands.cs:line 84
+   at PMS.Common.CommonFunction.GetDocuments(Int64 projectid, Int32 Id_Type) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Common\CommonFunction.cs:line 2366
+ClientConnectionId:062e8fcd-8bb8-4970-a003-d99be9c99cd3
+Error Number:201,State:4,Class:16
+Get Base Exception  :  
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'GetDocuments' expects parameter '@IdType', which was not supplied.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at PMS.Data_Access.DBSqlCommand.ExecuteDataReader(String commandText) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DBSqlCommands.cs:line 84
+   at PMS.Common.CommonFunction.GetDocuments(Int64 projectid, Int32 Id_Type) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Common\CommonFunction.cs:line 2366
+ClientConnectionId:062e8fcd-8bb8-4970-a003-d99be9c99cd3
+Error Number:201,State:4,Class:16
+Get Base Exception  :  
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'GetDocuments' expects parameter '@IdType', which was not supplied.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at PMS.Data_Access.DBSqlCommand.ExecuteDataReader(String commandText) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DBSqlCommands.cs:line 84
+   at PMS.Common.CommonFunction.GetDocuments(Int64 projectid, Int32 Id_Type) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Common\CommonFunction.cs:line 2366
+ClientConnectionId:062e8fcd-8bb8-4970-a003-d99be9c99cd3
+Error Number:201,State:4,Class:16
+--------------------------------------------------------------------------------
+29 Jul 2022 7:03:36 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Projects/_LoadAdditions?id=1-5217&projectId=0
+Method Name: _LoadAdditions, Parameter : Id=1-5217
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Convert.ToInt64(String value)
+   at PMS.Controllers.ProjectsController._LoadAdditions(String Id, Int32 projectId)
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Convert.ToInt64(String value)
+   at PMS.Controllers.ProjectsController._LoadAdditions(String Id, Int32 projectId)
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Convert.ToInt64(String value)
+   at PMS.Controllers.ProjectsController._LoadAdditions(String Id, Int32 projectId)
+--------------------------------------------------------------------------------
+29 Jul 2022 7:04:58 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Projects/_LoadAdditions?id=1-5217&projectId=0
+Method Name: _LoadAdditions, Parameter : Id=1-5217
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Convert.ToInt64(String value)
+   at PMS.Controllers.ProjectsController._LoadAdditions(String Id, Int32 projectId)
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Convert.ToInt64(String value)
+   at PMS.Controllers.ProjectsController._LoadAdditions(String Id, Int32 projectId)
+Get Base Exception  :  
+System.FormatException: Input string was not in a correct format.
+   at System.Number.StringToNumber(String str, NumberStyles options, NumberBuffer& number, NumberFormatInfo info, Boolean parseDecimal)
+   at System.Number.ParseInt64(String value, NumberStyles options, NumberFormatInfo numfmt)
+   at System.Convert.ToInt64(String value)
+   at PMS.Controllers.ProjectsController._LoadAdditions(String Id, Int32 projectId)
+--------------------------------------------------------------------------------

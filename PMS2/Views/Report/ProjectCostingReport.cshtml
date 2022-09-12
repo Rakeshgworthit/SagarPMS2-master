@@ -1,0 +1,161 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.ReportViewModel
+@{
+    ViewBag.Title = "Project Listing Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="animated fadeInLeft text-primary">Project Costing Report</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="well">
+                    @using (Html.BeginForm("ProjectCostingReport", "Report", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+                    {
+                    <div class="row">
+                        <div class="col-md-2 col-sm-6 ">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Year:</label>
+                                @Html.DropDownListFor(o => o.ReportYear, Model.YearList, new { @class = "form-control", onchange = "LoadProjects();" })
+                            </div>
+                        </div>
+                        <div class="col-md-2 col-sm-6 ">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Status:</label>
+                                @Html.DropDownListFor(o => o.SearchSalesmenStatus, Model.SalesmenStatusList, new { @class = "form-control", id = "ddlStatus" })
+                            </div>
+                        </div>
+                        @if (!User.IsInRole("Salesman"))
+                        {
+                            <div class="col-md-3 col-sm-6 ">
+                                <div class="form-group">
+                                    <label class="control-label" for="from_date">Salesman:</label>
+                                    @Html.DropDownListFor(o => o.SalesmenId, Model.SalenmenList, new { @class = "form-control", onchange = "LoadProjects();", id = "ddlSalesmen" })
+                                </div>
+                            </div>
+                        }
+                        <div class="col-md-3 col-sm-5 col-xs-10">
+                            <div class="form-group">
+                                <label class="control-label" for="from_date">Address/Site:</label>
+                                @Html.DropDownListFor(o => o.ProjectId, Model.ProjectList, new { @class = "form-control" })
+                            </div>
+                        </div>
+                        <div class="col-md-1 col-sm-1 col-xs-2 pl-md-2 ">
+                            <input type="hidden" id="BranchId" name="BranchId" value="@PMS.Common.SessionManagement.SelectedBranchID" />
+                            <button type="submit" class="btn btn-primary mt-srh-btn" onclick="return SubmitAs('form','frm');"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+
+                        <div class="row mb-2" >
+                            <div class="col-md-12">
+                            <button type="submit" class="btn btn-danger pull-right " onclick="return SubmitAs('export','pdf');"><i class="fa fa-file-excel-o" aria-hidden="true"></i> PDF</button><span>&nbsp;</span>
+                            <button type="submit" class="btn btn-success pull-right " onclick="return SubmitAs('export', 'xls');" style="margin-right: 5px;"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export</button>
+
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="table-responsive">
+                    @Html.Raw(Model.GridData)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SubmitAs(obj, obj2) {
+        debugger;
+        if ($("#ProjectId").val() == "0") {
+            notify("Please select a project.", "error");
+            return false;
+        } else {
+            if (obj == 'form') {
+                $("#SearchForm").attr('action', "ProjectCostingReport").submit();
+            } else {
+                $('#SearchForm').attr('action', "ExportProjectCostingReport?btntype=" + obj2).submit();
+            }
+            return true;
+        }
+    }
+
+    function LoadProjects() {
+        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        $("#ProjectId").html("");
+        var options = $("#ProjectId");
+        $.getJSON("/Home/GetProjectListByYear?year=" + $("#ReportYear").val() + "&salesmenId=" + $("#ddlSalesmen").val(), function (response) {
+            $.each(response, function () {
+                options.append($("<option />").val(this.Value).text(this.Text));
+                $("#ProjectId").trigger("chosen:updated");
+                $("#ProjectId").trigger("liszt:updated");
+            });
+
+        });
+        $.loader('close');
+
+
+        //$("#ProjectId").chosen();
+
+    }
+    $(function () {
+        //$("#ProjectId").chosen();
+        //$("#ProjectId").width(260);
+
+
+    });
+    function LoadDocuments() {
+        debugger;
+        var projectid = $("#ProjectId").val();
+        var ProjectBudgetDetailId = '@Model.ProjectBudget_DetailId';
+        LoadDocumentsByProject(projectid);
+        InvoiceFilePreviewInReport(projectid, ProjectBudgetDetailId);
+    }
+
+    function UploadedFiles() {
+        debugger;
+        var id = $("#ProjectId").val();
+        window.open("/Projects/ProjectDocument?id=" + id + "&IsProject=" + true, 'targetWindow', 'toolbar=no,location=no, status=no, menubar=no, scrollbars=yes,resizable=yes,width=850,height=500');
+        //UploadFile
+    }    
+
+    $("#ddlStatus").change(function () {
+
+        var Id = $('#ddlStatus').val();
+        $.ajax({
+            type: 'POST',
+
+            url: "/Report/GetSalesmen",
+            data: { salesmenStatus: Id },
+            dataType: "json",
+            success: function (Model) {
+                {
+                    $("#ddlSalesmen").empty();
+                    $.each(Model.SalesmenList, function () {
+                        $("#ddlSalesmen").append($("<option/>").val(this.Value).text(this.Text));
+                    });
+                }
+            },
+            error: function () {
+
+            }
+
+        })
+    });
+    $(document).ready(function () {
+        debugger;
+        $(".table").addClass("table-bordered");
+    });
+</script>
+

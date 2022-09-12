@@ -1,0 +1,655 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.ReceiptsViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-8 ">
+                <h3 class="animated fadeInLeft text-primary">Customer Payments</h3>
+            </div>
+            <div class="col-md-6 col-4 ">
+                <button type="button" onclick="openModelpop('/Receipts/LoadAddEdit', 'id', 0);" class='btn btn-primary pull-right'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1">
+    <div class="col-md-12">
+
+        @*<div class="col-md-4">
+                <label class="control-label" for="date_rangelbl">Date Range</label>
+                <div class="input-group">
+                    <input type="text" id="date_range" name="date_range" class="form-control date_form_control" maxlength="21" readonly />
+                    <div class="input-group-append">
+                        <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                    </div>
+                </div>
+            </div>*@
+        @using (Html.BeginForm("Index", "Receipts", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+        {
+            <div class="row">
+                <div class="col-md-2  col-sm-6" style="white-space:nowrap">
+                    <label class="control-label " for="from_date"> From Date:</label>
+                    <div class="input-group col-md-9">
+                        <input id="SearchFrom" name="SearchFrom" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.SearchFrom).ToString("dd/MM/yyyy")" />
+                    </div>
+                </div>
+                <div class="col-md-2  col-sm-6" style="white-space:nowrap">
+                    <label class="control-label" for="to_date">To Date:</label>
+                    <div class="input-group col-md-9">
+                        <input id="SearchTo" name="SearchTo" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.SearchTo).ToString("dd/MM/yyyy")" />
+                    </div>
+                </div>
+
+                <div class="col-md-2 col-sm-6">
+                    <div class="form-group">
+                        <label class="control-label" for="Statuslbl">Address/Site</label>
+                        <div>
+                            <select name="AddressId" id="AddressId" class="form-control select2" required="required">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="form-group">
+                        <label class="control-label" for="Salesmenlbl">Salesmen</label>
+                        <div>
+                            <select name="SalesmenId" id="SalesmenId" class="form-control select2" required="required">
+                                <option value="">-- Select --</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="col-md-2 col-sm-6 col-10">
+                        <div class="form-group">
+                            <label class="control-label" for="SearchStringlbl">Search</label>
+                            <input id="SearchString" name="SearchString" class="form-control" placeholder="Search Here" maxlength="50" />
+                        </div>
+                    </div>*@
+                <div class="col-md-1 col-sm-2 col-2">
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary btn-sm mt-srh-btn">
+                            <i class="fa fa-search" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        }
+
+    </div>
+</div>
+
+
+<div class="col-md-12 padding-0">
+    <div class="col-md-12">
+
+        <div class="responsive-table">
+
+            <div id="Receiptsgrid"></div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+
+        //$('#date_range').daterangepicker({
+        //    "autoUpdateInput": true,
+        //    "autoApply": true,
+        //    locale: {
+        //        format: 'DD/MM/YYYY',
+        //        cancelLabel: 'Clear'
+        //    },
+        //    ranges: {
+        //        'Today': [moment(), moment()],
+        //        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+        //        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+        //        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+        //        'This Month': [moment().startOf('month'), moment().endOf('month')],
+        //        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        //        'Last 3 Months': [moment().subtract(3, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        //        'Last 6 Months': [moment().subtract(6, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        //        'Last 1 Year': [moment().subtract(12, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')],
+        //    },
+        //    "alwaysShowCalendars": true,
+        //});
+
+        //$('#date_range').on('apply.daterangepicker', function (ev, picker) {
+        //    $(this).val(picker.startDate.format('DD/MM/YYYY') + ' - ' + picker.endDate.format('DD/MM/YYYY'));
+        //});
+
+        //$('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+        //    $(this).val('');
+        //});
+
+        ////Nithin Start Added Defaultly 1 month from present date in DateRangePicker
+        //var present_date = new Date();
+
+        //var previous_date = present_date.setMonth(present_date.getMonth() - 1);
+        //$('#date_range').data('daterangepicker').setStartDate(present_date);
+        //$('#date_range').data('daterangepicker').setEndDate(previous_date);
+        ////Nithin End Added Defaultly 1 month from present date in DateRangePicker
+
+        //$('#date_range + .input-group-append').click(function () {
+        //    $('#date_range').trigger("focus");
+        //});
+        $("#SearchFrom").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt2 = $('#SearchTo');
+                var startDate = $(this).datepicker('getDate');
+                var minDate = $(this).datepicker('getDate');
+                dt2.datepicker('option', 'minDate', minDate);
+            }
+        });
+        $('#SearchFrom').removeAttr("data-val-date");
+
+        $("#SearchTo").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt1 = $('#SearchFrom');
+                var startDate = $(this).datepicker('getDate');
+                var maxDate = $(this).datepicker('getDate');
+                dt1.datepicker('option', 'maxDate', maxDate);
+            }
+
+        });
+        $('#SearchTo').removeAttr("data-val-date");
+
+        debugger;
+        BindSalesMan();
+        BindAddressSite();
+        BindCustomerPaymentGrid();
+    });
+
+    var slsManId = '';
+
+    function BindSalesMan() {
+        debugger;
+        var IsSalesManLogin = '@ViewBag.IsSalesManLogin';
+        //alert(IsSalesManLogin);
+        if (IsSalesManLogin != "NO") {
+            $.get('@Url.Action("BindSalesmenByLogin", "Master")?Uid=' + IsSalesManLogin, function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                //items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                //var i;
+                //for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data.id + ">" + list.data.salesmen_name + "</option>");
+                //}
+                $("#SalesmenId").html(items.join(' '));
+                $("#SalesmenId").val(list.data.id);
+                slsManId = list.data.id;
+                //alert("BindSalesMan" + slsManId);
+                $('#SalesmenId').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+            @*debugger
+            var role = '@Model.role';
+            if (role == "Salesman") {
+                $("#SalesmenId").val('@Model.id').trigger('change');
+                $('#SalesmenId').prop('disabled', true);
+            }
+            else {
+                $('#SalesmenId').prop('disabled', false);
+            }*@
+            //BindCustomerPaymentGrid();
+        });
+        }
+        else {
+            $.get('@Url.Action("BindSalesmen", "Master")', function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].id + ">" + list.data[i].salesmen_name + "</option>");
+                }
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#SalesmenId").html(items.join(' '));
+                $('#SalesmenId').select2();
+            }
+            @*debugger
+            var role = '@Model.role';
+            if (role == "Salesman") {
+                $("#SalesmenId").val('@Model.id').trigger('change');
+                $('#SalesmenId').prop('disabled', true);
+            }
+            else {
+                $('#SalesmenId').prop('disabled', false);
+            }*@
+            //BindCustomerPaymentGrid();
+        });
+        }
+    }
+
+    function BindAddressSite() {
+        debugger;
+        //alert("BindAddressSite -" + slsManId);
+        if (slsManId == "")
+            slsManId = 0;
+        $.get('@Url.Action("BindAddressSite", "Master")?Project_Id=0&Salesmen_Id=' + slsManId, function (list) {
+            debugger
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].id + ">" + list.data[i].AddressSite + "</option>");
+                }
+                $("#AddressId").html(items.join(' '));
+                $('#AddressId').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#AddressId").html(items.join(' '));
+                $('#AddressId').select2();
+            }
+            @*debugger
+            var role = '@Model.role';
+            if (role == "Salesman") {
+                $("#SalesmenId").val('@Model.id').trigger('change');
+                $('#SalesmenId').prop('disabled', true);
+            }
+            else {
+                $('#SalesmenId').prop('disabled', false);
+            }
+            BindCustomerPaymentGrid();*@
+        });
+    }
+
+    function CustomerPaymentGrid() {
+        debugger;
+        BindCustomerPaymentGrid();
+    }
+    function BindCustomerPaymentGrid() {
+    debugger
+    kendo.ui.Grid.fn.onAddClearFilter = function () {
+        debugger
+        var grid = this;
+        grid.wrapper.find(".k-grid-add").on("click", function (e) {
+            //console.log('onaddclearfilter');
+            //send to first page if it's not already
+            if (grid.pager) grid.pager.page(1);
+            //clear the filter
+            if (grid.dataSource) grid.dataSource.filter([]);
+        });
+        }
+        var AddressId = $('#AddressId').val();
+        if (AddressId == "") {
+            AddressId = 0;
+        }
+        var salesMenId = $('#SalesmenId').val();
+        if (salesMenId == "") {
+            salesMenId = 0;
+        }
+    var Values = {
+        fromdate: $('#SearchFrom').val(),
+        todate: $('#SearchTo').val(),
+        ProjectId: AddressId,//$('#AddressId').val(),
+        salesMenId: salesMenId,//$('#SalesmenId').val(),
+        SearchString: $('#SearchString').val(),
+    };
+    var JsonValues = JSON.stringify(Values);
+
+    dataSource = new kendo.data.DataSource({
+        transport: {
+                        read: function (options) {
+                            $.ajax({
+                                url: '@Url.Action("ReceiptsList", "Receipts")?JsonValues=' + JsonValues,
+                                type: "GET",
+                                dataType: "json",
+                                success: function (result) {
+                                    debugger
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    debugger
+                                    options.error(result);
+                                }
+                            });
+                        },
+                        @*create: function (options) {
+                            debugger
+                            $.ajax({
+                                    url: '@Url.Action("", "")',
+                                type: "POST",
+                                dataType: "json",
+                                data: { JsonQuotation: JSON.stringify(options.data.models[0]) },
+                                success: function (result) {
+                                    debugger
+                                    $("#Receiptsgrid").data('kendoGrid').dataSource.read();
+                                    $("#Receiptsgrid").data('kendoGrid').refresh();
+                                    if (result.data.Result > 0) {
+                                        notify(result.data.Errormessage, "success");
+                                    }
+                                    else {
+                                        notify(result.data.Errormessage, "error");
+                                    }
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    debugger
+                                    options.error(result);
+                                }
+                            });
+                        },
+                        update: function (options) {
+                            debugger
+                            options.data.models[0].CreatedUpdated = "";
+                            $.ajax({
+                                url: '@Url.Action("UpsertCustomerPayments", "Receipts")',
+                                type: "POST",
+                                dataType: "json",
+                                data: { JsonCustomerPayments: JSON.stringify(options.data.models[0]) },
+                                success: function (result) {
+                                    debugger
+                                    $("#Receiptsgrid").data('kendoGrid').dataSource.read();
+                                    $("#Receiptsgrid").data('kendoGrid').refresh();
+                                    if (result.data.Result > 0) {
+                                        notify(result.data.Errormessage, "success");
+                                    }
+                                    else {
+                                        notify(result.data.Errormessage, "error");
+                                    }
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    debugger
+                                    options.error(result);
+                                }
+                            });
+                        },*@
+                        @*destroy: function (options) {
+                            debugger
+                            var Id = options.data.models[0].id;
+                            $.ajax({
+                                url: '@Url.Action("Delete_Customer_Payments", "Receipts")?Id=' + Id,
+                                type: "POST",
+                                dataType: "json",
+                                data: {},
+                                success: function (result) {
+                                    debugger
+                                    $("#Receiptsgrid").data('kendoGrid').dataSource.read();
+                                    $("#Receiptsgrid").data('kendoGrid').refresh();
+                                    if (result.data.Result > 0) {
+                                        notify(result.data.Errormessage, "success");
+                                    }
+                                    else {
+                                        notify(result.data.Errormessage, "error");
+                                    }
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    debugger
+                                    options.error(result);
+                                }
+                            });
+                        },*@
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && options.models) {
+                                return { models: kendo.stringify(options.models) };
+                            }
+                        }
+                    },
+                    batch: true,
+                    pageSize: 15,
+                    schema: {
+                        data: "data.Items", total: "data.TotalCount",
+                        model: {
+                            id: "id",
+                            fields: {
+                                id: { editable: false },
+                                receipt_date: { validation: { required: true }, type: "date" },
+                                project_name: { defaultValue: { id: 0, AddressSite: "-- Select --" }, validation: { required: true} },
+                                mode_of_payment: { defaultValue: { MOP_id: 0, MOP_Description: "-- Select --" }, validation: { required: true } },
+                                Banks: { defaultValue: { bank_id: 0, bank_name: "-- Select --" }, validation: { required: true } },
+                                cheque_details: { validation: { required: true } },
+                                remarks: { validation: { required: true } },
+                                CreatedUpdated: { validation: { required: false }, editable: false },
+                                Amount: { type: "number", editable: false },
+                                Gst_Percentage: { type: "number", editable: false },
+                                Gst_Amount: { type: "number", editable: false },
+                                Total_Amount: { type: "number", editable: false },
+                                //Amount  Gst_Percentage Gst_Amount Total_Amount
+                            }
+                        }
+                    }
+
+                });
+
+    var Receiptsgrid = $("#Receiptsgrid").kendoGrid({
+                dataSource: dataSource,
+                navigatable: true,
+                pageable: true,
+        toolbar: [{ name: "excel", text: "Export to Excel " },
+        { name: "search" }, { template: '   <a type="button" class="k-button" style="float:right;" onclick="return  clearAllFilters()" >Clear All Filters</a>' }],
+        excel: {
+            fileName: "Receipts List.xlsx",
+            allPages: true,
+        },
+        filterable: true,
+
+        sortable: true,
+        autoSync: true,
+        reorderable:true,
+                resizable: true,
+                pageable: {
+                    pageSize: 15,
+                    buttonCount: 15,
+                    pageSizes: [5, 15, 30, 60, 100, 500],
+                    refresh: true,
+                    messages: {
+                        display: "{0} - {1} of {2} Receipts", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                        empty: "No Receipts to display",
+                        page: "Page",
+                        of: "of {0}", //{0} is total amount of pages
+                        itemsPerPage: "Receipts per page",
+                        first: "Go to the first page",
+                        previous: "Go to the previous page",
+                        next: "Go to the next page",
+                        last: "Go to the last page",
+                        refresh: "Refresh"
+                    }
+        },
+        //edit: onGridEditing,
+        columns: [
+
+
+            //{
+            //    command: [
+            //        { name: "editdetails", text: " ", iconClass: "k-icon k-i-pencil", click: QuotationDetail }, { name: "copy", text: " ", iconClass: "k-icon k-i-copy", click: CopyProjectDetails }, { name: "Print", text: "", iconClass: "k-icon k-i-print", click: PrintPreview }, { name: "destroy", text: " ", iconClass: "k-icon k-i-delete" }], title: "Action", width: "96px"
+            //},
+                    //{ field: "id", hidden: true },
+            { field: "id", hidden: true },
+            { field: "receipt_date", width: "110px", title: "Date", format: "{0:dd-MMM-yyyy}", filterable: { multi: true, search: true, template: "betweenFilter" }, attributes: { style: "text-align:center;" }},
+            { field: "project_name", width: "100px", title: "Address/Site", filterable: { multi: true, search: true },
+                editor: AddressSiteDropDownEditor, template: "#=project_name.AddressSite#"
+            },
+            { field: "mode_of_payment", width: "100px", title: "Payment Mode", filterable: { multi: true, search: true }, editor: ModeOfPaymentsDropDownEditor, template: "#=mode_of_payment.MOP_Description#" },
+            { field: "Banks", width: "100px", title: "Bank", filterable: { multi: true, search: true }, editor: BanksDropDownEditor, template:"#=Banks.bank_name#" },
+            { field: "cheque_details", width: "100px", title: "Cheque Details", filterable: { multi: true, search: true } },
+            { field: "remarks", width: "100px", title: "Remarks", filterable: { multi: true, search: true } },
+            {
+                field: "Total_Amount", width: "100px", title: "Total Amount", format: "{0:c}", attributes: { style: "text-align:right;" }, filterable: { multi: true, search: true }
+            },
+              //Amount  Gst_Percentage Gst_Amount Total_Amount
+
+            {
+                field: "CreatedUpdated", width: "160px", title: "Created/Updated", filterable: false, editable: false, encoded: false },
+             {
+                 command: [{ name: "edit", text: "", iconClass: "k-icon k-i-pencil", click: UpdateReceipts},
+                     { name: "Delete", text: " ", iconClass: "k-icon k-i-delete", click: DestroyReceipts}], title: "Action", width: "96px",
+                             }
+        ],
+        editable: false
+    }).data("kendoGrid");
+        Receiptsgrid.onAddClearFilter();
+    }
+
+    function UpdateReceipts(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var Id = item.id;// get the date of this row
+        //  openModelpopNew('/ProjectsBudget/LoadAddEdit', 'id', Id, 'project_id', project_id, 'project_budget_details_id', project_budget_details_id);
+        //openModelpopup('/ProjectsBudget/LoadAddEditNew', 'id', Id, 'ProjectId', project_id);
+        openModelpop('/Receipts/LoadAddEdit', 'id', Id)
+    }
+
+    function onGridEditing(arg) {
+        /*arg.container.find("input[name='project_number']").attr('maxlength', '150');*/
+        arg.container.find("input[name='project_name']").attr('maxlength', '250');
+    }
+    function AddressSiteDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter: "contains",
+                            autoBind: false,
+                            optionLabel: "Select AddressSite",
+                            dataTextField: "AddressSite",
+                            dataValueField: "id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("BindAddressSite", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "AddressSite", dir: "asc" },
+                            },
+                           // noDataTemplate: $("#CategoryTemplate").html()
+                        });
+    }
+     function BanksDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter: "contains",
+                            autoBind: false,
+                            optionLabel: "Select Bank",
+                            dataTextField: "bank_name",
+                            dataValueField: "bank_id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("BindBanks", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "bank_name", dir: "asc" },
+                            },
+                           // noDataTemplate: $("#CategoryTemplate").html()
+                        });
+    }
+    function ModeOfPaymentsDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter: "contains",
+                            autoBind: false,
+                            optionLabel: "Select ModeOfPayment",
+                            dataTextField: "MOP_Description",
+                            dataValueField: "MOP_id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("BindMode_of_Payments", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                   },
+                                   sort: { field: "MOP_Description", dir: "asc" },
+                            },
+                           // noDataTemplate: $("#CategoryTemplate").html()
+                        });
+    }
+
+    function DestroyReceipts(e) {
+        debugger;
+
+        //var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        //var item = this.dataItem(tr);
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var Id = item.id;;// get the date of this row
+        $.ajax({
+            url: '@Url.Action("Delete_Customer_Payments", "Receipts")?Id=' + Id,
+           /* data: {},*/
+            type: "POST",
+            dataType: 'Json',
+            success: function (result) {
+                debugger
+                $("#Receiptsgrid").data('kendoGrid').dataSource.read();
+                $("#Receiptsgrid").data('kendoGrid').refresh();
+                if (result.data.Result > 0) {
+                    notify(result.data.Errormessage, "success");
+                }
+                else {
+                    notify(result.data.Errormessage, "error");
+                }
+                options.success(result);
+            },
+            error: function (result) {
+                debugger
+                options.error(result);
+            }
+        });
+    }
+
+</script>

@@ -1,0 +1,1153 @@
+﻿@using PMS.Models
+@using MVCGrid.Web;
+@model PMS.Models.ReportViewModel
+@{
+    ViewBag.Title = "AccountSalesDashboard";
+}
+
+<style id="compiled-css" type="text/css">
+    .row-eq-height {
+        display: -webkit-box;
+        display: -webkit-flex;
+        display: -ms-flexbox;
+        display: flex;
+    }
+    /* .scl {
+        overflow: scroll;
+    }*/
+
+    table {
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    th, td {
+        text-align: center;
+        padding: 8px;
+        height: 50px;
+        width: 100px;
+    }
+
+    tr:nth-child(even) {
+        background-color: aliceblue;
+    }
+</style>
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-6">
+                <h3 class="animated fadeInLeft text-primary">Dashboard</h3>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="row mx-auto mt-2">
+    <div class="col-md-12 px-1">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h4 class="card-title"> Filters </h4>
+            </div>
+            @using (Html.BeginForm("AccountSalesDashboard", "DashBoard", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+            {
+                <div class="row">
+                    <div  class="col-md-2 col-sm-8" style="padding-left:2%">
+                        <label class="col-form-label control-label text-primary" for="from_date"> From Date:</label>
+                        <div class="input-group">
+                            <input id="from_date" name="from_date" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.from_date).ToString("dd/MM/yyyy")" />
+                        </div>
+                    </div>
+                    <div class="col-md-2 col-sm-8" style="padding-left:0%;padding-right:1%;">
+                        <label class="col-form-label control-label text-primary" for="to_date">To Date:</label>
+                        <div class="input-group">
+                            <input id="to_date" name="to_date" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.to_date).ToString("dd/MM/yyyy")" />
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-8" style="padding-left:0%;padding-right:1%;">
+                        <label class="col-form-label control-label text-primary" for="Branch">Branch:</label>
+                        <div class="input-group">
+                            @Html.DropDownListFor(o => o.BranchId, Model.BranchList, new { @id = "NewBranchId", @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-sm-8" style="padding-left:0%;padding-right:1%;">
+                        <label class="col-form-label control-label text-primary" for="Salesmen">Salesmen:</label>
+                        <div class="input-group">
+                            @Html.DropDownListFor(o => o.ProjectSalesmenId, Model.SalenmenList, new { @class = "form-control" })
+                        </div>
+                    </div>
+                    <div class="col-md-1 col-xs-10">
+                        <button type="submit" class="btn btn-primary btn-sm-1 mt-srh-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="row mx-auto mt-2">
+    <div class="col-md-12 px-1">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h4 class="card-title">Contracts/Projects Summary Report</h4>
+            </div>
+            <div class="pt-1 card-body">
+                <div class="responsive-table">
+                    @if (Model.SearchStringmyprojects == null)
+                    {
+                        Model.SearchStringmyprojects = "";
+                    }
+                    @*<input type="hidden" id="branch_id" name="branch_id" value="@PMS.Common.SessionManagement.SelectedBranchID" />*@
+                    @Html.MVCGrid("MyProjects", new { hdnUID = Model.Uid, brId = Model.BranchId, fromdate = Model.from_date, todate = Model.to_date, ProjectStatusId = Model.ProjectStatusId, ProjectSalesmenId = Convert.ToInt32(Model.ProjectSalesmenId), SearchStringmyprojects = Model.SearchStringmyprojects })
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-auto mt-2">
+    <div class="col-md-12 px-1">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <div class="row">
+                    <div class="row col-md-11">
+                        <h4 class="card-title">Approved Budget Cost</h4>
+                    </div>
+                    <div class="row">
+                        <button type="button" onclick="BudgetList();" class='btn btn-primary pull-right ml-2 mb-2'>
+                            <span>Go To Budget Cost</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="pt-1 card-body">
+                <div class="responsive-table">
+                    <div id="BudgetCostgrid" class="accordion"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<div class="tab-content">
+
+
+    <div class="row mx-auto mt-2">
+        <div class="col-auto mb-0" align="right">
+            <h5>Year:</h5>
+        </div>
+        <div class="col-md-1 col-lg-2" align="right">
+            @Html.DropDownList("year", Enumerable.Range(2016, (DateTime.Today.Year - 2016) + 1).Reverse().Select(x => new SelectListItem { Text = x.ToString() }), new { Onchange = "selectedyear(this)", @class = "form-control" })
+        </div>
+    </div>
+
+    <div class="row mx-auto mt-2">
+        <div class="col-md-3 px-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex mb-1">
+                        <div class="col">
+                            <h4 class="mb-0 mt-2 number-font" id="TotalSales"><strong></strong></h4>
+                            <p class="mb-1">Total Sales</p>
+                        </div>
+
+                        <div class="col-auto mb-0">
+                            <div class="dash-icon text-orange">
+                                <i class="fa fa-bar-chart"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="fs-12 text-success"> <strong>3.3%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last year</span></span>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3 px-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex mb-1">
+                        <div class="col">
+                            <h4 class="mb-0 mt-2 number-font" id="NoOfContracts"><strong></strong></h4>
+                            <p class="mb-1">No.of Contracts</p>
+                        </div>
+                        <div class="col-auto mb-0">
+                            <div class="dash-icon text-orange">
+                                <i class="fa fa-bar-chart"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="fs-12 text-success"> <strong>2.9%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last year</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 px-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex mb-1">
+                        <div class="col">
+                            <h4 id="CurrentMonthSales" class="mb-0 mt-2 number-font"><strong></strong></h4>
+                            <p class="mb-1">Current Month Sales</p>
+                        </div>
+                        <div class="col-auto mb-0">
+                            <div class="dash-icon text-orange">
+                                <i class="fa fa-bar-chart"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="fs-12 text-success"> <strong>2.1%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than last Month</span></span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 px-2">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row d-flex mb-1">
+                        <div class="col">
+                            <h4 id="CurrentMonthContracts" class="mb-0 mt-2 number-font"><strong></strong></h4>
+                            <p class="mb-1">Current Month Contracts</p>
+                        </div>
+                        <div class="col-auto mb-0">
+                            <div class="dash-icon text-orange">
+                                <i class="fa fa-bar-chart"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <span class="fs-12 text-success"> <strong>2.3%</strong> <i class="fa fa-arrow-up"></i> <span class="text-muted fs-12 ml-0 mt-1">than Last Month</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-auto mt-2">
+    <div class="row mx-auto mt-2 ">
+        <div class="col-md-3 px-1 row-eq-height">
+            <div class="card overflow-hidden ">
+                <div class="card-header">
+                    <h4 class="card-title">Top 10 Salesman</h4>
+                </div>
+                <div class="pt-1 card-body">
+                    <table id="toptensales">
+                        <thead>
+                            <tr>
+                                <th data-field="make" class="k-header" data-role="columnsorter" data-index="0">
+                                    <a class="k-link" href="#">Salesman</a>
+                                </th>
+                                <th data-field="model" class="k-header" data-role="columnsorter" data-index="1">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topTenSalesman">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 px-1 row-eq-height">
+            <div class="card overflow-hidden">
+                <div class="card-header">
+                    <h4 class="card-title">Top 10 Customer</h4>
+                </div>
+                <div class="pt-1 card-body ">
+                    <table id="toptencustomer">
+                        <thead>
+                            <tr>
+                                <th data-field="make" class="k-header" data-role="columnsorter" data-index="0">
+                                    <a class="k-link" href="#">CustomerName</a>
+                                </th>
+                                <th data-field="model" class="k-header" data-role="columnsorter" data-index="1">
+                                    <a class="k-link" href="#">Amount</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="topTenCustomer">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 px-1 row-eq-height">
+            <div class="card overflow-hidden">
+                <div class="card-header">
+                    <h4 class="card-title">Top 10 Projects</h4>
+                </div>
+                <div class="pt-1 card-body">
+                    <table id="toptenproject">
+                        <thead>
+                            <tr>
+                                <th data-field="make" class="k-header" data-role="columnsorter" data-index="0">
+                                    <a class="k-link" href="#">Address/Site</a>
+                                </th>
+                                <th data-field="model" class="k-header" data-role="columnsorter" data-index="1">
+                                    <a class="k-link" href="#">Amount</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="topTenprojects">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 px-1 row-eq-height">
+            <div class="card overflow-hidden">
+                <div class="card-header">
+                    <h4 class="card-title">Top 10 Supplier</h4>
+                </div>
+                <div class="pt-1 card-body ">
+                    <table id="toptensupplier">
+                        <thead>
+                            <tr>
+                                <th data-field="make" class="k-header" data-role="columnsorter" data-index="0">
+                                    <a class="k-link" href="#">SupplierName</a>
+                                </th>
+                                <th data-field="model" class="k-header" data-role="columnsorter" data-index="1">
+                                    <a class="k-link" href="#">Amount</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="topTensupllier">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mx-auto mt-2 ">
+        <div class="card overflow-hidden">
+            <div class="card-header">
+                <h4 class="card-title">Loan Summary</h4>
+            </div>
+            <div class="pt-1 card-body">
+                <table id="topTenloan">
+                    <thead>
+                        <tr>
+                            <th data-field="make" class="k-header" data-role="columnsorter" data-index="0">
+                                <a class="k-link" href="#">Address</a>
+                            </th>
+                            <th data-field="model" class="k-header" data-role="columnsorter" data-index="1">
+                                <a class="k-link" href="#">Comission</a>
+                            </th>
+                            <th data-field="make" class="k-header" data-role="columnsorter" data-index="0">
+                                <a class="k-link" href="#">LoanAmount</a>
+                            </th>
+                            <th data-field="model" class="k-header" data-role="columnsorter" data-index="1">
+                                <a class="k-link" href="#">loanpaid</a>
+                            </th>
+                            <th data-field="make" class="k-header" data-role="columnsorter" data-index="0">
+                                <a class="k-link" href="#">repaidloan</a>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="topTenloan">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        debugger;
+        $("#from_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt2 = $('#to_date');
+                var startDate = $(this).datepicker('getDate');
+                var minDate = $(this).datepicker('getDate');
+                dt2.datepicker('option', 'minDate', minDate);
+            }
+        });
+
+        $('#from_date').removeAttr("data-val-date");
+
+        $("#to_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt1 = $('#from_date');
+                var startDate = $(this).datepicker('getDate');
+                var maxDate = $(this).datepicker('getDate');
+                dt1.datepicker('option', 'maxDate', maxDate);
+            }
+
+        });
+        $('#to_date').removeAttr("data-val-date");
+        var year = $('#year').val();
+        var BranchId = $('#NewBranchId').val();
+        var SalesmanId = $('#ProjectSalesmenId').val();
+        GetTop10Salesman(year, BranchId, SalesmanId);
+        GetTopTenCustomer(year, BranchId, SalesmanId);
+        GetTopTenProjects(year, BranchId, SalesmanId);
+        GetTopTenSupplier(year, BranchId, SalesmanId);
+        GetDetailsBasedonYear(year, BranchId, SalesmanId);
+        GetTopTenLoan(year, BranchId, SalesmanId);
+        BindGrid();
+    });
+
+    function GetTop10Salesman(yearvalue, branchvalue,SalesmenId) {
+        debugger;
+        $.ajax({
+            url: '@Url.Action("GetTop10Salesman", "DashBoard")',
+            type: "GET",
+            dataType: "json",
+            data: { year: yearvalue, BranchID: branchvalue, SalesmanId: SalesmenId },
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+               // debugger;
+                var rows = '';
+                    $.each(data, function (i,val) {
+                        rows += "<tr><td>" + val.Salesman + "</td><td>$" + val.Amount + "</td></tr>";
+                    });
+
+                $("#topTenSalesman").html(rows);
+
+            },
+            error: function (data) {
+                alert("An error occured. Please contact admin");
+            },
+        });
+
+    }
+
+    function GetTopTenCustomer(yearvalue, branchvalue, SalesmenId) {
+        $.ajax({
+            url: '@Url.Action("GetTopTenCustomer", "DashBoard")',
+            type: "GET",
+            dataType: "json",
+            data: { year: yearvalue, BranchID: branchvalue, SalesmanId: SalesmenId},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+               // debugger;
+                var rows = '';
+                    $.each(data, function (i,val) {
+                        rows += "<tr><td>" + val.name1 + "</td><td>$" + val.Amount + "</td></tr>";
+                    });
+                $("#topTenCustomer").html(rows);
+            },
+            error: function (data) {
+                alert("An error occured. Please contact admin");
+            },
+        });
+    }
+
+    function GetTopTenProjects(yearvalue, branchvalue, SalesmenId) {
+        $.ajax({
+            url: '@Url.Action("GetTopTenProjects", "DashBoard")',
+            type: "GET",
+            dataType: "json",
+            data: { year: yearvalue, BranchID: branchvalue, SalesmanId: SalesmenId},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+              //  debugger;
+                var rows = '';
+                    $.each(data, function (i,val) {
+                        rows += "<tr><td>" + val.project_name + "</td><td>$" + val.Amount + "</td></tr>";
+                    });
+                $("#topTenprojects").html(rows);
+
+            },
+            error: function (data) {
+                alert("An error occured. Please contact admin");
+            },
+        });
+
+    }
+
+    function GetTopTenSupplier(yearvalue, branchvalue,SalesmenId) {
+        $.ajax({
+            url: '@Url.Action("GetTopTenSupplier", "DashBoard")',
+            type: "GET",
+            dataType: "json",
+            data: { year: yearvalue, BranchID: branchvalue, SalesmanId: SalesmenId},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+              //  debugger;
+                var rows = '';
+                    $.each(data, function (i,val) {
+                        rows += "<tr><td>" + val.supplier_name + "</td><td>$ " + val.Amount + "</td></tr>";
+                    });
+                $("#topTensupllier").html(rows);
+            },
+            error: function (data) {
+                alert("An error occured. Please contact admin");
+            },
+        });
+        }
+
+    function GetDetailsBasedonYear(yearvalue, branchvalue,SalesmenId) {
+       // debugger;
+        $.ajax({
+            url: '@Url.Action("GetDetailsBasedonYear", "DashBoard")',
+            type: "GET",
+            dataType: "json",
+            data: { year: yearvalue, BranchID: branchvalue, SalesmanId: SalesmenId},
+            contentType: "application/json;charset=utf-8",
+            success: function (data) {
+               // debugger;
+                var rows = '';
+                var rows1 = '';
+                var rows2 = '';
+                var rows3 = '';
+                $.each(data, function (i, val) {
+                    rows += "<tr><td>$" + val.TotalSales + "</td></tr>";
+                    rows1 += "<tr><td>" + val.NoOfContracts + "</td></tr>";
+                    rows2 += "<tr><td>$" + val.CurrentMonthSales + "</td></tr>";
+                    rows3 += "<tr><td>" + val.CurrentMonthContracts + "</td></tr>";
+                });
+                $("#TotalSales").html(rows);
+                $("#NoOfContracts").html(rows1);
+                $("#CurrentMonthSales").html(rows2);
+                $("#CurrentMonthContracts").html(rows3);
+            },
+            error: function (data) {
+                alert("An error occured. Please contact admin");
+            }
+        });
+    }
+
+    function GetTopTenLoan(yearvalue, branchvalue,SalesmenId) {
+        debugger;
+        $.ajax({
+            url: '@Url.Action("GetTopTenLoan", "DashBoard")',
+            type: "GET",
+            dataType: "json",
+            data: { year: yearvalue, BranchID: branchvalue, SalesmanId: SalesmenId},
+            contentType: "application/json;charset=utf-8",
+            // data: '{bnk: ' + JSON.stringify(bnk) + '}',
+            success: function (data) {
+               // debugger;
+                var rows = '';
+                    $.each(data, function (i,val) {
+                        rows += "<tr><td>" + val.Address + "</td><td>$" + val.Comission + "</td><td>" + val.LoanAmount + "</td><td>" + val.loanpaid + "</td><td>" + val.repaidloan + "</td></tr>";
+                    });
+                $("#topTenloan").html(rows);
+            },
+            error: function (data) {
+                alert("An error occured. Please contact admin");
+            },
+        });
+    }
+
+    function selectedyear(year) {
+        debugger;
+        var yearvalue = year.value;
+        var yeartext = year.options[year.selectedIndex].innerHTML;
+        $('#year').val(yearvalue);
+        var BranchId = $('#NewBranchId').val();
+        var SalesmanId = $('#ProjectSalesmenId').val();
+        GetTop10Salesman(yearvalue, BranchId, SalesmanId);
+        GetTopTenCustomer(yearvalue, BranchId, SalesmanId);
+        GetTopTenProjects(yearvalue, BranchId, SalesmanId);
+        GetTopTenSupplier(yearvalue, BranchId, SalesmanId);
+        GetDetailsBasedonYear(yearvalue, BranchId, SalesmanId);
+        GetTopTenLoan(yearvalue, BranchId, SalesmanId);
+    }
+
+    $("#NewBranchId").change(function () {
+
+        debugger;
+        var BranchId = $("#NewBranchId").val();
+        $.get('@Url.Action("BindSalesmanListByBranch", "Dashboard")?BranchId=' + BranchId, function (list) {
+            debugger;
+            if (list != null) {
+                var items = [];
+                //items.push("<option value=" + 0 + ">" + "Select Salesmen" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].Value + ">" + list.data[i].Text + "</option>");
+                }
+                /*items.push("<option selected value=" + selectedSalesmenId + ">" + selectedSalesmentext + "</option>");*/
+                $("#ProjectSalesmenId").html(items.join(' '));
+                $('#ProjectSalesmenId').select2();
+                //$('#SalesmenId').val('@Model.ProjectSalesmenId').trigger('change')
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#ProjectSalesmenId").html(items.join(' '));
+                $('#ProjectSalesmenId').select2();
+            }
+            @*//debugger;
+            var role = '@Model.role';
+            if (role == "Salesman") {
+                $("#SalesmenId").val('@Model.id').trigger('change');
+                $('#SalesmenId').prop('disabled', true);
+            }
+            else {
+                $('#SalesmenId').prop('disabled', false);
+            }*@
+            //BindCustomerPaymentGrid();
+        });
+
+    });
+
+
+    function GetDetailsBasedonBranch() {
+        $.ajax({
+            url: '@Url.Action("GetDetailsBasedonBranch", "DashBoard")',
+            type: "GET",
+            dataType: "json",
+            data: $("#size").val(),
+            success: function (data) {
+                $("#CurrentDay").val(data.CurrentDay);
+                $("#CurrentMonth").val(data.CurrentMonth);
+                $("#CurrentQuarter").val(data.CurrentQuarter);
+                $("#No.ofCompletedProjects").val(data.CompletedProjects);
+            },
+            error: function (data) {
+                alert("An error occured. Please contact admin");
+            }
+        });
+    }
+
+    $(function () {
+        /*-------------------------------------------------------------*/
+        /*Total Revenue Kendo Chart*/
+
+        //Total Revenue Chart
+        $("#revenue_combo_charts").kendoChart({
+            // The Bottom Labels
+            legend: {
+                visible: false,
+                position: "bottom",
+            },
+            // Data For Dataset(Bar Chart))
+            series: [{
+                type: "column",
+                name: "Revenue ",
+                color: "#0C2D48",
+                data: [700, 350, 400, 250, 300, 600, 750, 550, 680, 920, 840, 960],
+            },
+            // Data For Dataset(line Chart)
+            {
+                type: "line",
+                name: "Growth",
+                color: "#2E8BC0",
+                style: "smooth",
+                width: 3,
+                data: [700, 350, 400, 250, 300, 600, 750, 550, 680, 920, 840, 960],
+
+                markers: {
+                    visible: true,
+                    background: "#0C2D48",
+
+                },
+            },],
+            //X Axis Value Range for labels
+            valueAxis: {
+                min: 100,
+                max: 1000,
+                majorGridLines: {
+                    visible: true
+                },
+            },
+            //Y Axis Data labels
+            categoryAxis: {
+
+                justified: true,
+                majorGridLines: {
+                    visible: true
+                },
+
+                categories: ['Jan', 'Feb', 'March', 'Apr', 'May', 'June', 'July', 'Aug', 'Sept', 'Oct', 'Nov', 'Dec'],
+
+
+            },
+            // Tootip For Dataset
+            tooltip: {
+                visible: true,
+
+                template: "#= category # : #= value #K"
+
+
+            },
+
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Project Status Chart
+        $("#project_status_chart").kendoChart({
+            // The Bottom Labels
+            legend: {
+                visible: true,
+                position: "bottom",
+            },
+
+            seriesDefaults: {
+                type: "donut",
+                size: 60,
+                holeSize: 60,
+                startAngle: 150
+            },
+            // Data For Dataset
+            series: [{
+                data: [
+                    { category: "Open", value: 56, color: "#267FE0" },
+                    { category: "Accepted", value: 20, color: "#3DE083" },
+                    { category: "Not Accepted", value: 30, color: "#E07231" },
+                    { category: "Completed", value: 12, color: "#125094" },
+
+                ],
+            }],
+            // Tootip For Dataset
+            tooltip: {
+                visible: true,
+                template: "#= category # : #= value #%"
+            }
+        });
+
+
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Sites
+        $("#top_sites").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Sites Owing
+        $("#top_sites_owing").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Sites Customer Owing
+        $("#top_sites_cust_owing").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Sites Customer Owing
+        $("#top_open_projects").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Sites Customer Owing
+        $("#top_sites_salesman").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+        /*-------------------------------------------------------------*/
+        /*-------------------------------------------------------------*/
+        //Top 10 Sites Customer Owing
+        $("#top_sites_salesman_owing").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+         //Top 10 Salesman
+        $("#toptensales").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+
+        //Top 10 Customer
+        $("#toptencustomer").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+
+        //Top 10 Projects
+        $("#toptenproject").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+
+        //Top 10 Supplier
+        $("#toptensupplier").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+        //Top 10 Loans
+        $("#topTenloan").kendoGrid({
+
+            sortable: true, resizable: true,
+        });
+        /*-------------------------------------------------------------*/
+    /*-------------------------------------------------------------*/
+        @*dataSource = new kendo.data.DataSource({
+            transport: {
+                            read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("ProjectsSummaryReport", "DashBoard")',
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 10,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "SNo",
+                                fields: {
+                                    id: { editable: false },
+                                    SNo: { editable: false },
+                                    Address: { editable: false, nullable: true },
+                                    SalesMan: { validation: { required: true} },
+                                    Date: { validation: { required: true }, type: "date" },
+                                    BudgetedCost: { defaultValue: { Customer_id: 0, name1: "-- Select --" }},
+                                    ContractValue: { defaultValue: { id: 0, salesmen_name: "-- Select --" } },
+                                    ProgressClaim: { validation: { required: false }, editable: false },
+                                    BalanceAmount: { validation: { required: true } },
+                                    CostingAmount: { validation: { required: true } },
+                                    Pcbc: { validation: { required: true } }
+                                }
+                            }
+                        }
+
+                    });*@
+    /*-------------------------------------------------------------*/
+    /*-------------------------------------------------------------*/
+
+
+        $("#projects_summary_report").kendoGrid({
+            columns: [
+                { field: "sno" },
+                { field: "address" },
+                { field: "salesman" },
+                { field: "date" },
+                { field: "budgetedcost" },
+                { field: "contractvalue" },
+                { field: "progressclaim" },
+                { field: "balanceamount" },
+                { field: "costingamount" },
+                { field: "pcbc" },
+            ],
+            dataSource: [
+                { sno: 1, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                { sno: 2, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                { sno: 3, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                { sno: 4, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                { sno: 5, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                { sno: 6, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                { sno: 7, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                {
+                    sno: 8, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00",
+                    balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00"
+                },
+                { sno: 9, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+                { sno: 10, address: "Blk 3 Bedok South Ave 3,#07-22", salesman: "Tan Bao Shen", date: "26/01/2021", budgetedcost: "$20,890.00", contractvalue: "$22,890.00", progressclaim: "$12,000.00", balanceamount: "$6,890", costingamount: "18,000.00", pcbc: "2,000.00" },
+
+            ]
+        });
+
+        $("#top_loan_report").kendoGrid({
+            columns: [
+                { field: "address" },
+                { field: "comission" },
+                { field: "loanamount" },
+                { field: "loanpaid" },
+                { field: "repaidloan" },
+
+            ],
+            dataSource: [
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+                { address: "Blk 3 Bedok South Ave 3,#07-22", comission: 3000, loanamount: 12000, loanpaid: 6000, repaidloan: 6000 },
+
+            ]
+        });
+    });
+
+    function loadGrid() {
+        debugger;
+        MVCGrid.reloadGrid('MyProjects');
+    }
+    function UploadFile(id) {
+        debugger;
+        window.open("/Projects/ProjectDocument?id=" + id + "&IsProject=" + true + "&IsDashBoard=" + true + "&IsContract=" + true, 'targetWindow', 'toolbar=no,location=no, status=no, menubar=no, scrollbars=yes,resizable=yes,width=850,height=500');
+        //UploadFile
+    }
+
+    function BindGrid() {
+        debugger;
+        var IsAdmin;
+
+        var IsAdminLogin = '@ViewBag.IsAdminLogin';
+        if (IsAdminLogin == 'YES')
+            IsAdmin = false;
+        else
+            IsAdmin = true;
+       // var supplier_id = $('#supplier_id').val();
+       // //var supplier_id = 539;
+       //var SearchString = $('#SearchString').val();
+       // //var SearchString = '';
+       // var fromdate = $('#date_range').data('daterangepicker').startDate;
+       // var enddate = $('#date_range').data('daterangepicker').endDate;
+        var Values = {
+            fromdate: $('#from_date').val(),
+            endDate: $('#to_date').val(),
+            supplier_id: 0,
+            SearchString: "",
+            SupplierId: 0,
+            StatusId: 2,
+            SalesmenId: $('#ProjectSalesmenId').val(),
+        };
+        var JsonValues = JSON.stringify(Values);
+        dataSource = new kendo.data.DataSource({
+			transport: {
+                read: function (options) {
+
+                    $.ajax({
+                        //url: '@Url.Action("ProjectsBudgetList", "ProjectsBudget")?supplier_id=' + supplier_id + '&SearchString=' + SearchString + '&fromdate=' + date.toISOString(fromdate) + '&enddate=' + date.toISOString(enddate),
+                        url: '@Url.Action("ProjectsBudgetList", "ProjectsBudget")?JsonValues=' + JsonValues,
+                        type: "GET",
+                        dataType: "json",
+                        success: function (result) {
+                            debugger;
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            options.error(result);
+                        }
+                    });
+				},
+
+                 @*destroy: function (options) {
+                    //debugger
+                     var project_budget_details_id = options.data.models[0].project_budget_details_id;
+                    $.ajax({
+                        url: '@Url.Action("Remove_Project_Budget_Detail", "ProjectsBudget")?Project_Budget_Detail_Id=' + project_budget_details_id,
+                        type: "POST",
+                        dataType: "json",
+                        data: {},
+                        success: function (result) {
+                            //debugger
+                            $("#grid").data('kendoGrid').dataSource.read();
+                            $("#grid").data('kendoGrid').refresh();
+                            if (result.data.Result > 0) {
+                                notify(result.data.Errormessage, "success");
+                            }
+                            else {
+                                notify(result.data.Errormessage, "error");
+                            }
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            //debugger
+                            options.error(result);                       }
+					});
+				},*@
+
+
+				parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return { models: kendo.stringify(options.models) };
+                    }
+                }
+			},
+            batch: true,
+            pageSize: 5,
+            schema: {
+                data: "data.Items", total: "data.TotalCount",
+                model: {
+                    project_budget_details_id: "project_budget_details_id",
+                    fields: {
+                       // project_budget_details_id: { type: "number", defaultValue: 0 },
+                        project_budget_id: { type: "number"},
+                        project_id: { type: "number" },
+                        project_name: { validation: { required: true } },
+                        supplier_names: { validation: { required: true } },
+                        //supplier_id: { validation: { required: false } },
+                        status_id: { validation: { required: true } },
+                        budget_amount: { type: "number", validation: { required: true } },
+                        InvoiceAmtWithGST: { type: "number", validation: { required: true } },
+                        Approved_amount: { type: "number", validation: { required: true } },
+                        CreatedUpdated: { validation: { required: true }, editable: false },
+                        status_name: { validation: { required: true } },
+                    }
+                }
+            }
+		});
+        $("#BudgetCostgrid").kendoGrid({
+            dataSource: dataSource,
+            navigatable: true,
+            toolbar: [{ name: "excel", text: "Export to Excel " },
+            { name: "search" }, { template: '   <a type="button" class="k-button" style="float:right;" onclick="return  clearAllFilters()" >Clear All Filters</a>' }],
+            excel: {
+                fileName: "Budget Cost List.xlsx",
+                allPages: true,
+            },
+            pageable: {
+                        pageSize: 5,
+                        buttonCount: 5,
+                        pageSizes: [10, 20, 30, 50, 100, 500],
+                        refresh: true,
+                        messages: {
+                            display: "{0} - {1} of {2} BC", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No BC to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "BC per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+            },
+            filterable: true,
+            sortable: true,
+             autoSync: true,
+    //           dataBound: function (e) {
+    //    debugger
+    //    //Nithin Added for disabling  inline edit for approved invoice
+    //               // var ApprovedAmount = e.container.find("input[name=Approved_amount]").data("kendoNumericTextBox");
+
+    //               //ApprovedAmount.enable(false);
+
+        //var grid = $("#grid").data("kendoGrid");
+        //var gridData = grid.dataSource.view();
+        //for (var i = 0; i < gridData.length; i++) {
+    //    //    var currentUid = gridData[i].uid;
+    //    //    if (gridData[i].status_id == 1 || gridData[i].status_id == "1" ) {
+    //    //        debugger
+    //    //        var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+    //    //        var currenttd = grid.table.find("td[data-field='" + "Approved_amount" + "']");
+
+    //    ////        debugger
+    //    ////        //var editButton = $(currenRow).find(".k-grid-Active");
+    //    ////        //editButton.addClass("active_btn");
+    //    //   } else {
+    //    ////        //var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+    //    ////        //var editButton = $(currenRow).find(".k-grid-Active");
+    //    ////        ////  editButton.hide();
+            //    ////        //editButton.removeClass("active_btn");
+        //    gridData[0].fields["Approved_amount"].visible = false;
+        //}
+
+    //    //}
+
+
+
+
+    //},
+            columns: [
+                // {
+                //    command: [{
+                //            name: "Approve", text: " ", iconClass: "k-icon k-i-check", click: UpdateForApproval, visible: function () {
+                //             var StatusId = status_id; return StatusId == "7"  }     },
+                //        {
+                //            name: "Approved", text: " ", iconClass: "k-icon k-i-undo",
+                //            //click: UpdateForDisApproval,
+                //            visible: function () {
+                //                var StatusId = status_id; return (StatusId == "2" || StatusId == "6")
+                //            }
+                //        },
+                //    ], title: "Approve", width: "50px", hidden: !IsAdmin
+                //},
+                //{
+                //    command: [{
+                //        name: "Verify", text: " ", iconClass: "k-icon k-i-check", click: UpdateForVerification, visible: function () {
+                //            var StatusId = status_id; return (StatusId == "1")
+                //        }
+                //    },
+                //    {
+                //        name: "Verified", text: " ", iconClass: "k-icon k-i-undo",
+                //        //click: UpdateForDisApproval,
+                //        visible: function () {
+                //            var StatusId = status_id; return (StatusId == "2" || StatusId == "6" || StatusId == "7")
+                //        }
+                //    },
+                //    ], title: "Verify", width: "50px", hidden: IsAdmin
+                //},
+                { field: "project_budget_details_id", hidden: true},
+                { field: "project_name", title: "Address/Site", filterable: { multi: true, search: true }, editable: true , width: "200px"},
+                { field: "supplier_names", title: "Suppliers", filterable: { multi: true, search: true }, editable: true, width: "130px" },
+                //{ field: "supplier_id", title: "supplier_id", filterable: { multi: true, search: true }, editable: false, width: "130px" },
+                { field: "status_name", title: "Status", filterable: { multi: true, search: true }, editable: true , width: "80px"},
+                { field: "InvoiceNumber", title: "Invoice Number", filterable: { multi: true, search: true }, editable: true , width: "100px"},
+                { field: "budget_amount", title: "Inv Amount", format: "{0:c}", hidden: true,  filterable: { multi: true, search: true }, editable: true, attributes: { style: "text-align:right;" } , width: "100px"},
+                { field: "InvoiceAmtWithGST", title: "Inv Amount(incl.GST)", format: "{0:c}", filterable: { multi: true, search: true }, editable: true, attributes: { style: "text-align:right;" }, width: "130px" },
+                { field: "Approved_amount", title: "App Amount", format: "{0:c}", filterable: { multi: true, search: true }, attributes: { style: "text-align:right;" }, width: "100px"
+                    //, editable: function () {
+                    //    var status = status_id;
+                    //    debugger;
+                    //    if (status != "2") {
+                    //        return true;
+                    //    }
+                    //    else {
+                    //        return false;
+                    //    }
+                    //}
+                },
+                {
+                    field: "reason", title: "Reason", filterable: { multi: true, search: true }, editable: true, width: "100px"},
+                { field: "CreatedUpdated", width: "170px", title: "Created/Updated", filterable: false, editable: true, encoded: false },
+                //{
+                //    command: [
+                //        {
+                //            name: "MakePayment", text: " ", iconClass: "k-icon k-i-pencil", click: MakePaymentForBudgetCost, visible: function () {
+                //                var StatusId = status_id; return StatusId == "2"
+                //            }
+                //        },
+                //        {
+                //            name: "NoPayment", text: " ", iconClass: "k-icon k-i-cancel",
+                //            //click: UpdateForDisApproval,
+                //            visible: function () {
+                //                var StatusId = status_id; return (StatusId == "1" || StatusId == "6" || StatusId == "7")
+                //            }
+                //        }
+                //    ], title: "Payment", width: "50px", hidden: IsAdmin
+                //},
+                @*{
+                    command: [
+                        { name: "editdetails", text: " ", iconClass: "k-icon k-i-pencil", click: UpdateForBudgetCost, visible: function () { return ('@ViewBag.IsAdminLogin' == 'YES'  ) } },
+                        { name: "preview", text: "", className: "view_icon", iconClass: "k-icon ", click: InvoiceFilePreview, visible: function () { return ('@ViewBag.IsAdminLogin' == 'YES' || '@ViewBag.IsAdminLogin' == 'NO') }},
+                        { name: "deletedetails", text: "", iconClass: "k-icon k-i-delete", click: DestroyForBudgetCost, visible: function () { return '@ViewBag.IsAdminLogin' == 'YES' && (status_id == "1" || status_id == "7")} },
+                        //{,
+                        //    name: "Approve", text: " ", iconClass: "k-icon k-i-check", id: "Approve123", click: UpdateForApproval,
+                        // visible: function () {
+                        //     var StatusId = status_id; return StatusId != "2"
+                        //    }},
+
+                        /*{ name: 'Active', text: " ", iconClass: "k-icon k-i-checkmark", id: "Active123", click: ActDeactPackage, className: "active_btn", },*/
+
+                    ], title: "Action", width: "90px" //, hidden: IsAdmin
+                }*@
+            ],
+            editable: false,
+		 }).data("kendoGrid");
+    }
+
+    function clearAllFilters() {
+        $("#BudgetCostgrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");
+    }
+
+      function BudgetList() {
+            debugger;
+            window.location = '@Url.Action("", "ProjectsBudget")';
+        }
+</script>

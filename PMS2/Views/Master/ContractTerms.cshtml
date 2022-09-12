@@ -1,0 +1,412 @@
+﻿@{
+    ViewBag.Title = "UOM";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    /*Nithin start added for kendo popup in contract terms*/
+    div.k-widget.k-window {
+        right: 5%;
+        left: 5% !important;
+    }
+
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .k-edit-form-container .editor-label, .k-edit-label {
+        float: left;
+        clear: both;
+        width: 10%;
+        padding: .4em 0 1em;
+        margin-left: 2%;
+        text-align: right;
+    }
+
+    .k-edit-field, .k-edit-form-container .editor-field {
+        float: right;
+        clear: right;
+        width: 80%;
+        margin-right: 2%;
+        padding: 0 0 .6em;
+    }
+
+    table.k-editor {
+        min-height: 567px;
+    }
+
+    textarea.k-editor-textarea.k-input {
+        width: 94%;
+        margin: 1%;
+    }
+    /*Nithin End added for kendo popup in contract terms*/
+    /*Nithin start Added contract terms description stop show less inside grid*/
+    .contract_description_td {
+        white-space: nowrap;
+    }
+    .k-edit-field .k-no-editor{
+        display:none;
+    }
+    .k-edit-field.k-no-editor, .k-edit-form-container .editor-field.k-no-editor {
+        display: none;
+    }
+    label[for="Id"]{
+        display:none;
+    }
+</style>
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="col-md-6">
+            <h3 class="animated fadeInLeft text-primary">Contract Terms List</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-3">
+    <div class="col-md-12">
+                <div class="responsive-table">
+                    <div id="CTgrid"></div>
+                </div>
+            </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        kendo.ui.Grid.fn.onAddClearFilter = function () {
+            debugger
+            var grid = this;
+            grid.wrapper.find(".k-grid-add").on("click", function (e) {
+                //console.log('onaddclearfilter');
+                //send to first page if it's not already
+                if (grid.pager) grid.pager.page(1);
+                //clear the filter
+                if (grid.dataSource) grid.dataSource.filter([]);
+            });
+        }
+                    dataSource = new kendo.data.DataSource({
+                        transport: {
+                            read: function (options) {
+                                debugger
+                                $.ajax({
+                                   url: '@Url.Action("ContractTermList", "Master")',
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                var Id = options.data.models[0].Id;
+                                var ShortName = options.data.models[0].ShortName;
+                                var Description = escape(options.data.models[0].Description);
+                                var Values = {
+                                    Id: Id,
+                                    Description: Description,
+                                    ShortName: ShortName,
+                                };
+                                var JsonValues = JSON.stringify(Values);
+                                $.ajax({
+                                    @*url: '@Url.Action("CreateContractTerm", "Master")?JsonValues=' + JsonValues,*@
+                                    url: '@Url.Action("CreateContractTerm", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                   /* data: { Id: options.data.models[0].Id, Description: escape(options.data.models[0].Description)},*/
+                                    data: { JsonContractTerms: JsonValues },
+                                    success: function (result) {
+                                        debugger
+                                        $("#CTgrid").data('kendoGrid').dataSource.read();
+                                        $("#CTgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            update: function (options) {
+                                debugger
+                                var Id = options.data.models[0].Id;
+                                var ShortName = options.data.models[0].ShortName;
+                                var Description = escape(options.data.models[0].Description);
+                                var Values = {
+                                    Id: Id,
+                                    Description: Description,
+                                    ShortName: ShortName,
+                                };
+                                var JsonValues = JSON.stringify(Values);
+                                $.ajax({
+                                    @*url: '@Url.Action("CreateContractTerm", "Master")?JsonValues=' + JsonValues,*@
+                                    url: '@Url.Action("CreateContractTerm", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                   /* data: { Id: options.data.models[0].Id, Description: escape(options.data.models[0].Description)},*/
+                                    data: { JsonContractTerms: JsonValues },
+                                    success: function (result) {
+                                        debugger
+                                        $("#CTgrid").data('kendoGrid').dataSource.read();
+                                        $("#CTgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                             destroy: function (options) {
+                                debugger
+                                 var ContractTermId = options.data.models[0].Id;
+                                $.ajax({
+                                    url: '@Url.Action("DeleteMasterContractTermById", "Master")?ContractTermId=' + ContractTermId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        $("#CTgrid").data('kendoGrid').dataSource.read();
+                                        $("#CTgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            @*update: function (options) {
+                                debugger
+                                $.ajax({
+                                   url: '@Url.Action("CreateContractTerm", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonContract: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#CTgrid").data('kendoGrid').dataSource.read();
+                                        $("#CTgrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        //kendo.alert(result.data.Errormessage);
+                                        notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                            },*@
+                            @*read: {
+                                 url: '@Url.Action("ContractTermList", "Master")',
+                                        type: "GET",
+                                        dataType: "json"
+                            },*@
+                            @*update: {
+                               url: '@Url.Action("CreateContractTerm", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#CTgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            @*destroy: {
+                                 url: '@Url.Action("", "Master")',
+                                        type: "POST",
+                                        dataType: "json"
+                            },*@
+                            @*create: {
+                                url: '@Url.Action("CreateContractTerm", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#CTgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 15,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "Id",
+                                fields: {Id: { editable: false, type: "number"  },
+                                    Description: { validation: { required: true }, width: "100%" },
+                                    ShortName: { validation: { required: true }, width: "100%" },
+                                    //isactive: { validation: { required: true }, defaultValue: true },
+                                }
+                            }
+                        }
+                    });
+
+       var CTGrid =    $("#CTgrid").kendoGrid({
+                    dataSource: dataSource,
+                    navigatable: true,
+                    pageable: true,
+           //toolbar: [{ name: "create", text: "Add New Contract Terms" }],
+                    filterable: true,
+                    sortable: true,
+                    autoSync: true,
+                    resizable: true,
+                    pageable: {
+                        pageSize: 15,
+                        buttonCount: 15,
+                        pageSizes: [5, 15, 30, 60, 100, 500], messages: {
+                            display: "{0} - {1} of {2} contract terms", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No contract terms  to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "contract terms per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+           columns: [
+               {
+                   command: [{ name: "edit", text: { edit: " ", update: "Update ", cancel: "Cancel " } },
+                       { name: "destroy", text: " ", iconClass: "k-icon k-i-delete" }], title: "Action", width: "100px"
+               },
+               
+               { field: "Id", title: "Code", width: "185px", filterable: { multi: true, search: true } ,hidden: true },
+               { field: "ShortName", title: "Name", width: "185px", filterable: false },
+               { field: "Description", title: "Description", editor: PackagetextareaEditor, attributes: { class: "contract_description_td" }, encoded: false, hidden: true },
+                        //{ field: "isactive", title: "is active",hidden:true },
+                        /*{ command: ["edit", "destroy"], title: "Action", width: "185px" }*/],
+               //editable: "inline"
+               editable: "popup"
+       }).data("kendoGrid");
+        CTGrid.onAddClearFilter();
+       });
+
+
+
+    function PackagetextareaEditor(container, options) {
+        debugger
+
+        $('<textarea required name="' + options.field + '" ></textarea>')
+            .appendTo(container);
+        $("textarea").kendoEditor({
+            
+            tools: [
+                "bold",
+                "italic",
+                "underline",
+                "strikethrough",
+                "justifyLeft",
+                "justifyCenter",
+                "justifyRight",
+                "justifyFull",
+                "insertUnorderedList",
+                "insertOrderedList",
+                "insertUpperRomanList",
+                "insertLowerRomanList",
+                "indent",
+                "outdent",
+                "createLink",
+                "unlink",
+                "subscript",
+                "superscript",
+                "tableWizard",
+                "createTable",
+                "addRowAbove",
+                "addRowBelow",
+                "addColumnLeft",
+                "addColumnRight",
+                "deleteRow",
+                "deleteColumn",
+                "mergeCellsHorizontally",
+                "mergeCellsVertically",
+                "splitCellHorizontally",
+                "splitCellVertically",
+                "tableAlignLeft",
+                "tableAlignCenter",
+                "tableAlignRight",
+                "viewHtml",
+                "formatting",
+                "cleanFormatting",
+                "copyFormat",
+                "applyFormat",
+                "fontName",
+                "fontSize",
+                "foreColor",
+                "backColor",
+                "print"
+            ],
+        });
+
+    }
+
+
+    //Tooltips For Kendogrid Action Btn
+
+    $("#CTgrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Contract terms";
+        }
+    });
+    $("#CTgrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Contract term Details";
+        }
+    });
+    $("#CTgrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Contract terms";
+        }
+    });
+    $("#CTgrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Contract terms";
+        }
+    });
+</script>
+
+
+

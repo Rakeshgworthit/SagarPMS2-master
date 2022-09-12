@@ -1,0 +1,69 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.ReportViewModel
+@{
+    ViewBag.Title = "Sales Summary Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="animated fadeInLeft text-primary">Sales Summary Report</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="well">
+                    @using (Html.BeginForm("SaleSummaryReport", "Report", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+                    {
+                        <div class="row">
+                            <div class="col-md-4 col-lg-3 ">
+                                <div class="form-group">
+                                    <label class="control-label" for="from_date">Year:</label>
+                                    @Html.DropDownListFor(o => o.ReportYear, Model.YearList, new { @class = "form-control" })
+                                </div>
+                            </div>
+                            <div class="col-md-2 col-xs-6">
+                                <input type="hidden" id="BranchId" name="BranchId" value="@PMS.Common.SessionManagement.SelectedBranchID" />
+                                @*<div class="form-group">
+                                        @Html.DropDownListFor(o => o.BranchId, Model.BranchList, new { @class = "form-control" })
+                                    </div>*@
+                                <button type="submit" class="btn btn-primary mt-srh-btn" onclick="SubmitAs('form');"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+
+                            <div class="col-md-6 col-lg-7 col-xs-6">
+                                <button type="submit" class="btn btn-success pull-right mt-md-3" onclick="SubmitAs('export');"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export</button>
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="responsive-table">
+                    @Html.Raw(Model.GridData)
+                    @*@Html.MVCGrid("SaleSummaryReport", new { ReportYear = Model.ReportYear, Uid = Model.Uid, BranchId = Model.BranchId })*@
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SubmitAs(obj) {
+        if (obj == 'form') {
+            $("#SearchForm").attr('action', "SaleSummaryReport").submit();
+        } else {
+            $('#SearchForm').attr('action', "ExportSaleSummaryReport").submit();
+        }
+    }
+    $(document).ready(function () {
+        $(".table").addClass("table-bordered");
+    });
+</script>
+

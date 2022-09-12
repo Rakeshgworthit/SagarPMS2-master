@@ -1,0 +1,348 @@
+﻿
+@{
+    ViewBag.Title = "Plan";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class=" panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="animated fadeInLeft text-primary">Plan List</h3>
+            </div>
+
+            @*Nithin Commented Because Paresh said no need of this feature*@
+            @*<div class="col-md-6 text-right">
+                <button id="startTourBtn" class="btn btn-primary">Practical Guide</button>
+            </div>*@
+        </div>
+       
+    </div>
+</div>
+<div class="row mx-3">
+    <div class="col-md-12">
+                <div class="responsive-table">
+                    <div id="Plangrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+            kendo.ui.Grid.fn.onAddClearFilter = function () {
+            debugger
+            var grid = this;
+            grid.wrapper.find(".k-grid-add").on("click", function (e) {
+                //console.log('onaddclearfilter');
+                //send to first page if it's not already
+                if (grid.pager) grid.pager.page(1);
+                //clear the filter
+                if (grid.dataSource) grid.dataSource.filter([]);
+            });
+        }
+                    dataSource = new kendo.data.DataSource({
+                        transport: {
+                            read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("PlanList", "Master")',
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                $.ajax({
+                                    url: '@Url.Action("CreatePlan", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonPlanValues: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                            //$("#grid").data('kendoGrid').dataSource.read();
+                                            //$("#grid").data('kendoGrid').refresh();
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        $("#Plangrid").data('kendoGrid').dataSource.read();
+                                        $("#Plangrid").data('kendoGrid').refresh();
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            update: function (options) {
+                                debugger
+                                $.ajax({
+                                    url: '@Url.Action("CreatePlan", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonPlanValues: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                            //$("#grid").data('kendoGrid').dataSource.read();
+                                            //$("#grid").data('kendoGrid').refresh();
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        $("#Plangrid").data('kendoGrid').dataSource.read();
+                                        $("#Plangrid").data('kendoGrid').refresh();
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                //to clear filter
+                                $("#Plangrid").data("kendoGrid").dataSource.filter({});
+                            },
+                            destroy: function (options) {
+                                debugger
+                                var plan_id = options.data.models[0].plan_id;
+                                $.ajax({
+                                    url: '@Url.Action("DeletePlansByPlanId", "Master")?PlanId=' + plan_id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        $("#Plangrid").data('kendoGrid').dataSource.read();
+                                        $("#Plangrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                //to clear filter
+                                $("#Plangrid").data("kendoGrid").dataSource.filter({});
+                            },
+                            @*read: {
+                                 url: '@Url.Action("PlanList", "Master")', 
+                                        type: "GET",
+                                        dataType: "json"
+                            },
+                            update: {
+                               url: '@Url.Action("CreatePlan", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#Plangrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                 url: '@Url.Action("DeletePlan", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#Plangrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            create: {
+                                url: '@Url.Action("CreatePlan", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#Plangrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 15,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "plan_id",
+                                fields: {
+                                    plan_id: { editable: false, type: "number"  },
+                                    //plan_cd: { } },
+                                    plan_name: { validation: { required: true, maxlength: 30 } },
+                                    plan_description: { validation: { required: true, maxlength: 40 } },
+                                    isactive: { validation: { required: true }, defaultValue: true },
+                                }
+                            }
+                        }
+                    });
+
+        var PlanGrid =   $("#Plangrid").kendoGrid({
+            dataSource: dataSource,
+            dataBound: function (e) {
+                $('.k-grid-add').unbind("click");
+            }, 
+                    navigatable: true,
+                    pageable: true,
+            toolbar: [{ name: "create", text: "Add New Plan" }, { name: "excel", text: "Export to Excel " }, { name: "search" }, { template: '   <a type="button" class="k-button" onclick="return  clearAllFilters()" style="float:right" >Clear All Filters</a>' }],
+            excel: {
+                fileName: "Plans List.xlsx",
+                allPages: true,
+            },
+            //Nithin Added For Filter Ascending Order
+            filterMenuInit: function (e) {
+                debugger
+                if (e.field === "plan_name" || e.field === "plan_description") {
+                    var filterMultiCheck = this.thead.find("[data-field=" + e.field + "]").data("kendoFilterMultiCheck")
+                    filterMultiCheck.container.empty();
+                    filterMultiCheck.checkSource.sort({ field: e.field, dir: "asc" });
+
+                    // uncomment the following line to handle any grouping from the original dataSource:
+                    // filterMultiCheck.checkSource.group(null);
+
+                    filterMultiCheck.checkSource.data(filterMultiCheck.checkSource.view().toJSON());
+                    filterMultiCheck.createCheckBoxes();
+                }
+            },
+            filterable: true,
+            reorderable: true,
+                    sortable: true,
+                    autoSync: true,
+                    resizable: true,
+                    pageable: {
+                        pageSize: 15,
+                        buttonCount: 15,
+                        pageSizes: [5, 15, 30, 60, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} plan", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No plan to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "plans per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+            columns: [
+                {
+                    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                        { name: "destroy", text: " ", iconClass: "k-icon k-i-delete" }], title: "Action", width: "100px"
+                },
+                        { field: "plan_cd", title: "Code", filterable: { multi: true, search: true },hidden:true },
+                        { field: "plan_name", title: "Name", filterable: { multi: true, search: true } },
+                        { field: "plan_description", title: "Description", filterable: { multi: true, search: true } },
+                        { field: "isactive", title: "is active",hidden:true },
+                      ],
+                    editable: "inline"
+        }).data("kendoGrid");
+        PlanGrid.onAddClearFilter();
+    });
+    //Nithin Added to clear all filterrs
+    function clearAllFilters() {
+        $("#Plangrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");  
+    }
+
+
+    //Tooltips For Kendogrid Action Btn
+
+    $("#Plangrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel Plan";
+        }
+    });
+    $("#Plangrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit Plan Details";
+        }
+    });
+    $("#Plangrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete Plan";
+        }
+    });
+    $("#Plangrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update Plan";
+        }
+    });
+
+
+
+
+    var tour = new Tour({
+        steps: [
+            {
+                element: ".k-grid-add",
+                title: "Add New plan",
+                content: "Add New Plan / With same name you cant Add",
+                placement: "bottom"
+            },
+            {
+                element: "#Plangrid tr:first-child .k-grid-edit",
+                title: "Edit Plan",
+                content: "Edit Existing Plan / With same name you cant add when it is Edit ",
+                placement: "bottom"
+            },
+            {
+                element: "#Plangrid tr:first-child .k-grid-delete",
+                title: "Delete Plan",
+                content: "Delete Existing Plan / You cant delete already used plan ",
+                placement: "bottom"
+            },
+            {
+                element: ".k-grid-excel ",
+                title: "Export to Excel",
+                content: "Export all data in to excel format",
+                placement: "bottom"
+            }
+        ],
+        backdrop: true,
+        storage: false
+    });
+
+    // tour.init();
+    // tour.start();
+    tour.init();
+    // tour.start();
+    $("#startTourBtn").click(function () {
+        tour.restart();
+    });
+
+</script>
+
+
+
+
+
+
+

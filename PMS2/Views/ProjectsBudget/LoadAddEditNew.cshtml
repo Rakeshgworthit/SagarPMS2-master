@@ -1,0 +1,847 @@
+﻿@model PMS.Models.ProjectsBudgetViewModel
+@{
+    Layout = null;
+}
+<style>
+    .redborder {
+        border: solid 1px #ff0000;
+    }
+
+    .k-grid-add {
+        float: right;
+    }
+</style>
+
+@{ int RowNumber = -1;}
+    <div class="modal-header">
+        <h4 class="modal-title">Add/Edit Budgeted Cost</h4>
+        <button type="button" class="close" data-dismiss="modal" onclick="CloseModal();">&times;</button>
+
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal" id="frmProjectBudget" name="frmProjectBudget">
+            <div class="row">
+                <div class="col-md-5  col-sm-5">
+                    <div class="form-group row">
+                        <label class="control-label col-sm-4" for="pwd">Supplier :</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownListFor(o => o.supplier_id, Model.supplierList, new { @class = "form-control chosen-select", @Id = "Supplier_id", @tabindex = "1", style = "width:300px" })
+                            @Html.ValidationMessageFor(o => o.supplier_id, "", new { @class = "text-error" })
+                            @*<input type="hidden" id="SupplierId" name="SupplierId" value="@Model.supplier_id" />*@
+                        </div>
+                    </div>
+                </div>
+                <input type="hidden" id="hdnProjectID" value="@ViewData["ProjectID"]" />
+                <input type="hidden" id="hdnproject_budget_id" value="@ViewData["project_budget_id"]" />
+                <input type="hidden" id="project_budget_id" value="@ViewData["project_budget_id"]" />
+                <input type="hidden" id="ParentSalesmanId" name="ParentSalesmanId" class="form-control" />
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-md-12">
+                <div id="grid1" class="accordion"></div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-footer">
+        <button id="btnClear" name="btnClear" type="button" class="btn btn-secondary" onclick="ClearModel();">Clear</button>
+        <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" onclick="CloseModal();">Close</button>
+    </div>
+
+    <input type="hidden" id="hdnId" name="hdnId" value="@Model.id" />  
+    <script>
+        var uploadInput = '<form method="post" action="#"><div><input name="upload" id="upload" type="file" /></div></form>';
+
+        function CloseModal() {
+            window.location = '@Url.Action("", "ProjectsBudget")';
+        }
+
+        function SaveForm() {
+
+        }
+
+        function ClearModel() {
+
+            openModelpopup('/ProjectsBudget/LoadAddEditNew', 'id', 0, 'ProjectId', 0);
+        }
+
+        $(document).ready(function () {
+            debugger;
+            var _id = $("#project_budget_id").val();
+            if (_id != "0") {
+                $('#Supplier_id').prop("disabled", true);
+            }
+            //BindSUpplier()
+            BindGridAdd();
+
+
+        });
+
+        function BindAddressSiteBySalesman() {
+            debugger;
+            var selectedZipCodeId = $("#ZipCodeId").val();
+            var selectedUnitCodeId = $("#UnitCodeId").val();
+            debugger;
+            $.get('@Url.Action("BindSalesmenAndAddressSite", "Master")?ZipCodeId=' + selectedZipCodeId + '&UnitCodeId=' + selectedUnitCodeId, function (list) {
+                debugger
+                if (list.addreessSite != null) {
+                    var items = [];
+                    var i;
+                    for (i = 0; i < list.addreessSite.length; i++) {
+                        items.push("<option value=" + list.addreessSite[i].AddressSite_id + ">" + list.addreessSite[i].AddressSite_Name + "</option>");
+                    }
+                    $("#AddressId").html(items.join(' '));
+                    $('#AddressId').select2();
+                    $('#AddressId').val('@Model.project_id');
+                }
+                else {
+                    var items = [];
+                    //items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                    $("#AddressId").html(items.join(' '));
+                    $('#AddressId').select2();
+                }
+            });
+        }
+
+        function BindGridAdd() {
+            debugger;
+            var IsEditMode = '@ViewBag.IsEdit';
+            if (IsEditMode == 'EDIT')
+                IsEditMode = true;
+            else
+                IsEditMode = false;
+            // var project_budget_id = $('#project_budget_details_id').val();
+            //var project_id = $('#project_id').val();
+            dataSource = new kendo.data.DataSource({
+                transport: {
+
+                    read: function (options) {
+                        debugger
+                        var hdnprID = @ViewData["ProjectID"];//$("#hdnProjectID").val();
+                        var hdnprj_budget_id = $("#project_budget_id").val();
+                        var project_budget_id = hdnprj_budget_id; //20914;
+                        var project_id = hdnprID;
+                        // var project_id = $('#AddressId').val();
+
+                        if (project_budget_id == 0) {
+                            $.ajax({
+                                //url: '@Url.Action("Get_Project_Budget_DetailsById", "ProjectsBudget")?project_budget_id=' + project_budget_id + '&project_id=' + project_id,
+                                url: '@Url.Action("LoadAddEditNew", "ProjectsBudget")',
+                                type: "GET",
+                                dataType: "json",
+                                data: {
+                                    Id: 0,
+                                    ProjectId: 0
+                                },
+                                success: function (result) {
+                                    debugger;
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    debugger;
+                                    options.error(result);
+                                }
+                            });
+                        }
+                        else {
+                            $.ajax({
+                                //url: '@Url.Action("Get_Project_Budget_DetailsById", "ProjectsBudget")?project_budget_id=' + project_budget_id + '&project_id=' + project_id,
+                                url: '@Url.Action("Get_Project_Budget_DetailsByIdNew", "ProjectsBudget")?project_budget_id=' + project_budget_id + '&project_id=' + project_id,
+                                type: "GET",
+                                dataType: "json",
+                                success: function (result) {
+                                    debugger;
+                                    options.success(result);
+                                    if (result.data.TotalCount > 0) {
+                                        $('#Supplier_id').prop("disabled", true);
+                                    }
+                                    else {
+                                        $('#Supplier_id').prop("disabled", false);
+                                    }
+                                },
+                                error: function (result) {
+                                    debugger;
+                                    options.error(result);
+                                }
+                            });
+                        }
+                    },
+                    create: function (options) {
+                        debugger;
+                        CalculateGSTTotalAmountSave(options);
+                        var supplierid = $('#Supplier_id').val();
+                        var project_id = "";
+                        if (options.data.models[0].Address.id != "0" ) {
+                            project_id = options.data.models[0].Address.id;
+                        }                       
+
+                        var ZipCodeId = 0;
+                        var UnitCodeId = "0";
+
+                        debugger;
+                        var grid = $("#grid1").data("kendoGrid");
+                        currentSelection = grid.select();
+                        selectedRows = [];
+                        currentSelection.each(function () {
+                            var currentRowIndex = $(this).closest("tr").index();
+                            if (selectedRows.indexOf(currentRowIndex) == -1) {
+                                selectedRows.push(currentRowIndex);
+                            }
+                        })
+
+                        var fileUpload = $('[name = "upload"]').get(0);
+                        var files = fileUpload.files;
+                        if (files.length > 0) {
+                            var fileData = new FormData();
+                            fileData.append(files[0].name, files[0]);
+                        }
+                        else {
+                            notify("Please Select Files", "error");
+                            $('div.k-loading-mask').css('display', 'none');
+                            return false;
+                        }
+                        //var isGSTValid = false;
+                        //if (options.data.models[0].GSTPercen.t == "0" || options.data.models[0].GSTPercent == "7") {
+                        //    isGSTValid = true;
+                        //}
+                        debugger;
+                        var ProjectBudgetid = $('#project_budget_id').val();
+                        if (ProjectBudgetid > 0) {
+                            options.data.models[0].project_budget_id = ProjectBudgetid;
+                        }
+
+                        //if (!isGSTValid) {
+                        //    notify("GST Percent should be 0 or 7", "error");
+                        //    $('div.k-loading-mask').css('display', 'none');
+                        //    return false;
+                        //}
+                        debugger;
+                        var isValid = ValidationForCreate();
+                        if (isValid) {
+                            debugger;
+                            $.loader({ content: "<table><tr><td><h5>Saving Of Budget Cost is in Progress</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+                            $.ajax({
+                                url: '@Url.Action("AddBudgetDetails", "ProjectsBudget")?JsonBudget=' + encodeURIComponent(JSON.stringify(options.data.models[0])) + '&SupplierId=' + supplierid + '&project_id=' + project_id + '&ZipCodeId=' + ZipCodeId + '&UnitCodeId=' + UnitCodeId/*+ '&files=' + files*/,
+                                //url: '@Url.Action("AddBudgetDetails", "ProjectsBudget")',
+                                type: "POST",
+                                dataType: "json",
+                                processData: false, //remember to set processData and ContentType to false, otherwise you may get an error
+                                contentType: false,
+                                data: fileData,
+                                //contentType: 'application/json; charset=utf-8',
+                                success: function (result) {
+                                    $.loader('close');
+                                    debugger;
+                                    options.success(result);
+                                    if (result.data.Result > 0) {
+                                        debugger;
+                                        $('#project_Budget_detail_id').val(result.data.Id);
+                                        $('#ProjectId').val(project_id);
+                                        $('#project_budget_id').val(result.data.project_budget_id);
+                                        //'@ViewBag.Project_Budget_Id' = result.data.project_budget_id;
+                                        notify(result.data.Errormessage, "success");
+                                    }
+                                    $("#grid1").data('kendoGrid').dataSource.read();
+                                    $("#grid1").data('kendoGrid').refresh();
+
+                                },
+                                error: function (result) {
+                                    //debugger;
+                                    //notify(result.data.Errormessage, "error");
+                                    options.error(result);
+                                }
+                            });
+                        }
+                        else {
+                            $('div.k-loading-mask').css('display', 'none');
+                        }
+                    },
+                    update: function (options) {
+                        debugger;
+                        CalculateGSTTotalAmountSave(options);
+                        var supplierid = $('#Supplier_id').val();
+                        var project_id = "";
+                        if (options.data.models[0].Address.id != "0") {
+                            project_id = options.data.models[0].Address.id;
+                        }
+                        var ZipCodeId = 0;
+                        var UnitCodeId = "";
+                    @*if (ZipCodeId == "" || ZipCodeId == null) {
+                        if (@Model.Zip_CodeId != null || @Model.Zip_CodeId != "") {
+                            ZipCodeId = @Model.Zip_CodeId;
+                        }
+                        else {
+                            ZipCodeId = 0;
+                        }
+                    }*@
+                        var UnitCodeId = $("#UnitCodeId").val();
+                        var isValid = ValidationForCreate();
+
+                        debugger;
+                        var fileUpload1 = $('[name = "upload"]').get();
+                        var bRetval = true;
+                        //var fileUpload = $('[name = "upload"]').get(0);
+                        for (var i = 0; i < fileUpload1.length - 1; i++) {
+                            var fileUpload = $('[name = "upload"]').get(i);
+                            var files = fileUpload.files;
+                            if (files.length > 0) {
+                                bRetval = true;
+                                var fileData = new FormData();
+                                fileData.append(files[0].name, files[0]);
+                            }
+                            else {
+                                bRetval = false;
+                            }
+                        }
+
+                        if (fileData.propertyIsEnumerable.length <= 0) {
+                            notify("Please Select Files", "error");
+                            $('div.k-loading-mask').css('display', 'none');
+                            return false;
+                        }
+                        var ProjectBudgetid = $('#project_budget_id').val();
+                        if (ProjectBudgetid > 0) {
+                            options.data.models[0].project_budget_id = ProjectBudgetid;
+                        }
+                        //fileData = "";
+                        // files = "";
+                        if (isValid) {
+                            options.data.models[0].project_name = "";
+                            $.loader({ content: "<table><tr><td><h5>Update Of Budget Cost is in Progress</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+                            $.ajax({
+                                url: '@Url.Action("AddBudgetDetails", "ProjectsBudget")?JsonBudget=' + encodeURIComponent(JSON.stringify(options.data.models[0])) + '&SupplierId=' + supplierid + '&project_id=' + project_id + '&ZipCodeId=' + ZipCodeId + '&UnitCodeId=' + UnitCodeId/*+ '&files=' + files*/,
+
+                                type: "POST",
+                                dataType: "json",
+                                processData: false, //remember to set processData and ContentType to false, otherwise you may get an error
+                                contentType: false,
+                                data: fileData,
+                                //contentType: 'application/json; charset=utf-8',
+                                success: function (result) {
+                                    debugger;
+                                    $.loader('close');
+                                    if (result.data.Result > 0) {
+                                        $('#project_budget_details_id').val(result.data.Id);
+                                        $('#project_budget_id').val(result.data.project_budget_id);
+                                        notify(result.data.Errormessage, "success");
+                                    }
+                                    $("#grid1").data('kendoGrid').dataSource.read();
+                                    $("#grid1").data('kendoGrid').refresh();
+                                    options.success(result);
+                                },
+                                error: function (result) {
+                                    //debugger;
+                                    // notify(result.data.Errormessage, "error");
+                                    options.error(result);
+                                }
+                            });
+                        }
+                        else {
+                            $('div.k-loading-mask').css('display', 'none');
+                        }
+                    },
+                    destroy: function (options) {
+                        debugger
+                        var project_budget_detail_Id = options.data.models[0].project_budget_details_id;
+                        $.ajax({
+                            url: '@Url.Action("Remove_Project_Budget_Detail", "ProjectsBudget")?project_budget_detail_Id=' + project_budget_detail_Id,
+                            type: "POST",
+                            dataType: "json",
+                            data: {},
+                            success: function (result) {
+                                debugger
+                                $("#grid1").data('kendoGrid').dataSource.read();
+                                $("#grid1").data('kendoGrid').refresh();
+                                if (result.data.Result > 0) {
+                                    notify(result.data.Errormessage, "success");
+                                }
+                                else {
+                                    notify(result.data.Errormessage, "error");
+                                }
+                                options.success(result);
+                            },
+                            error: function (result) {
+                                debugger
+                                options.error(result);
+                            }
+                        });
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 20,
+                schema: {
+                    data: "data.Items", total: "data.TotalCount",
+                    model: {
+                        project_budget_details_id: "project_budget_details_id",
+                        project_budget_id: "project_budget_id",
+                        fields: {
+                            project_budget_details_id: { type: "number", defaultValue: 0 },
+                            project_budget_id: { type: "number", defaultValue: 0 },
+                            Salesman: { defaultValue: { id: 0, salesmen_name: "--select--" }, validation: { required: true } },
+                            Address: { defaultValue: { id: 0, AddressSite: "--select--" }, validation: { required: true } },
+                            InvoiceNumber: { validation: { required: true } },
+                            InvoiceAmtWithGST: { type: "number", validation: { required: true } },
+                            //GSTPercent: { type: "number", length: 1, validation: { required: true }, defaultValue: 7 },
+                            GSTPercent: { defaultValue: { Value: @Convert.ToInt64(PMS.Common.SessionManagement.BranchGST), Text: "7" }, validation: { required: true }, },
+                            GSTAmount: { type: "number", validation: { required: true } },
+                            budget_amount: { type: "number", validation: { required: true } },
+                            BudgetCostType: { defaultValue: { BudgetCostType_id: 1, BudgetCostType_type: "Invoice" }, validation: { required: true } },
+                            status_id: { validation: { required: false }, editable: false },
+
+                        }
+                    }
+                }
+            });
+
+            $("#grid1").kendoGrid({
+                dataSource: dataSource,
+                dataBound: function (e) {
+                    $("input[type='file']").kendoUpload();
+                },
+                navigatable: true,
+                toolbar: ["create"],
+                pageable: {
+                    pageSizes: [10, 20, 30, 50, "all"]
+                },
+                sortable: true,
+                autoSync: true,
+                columns: [
+
+
+
+                    { field: "project_budget_details_id", hidden: true },
+                    { field: "project_budget_id", hidden: true },
+                    { field: "Salesman", title: "Salesman", editor: SalesmanDropDownEditor, template: "#=Salesman.salesmen_name#" },
+                    { field: "Address", title: "Address/Site", editor: AddressDropDownEditor, template: "#=Address.AddressSite#" },
+                    { field: "BudgetCostType", title: "Type", editor: BudgetCostTypeDropDownEditor, template: "#=BudgetCostType.BudgetCostType_type#" },
+                    { field: "InvoiceNumber", title: "Inv No" },
+                    { field: "InvoiceAmtWithGST", title: "Inv Amt with GST", format: "{0:c}", attributes: { style: "text-align:right;" } },
+                    //{ field: "GSTPercent", title: "GST %", format: "{0:0}", attributes: { length: 1 } },
+                    { field: "GSTPercent", title: "GST %", editor: GSTDropDownEditor, template: "#=GSTPercent.Text#" },
+                    { field: "GSTAmount", title: "GST Amt", format: "{0:c}", attributes: { style: "text-align:right;" } },
+                    { field: "budget_amount", title: "Amount", format: "{0:c}", attributes: { style: "text-align:right;" } },
+                    { field: "status_id", title: "Status", editable: false, hidden: true },
+                    {
+                        title: "Upload",
+                        filterable: false,
+                        sortable: false,
+                        template: "#= uploadInput #"
+                    },
+                    {
+                        command: [
+                            { name: "preview", text: "", className: "view_icon", iconClass: "k-icon ", click: InvoiceFilePreview }
+                        ], title: "view Invoice", width: "115px", hidden: !IsEditMode
+                    },
+                    {
+                        command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " }, visible: function () { return (status_id != "6")} },
+                            {
+                                name: "destroy", text: " ", iconClass: "k-icon k-i-delete", visible: function () {
+                                    return (status_id == "1"  || status_id == "7")
+                                } }], title: "Action", width: "100px"
+                    },
+
+                    /*{ field: "", title: "Upload", template: "<input type=\"file\" class=\"form-control-file\" name=\"file\" >"},*/
+                ],
+                editable: "inline",
+                edit: function (e) {
+                    debugger;
+                    var rows = e.sender.select();
+                    var row = $(this).closest("tr");
+                    var grid = $("#grid1").data("kendoGrid");
+                    var item = grid.dataItem(row);
+                    var editcellid = e.container.selectedRows;
+                    /*alert(editcellid);*/
+                    CalculateGSTTotalAmount(e);
+                },
+                complete: function (e) {
+                    //debugger
+                    //e.data("kendoGrid").dataSource.read();
+                    $("#grid1").data("kendoGrid").dataSource.read();
+                    $("#grid1").data('kendoGrid').refresh();
+
+                }
+            }).data("kendoGrid");
+
+            $("#grid1").kendoTooltip({
+                filter: ".k-grid-update",
+                autoHide: true,
+                content: function (e) {
+                    return "Update Item";
+                }
+            });
+        }
+
+        function BudgetCostTypeDropDownEditor(container, options) {
+            $('<input required name="' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    filter: "contains",
+                    autoBind: false,
+                    optionLabel: "Select Invoice Type",
+                    dataTextField: "BudgetCostType_type",
+                    dataValueField: "BudgetCostType_id",
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: '@Url.Action("BindBudgetCostType", "Master")',
+                                type: "GET",
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8"
+                            }
+                        },
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && options.models) {
+                                return { models: kendo.stringify(options.models) };
+                            }
+                        },
+                        schema: {
+                            data: "data"
+                        },
+                        sort: { field: "BudgetCostType_type", dir: "asc" },
+                    },
+                });
+        }
+
+        function SalesmanDropDownEditor(container, options) {
+            debugger;
+            $('<input id="SalesmanDropDownList" required name="' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    filter: "contains",
+                    autoBind: false,
+                    optionLabel: "Select Salesman",
+                    dataTextField: "salesmen_name",
+                    dataValueField: "id",
+                    select: onChange,
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: '@Url.Action("BindSalesmen", "Master")',
+                                type: "GET",
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8"
+                            }
+                        },
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && options.models) {
+                                return { models: kendo.stringify(options.models) };
+                            }
+                        },
+                        schema: {
+                            data: "data"
+                        },
+                        sort: { field: "salesmen_name", dir: "asc" },
+                    },
+                });
+        }
+
+        function AddressDropDownEditor(container, options) {
+            debugger;
+            $('<input id="AddressDropDownList"  required name="' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    filter: "contains",
+                    autoBind: false,
+                    optionLabel: "Select Address/Site",
+                    dataTextField: "AddressSite",
+                    dataValueField: "id",
+                    select: onAddressChange,
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: '@Url.Action("BindAddressSiteByStatus", "Master")',
+                                type: "GET",
+                                dataType: "json",
+                                data: {
+                                    Project_Id: 0,
+                                    Salesmen_Id: 0
+                                },
+                                contentType: "application/json; charset=utf-8"
+                            }
+                        },
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && options.models) {
+                                return { models: kendo.stringify(options.models) };
+                            }
+                        },
+                        schema: {
+                            data: "data"
+                        },
+                        sort: { field: "AddressSite", dir: "asc" },
+                    },
+                });
+        }
+
+         function GSTDropDownEditor(container, options) {
+            debugger;
+            $('<input id="GSTDropDownList"  required name="' + options.field + '"/>')
+                .appendTo(container)
+                .kendoDropDownList({
+                    filter: "contains",
+                    autoBind: false,
+                    /*optionLabel: "Select GST Percent",*/
+                    dataTextField: "Text",
+                    dataValueField: "Value",
+                    //select: onGSTChanges,
+                    dataSource: {
+                        type: "json",
+                        transport: {
+                            read: {
+                                url: '@Url.Action("BindGSTList", "Master")',
+                                type: "GET",
+                                dataType: "json",
+                                contentType: "application/json; charset=utf-8"
+                            }
+                        },
+                        parameterMap: function (options, operation) {
+                            if (operation !== "read" && options.models) {
+                                return { models: kendo.stringify(options.models) };
+                            }
+                        },
+                        schema: {
+                            data: "data"
+                        },
+                        sort: { field: "Text", dir: "asc" },
+                    },
+                });
+        }
+
+        function CalculateGSTTotalAmount(e) {
+            debugger;
+
+            var InvoiceAmtWithGSTEditor = e.container.find("input[name=InvoiceAmtWithGST]").data("kendoNumericTextBox");
+            var GSTPercentEditor = e.container.find("input[name=GSTPercent]").data("kendoDropDownList");
+            var GSTAmountEditor = e.container.find("input[name=GSTAmount]").data("kendoNumericTextBox");
+            var budget_amountEditor = e.container.find("input[name=budget_amount]").data("kendoNumericTextBox");
+            var BudgetType = e.container.find("input[name=BudgetCostType]").data("kendoDropDownList");
+            var grid = e.sender.element.closest(".k-grid").data("kendoGrid");
+            var row = e.sender.element.closest("tr");
+            var dataItem = grid.dataItem(row);
+            InvoiceAmtWithGSTEditor.bind("change", function (e) {
+
+                debugger;
+
+                var InvoiceAmtWithGST = this.value();
+                var GSTPercent = GSTPercentEditor.value();
+                var budgetTypeId = BudgetType.value();
+                var tolalamount = parseFloat(InvoiceAmtWithGST);
+
+                var gPer = 0;
+                if (GSTPercent > 0) {
+                    gPer = parseFloat(GSTPercent);
+                }
+
+                var gstp = parseFloat(gPer / 100) + 1;
+                if (String(tolalamount).length > 0 && String(gstp).length > 0) {
+                    var CAmount = parseFloat(tolalamount / gstp).toFixed(2);
+                    var GST = parseFloat(tolalamount - CAmount).toFixed(2);
+                    if (budgetTypeId == 2) {
+                        CAmount = CAmount * (-1);
+                        GST = GST * (-1);
+                        tolalamount = tolalamount * (-1);
+                    }
+                    if (String(GST) == "NaN") {
+                        GST = "0.00";
+                    }
+                    if (String(CAmount) == "NaN") {
+                        CAmount = "0.00";
+                    }
+                    GSTAmountEditor.value(GST);
+                    budget_amountEditor.value(CAmount);
+                    InvoiceAmtWithGSTEditor.value(tolalamount);
+                }
+
+            });
+            GSTPercentEditor.bind("change", function (e) {
+
+                debugger;
+
+                var GSTPercent = this.value();
+
+
+                    var InvoiceAmtWithGST = InvoiceAmtWithGSTEditor.value();
+
+                    var tolalamount = parseFloat(InvoiceAmtWithGST);
+
+                    var gPer = 0;
+                    if (GSTPercent > 0) {
+                        gPer = parseFloat(GSTPercent);
+                    }
+
+                    var gstp = parseFloat(gPer / 100) + 1;
+                    if (String(tolalamount).length > 0 && String(gstp).length > 0) {
+                        var CAmount = parseFloat(tolalamount / gstp).toFixed(2);
+                        var GST = parseFloat(tolalamount - CAmount).toFixed(2);
+                        if (String(GST) == "NaN") {
+                            GST = "0.00";
+                        }
+                        if (String(CAmount) == "NaN") {
+                            CAmount = "0.00";
+                        }
+                        GSTAmountEditor.value(GST);
+                        budget_amountEditor.value(CAmount);
+                        InvoiceAmtWithGSTEditor.value(tolalamount);
+                    }
+
+
+            });
+
+        }
+
+        function CalculateGSTTotalAmountSave(options) {
+            debugger;
+            var InvoiceAmtWithGST = options.data.models[0].InvoiceAmtWithGST;
+            var GSTPercent = options.data.models[0].GSTPercent.Value;
+            var GSTAmountEditor = options.data.models[0].GSTAmount;
+            var budget_amountEditor = options.data.models[0].budget_amount;
+            var budgetType = options.data.models[0].BudgetCostType.BudgetCostType_id;
+            var tolalamount = parseFloat(InvoiceAmtWithGST);
+            var gPer = 0;
+            if (GSTPercent > 0) {
+                gPer = parseFloat(GSTPercent);
+            }
+            var gstp = parseFloat(gPer / 100) + 1;
+            if (String(tolalamount).length > 0 && String(gstp).length > 0) {
+
+                var CAmount = parseFloat(tolalamount / gstp).toFixed(2);
+                var GST = parseFloat(tolalamount - CAmount).toFixed(2);
+                if (budgetType == 2) {
+                    CAmount = CAmount * (-1);
+                    GST = GST * (-1);
+                    tolalamount = tolalamount * (-1);
+                }
+                if (String(GST) == "NaN") {
+                    GST = "0.00";
+                }
+                if (String(CAmount) == "NaN") {
+                    CAmount = "0.00";
+                }
+                //GSTAmountEditor.value(GST);
+                //budget_amountEditor.value(CAmount);
+                options.data.models[0].GSTAmount = GST;
+                options.data.models[0].budget_amount = CAmount;
+                options.data.models[0].InvoiceAmtWithGST = tolalamount;
+            }
+        }
+
+        function ValidationForCreate() {
+            debugger;
+            var SupplierId = $('#Supplier_id').val();
+            if (SupplierId == "" || SupplierId == null || SupplierId == "0") {
+                notify("Please select Supplier", "error");
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+
+        function onChange(e) {
+            debugger;
+            if (e.dataItem === undefined) {
+                /*options.data.models[0].Item = { item_id: 0, item_description: options.data.models[0].Item }*/
+            }
+            else {
+                //console.log(e.dataItem);
+                debugger;
+                var SalesmanId = e.dataItem.id;
+                $("#ParentSalesmanId").val(SalesmanId);
+                if (SalesmanId == "") { SalesmanId = 0; }
+                GetAddressSiteDetails(e, SalesmanId);
+            }
+
+        };
+
+        function onGSTChanges(e) {
+            debugger;
+
+            var GSTPercent = this.value();
+
+            if (e.dataItem === undefined)
+            {
+            
+            }
+            else
+            {            
+                debugger;                
+                CalculateGSTTotalAmount(e)
+            }
+        };
+
+        function onAddressChange(e) {
+            debugger;
+            if (e.dataItem === undefined) {
+                /*options.data.models[0].Item = { item_id: 0, item_description: options.data.models[0].Item }*/
+            }
+            else {
+                //console.log(e.dataItem);
+                debugger;
+                var AddressId = e.dataItem.id;
+                if (AddressId == "") {
+                    AddressId = 0;
+                }
+                GetSalesmanDetails(e, AddressId);
+            }
+
+        };
+
+        function GetAddressSiteDetails(e, SalesmanId) {
+            $.ajax({
+                url: '@Url.Action("BindAddressSiteByStatus", "Master")',
+                type: "GET",
+                dataType: "json",
+                data: { Project_Id: 0, Salesmen_Id: SalesmanId },
+                success: function (result) {
+                    debugger;
+                    var SalesmanId = $("input[id^='SalesmanDropDownList']").data("kendoDropDownList").value();
+                    var Address = $("input[id^='AddressDropDownList']").data("kendoDropDownList");
+                    if (result.data != null) {
+
+                        var RebindinData = result.data;
+                        Address.setDataSource(RebindinData);
+                    }
+
+                },
+                error: function (result) {
+                    //   debugger
+
+                }
+            });
+        }
+
+        function GetSalesmanDetails(e, ProjectId) {
+            debugger;
+            $.ajax({
+                url: '@Url.Action("BindSalesmenByProject", "Master")',
+                type: "GET",
+                dataType: "json",
+                data: { ProjectId: ProjectId },
+                success: function (result) {
+                    debugger;
+                    var Salesman = $("input[id^='SalesmanDropDownList']").data("kendoDropDownList");
+                    var AddressId = $("input[id^='AddressDropDownList']").data("kendoDropDownList").value();
+                    if (result.data != null) {
+
+                        var RebindinData = result.data;
+                        Salesman.setDataSource(RebindinData);
+                        Salesman.value(RebindinData[0].id);
+                    }
+
+                },
+                error: function (result) {
+                    //   debugger
+
+                }
+            });
+        }
+    </script>   

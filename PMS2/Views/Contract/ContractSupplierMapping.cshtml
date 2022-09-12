@@ -1,0 +1,252 @@
+﻿@model PMS.Models.contractSupplierMapping
+@{
+    ViewBag.Title = "ContractSupplierMapping";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-4 col-7">
+                <h3 class="animated fadeInLeft text-primary">Contract Supplier Mapping</h3>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="form-group">
+                    <label class="control-label ml-2" for="project_number"><span class="data_inline_label" style="">Contr No</span></label>
+                    <input id="project_number" name="project_number" class="form-control" value="@Model.project_number" maxlength="100" readonly />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Customer</span></label>
+                    <select name="Customer_Id" id="Customer_Id" class="form-control" disabled>
+                        <option selected value="">@Model.customer</option>
+                    </select>
+                    @*<label class="control-label"><span class="data_inline">@Model.customer</span></label>*@
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label ml-2" for="project_name"><span class="data_inline_label">Address/Site</span></label>
+                    <input id="project_name" name="project_name" class="form-control" value="@Model.project_name" maxlength="100" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Salesmen</span></label>
+                    <select name="SalesmenId" id="SalesmenId" class="form-control" disabled>
+                        <option selected value="">@Model.salesmen</option>
+                    </select>
+                    @*<label class="control-label"><span class="data_inline">@Model.salesmen</span></label>*@
+                </div>
+            </div>
+        </div>
+        <div class="row align-items-end">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label">Supplier</span></label>
+                    <select name="SupplierId" id="SupplierId" class="form-control">
+                        <option selected value="">@Model.Supplier.Supplier_Name</option>
+                    </select>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <div class="form-group">
+                    <button type="button" id="btnAddSuppliers" onclick="OnClickAddSuppliers();" class='btn btn-primary'>
+                        <i class="fa fa-plus mr-2" aria-hidden="true"></i><span class="ml-2">Add</span>
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-2 ">
+                <div class="form-group">
+                    <button type="button" id="btnSaveAll" onclick="OnClickSaveSuppliers();" class='btn btn-primary'>
+                        <span>Save All</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="ProjectId" class="form-control col-8" value="@ViewBag.ProjectId" />
+        
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-12">
+        <div class="col-md-12">
+            <table class="table table-responsive table-striped table-bordered" style="overflow-x: visible; " id="tblCusSuppMap">
+                <thead>
+                    <tr>
+                        <th style="display: none">SupplierID</th>
+                        <th width="60%">Supplier</th>
+                        <th width="40%">Contact Info</th>
+                        <th width="20%">
+                            &nbsp;
+                            <input type="hidden" id="maintainID" name="maintainID" value="@Model._contractSupplierMapping.Count" />
+                        </th>
+                    </tr>
+                </thead>
+                <tbody id="tblbody">
+                    @if (Model._contractSupplierMapping.Count == 0)
+                    {
+                        <tr>
+                            <td style="display: none">
+                                @String.Empty
+                            </td>
+                            <td>
+                                @String.Empty
+                            </td>
+                            <td>
+                                @String.Empty
+                            </td>
+                            <td>
+                                @String.Empty
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        int i = 1;
+                        foreach (var csmaplst in Model._contractSupplierMapping)
+                        {
+                            <tr class="trtableclass" id="tr@(i)">
+                                <td style="display: none">
+                                    @csmaplst.supplierID
+                                </td>
+                                <td>
+                                    @csmaplst.suppliername
+                                </td>
+                                <td>
+                                    @csmaplst.suppaddress
+                                </td>
+                                <td>
+                                    <a href='javascript:void(0);' onclick=RemoveElement(@i)><i class="fa fa-trash"></i></a>
+                                </td>
+                            </tr>
+                            i = i + 1;
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    $(document).ready(function () {
+        BindCustomer();
+
+        //$('#tblCusSuppMap .trtableclass').each(function () {
+        //    //$(this).find("td").eq(0).hide();
+        //    debugger;
+        //    var column = "tblCusSuppMap ." + $(this).attr("supp_id");
+        //    $(column).hide();
+        //});
+
+    });
+
+    function RemoveElement(idnum) {
+        debugger;
+        $("#tr" + idnum).remove();
+    }
+
+    function OnClickAddSuppliers() {
+        debugger;
+        var idval = $("#maintainID").val();
+        var idnum = parseInt(idval) + 1;
+        var addnewHtML = "";
+        var selectedSupplierAddress = ''; //$("#SupplierId").val();
+        var selectedSupplierName = $('#SupplierId :selected').text();
+        var selectedSupplierID = $('#SupplierId :selected').val();
+        addnewHtML = "<tr class='trtableclass' id='tr" + idnum + "'>";
+        addnewHtML = addnewHtML + "<td style='display: none'>" + selectedSupplierID + "</td>";
+        addnewHtML = addnewHtML + "<td>" + selectedSupplierName + "</td>";
+        addnewHtML = addnewHtML + "<td>" + selectedSupplierAddress + "</td>";
+        addnewHtML = addnewHtML + "<td><a href='javascript:void(0);' onclick='RemoveElement(" + idnum + ")'><i class='fa fa-trash' aria-hidden='true'></i></a></td></tr>";
+
+        var ispresentintable = '';
+        if ($('#tblCusSuppMap .trtableclass').size() == 0)
+            $("#tblbody").append(addnewHtML);
+        else {
+            $('#tblCusSuppMap .trtableclass').each(function () {
+                debugger;
+                var customerId = $(this).find("td").eq(0).html();
+                var column = "table ." + $(this).attr("supp_id");
+                $(column).hide();
+                ispresentintable = ispresentintable + customerId.trim() + ",";
+            });
+            if (ispresentintable.includes(selectedSupplierID))
+                notify('Supplier Already Added')
+            else 
+                $("#tblbody").append(addnewHtML);
+        }
+        addnewHtML = "";
+    }
+
+    function OnClickSaveSuppliers() {
+        debugger;
+        var selectedSupplierIDs = '';
+        $('#tblCusSuppMap .trtableclass').each(function () {
+            var customerId = $(this).find("td").eq(0).html();
+            selectedSupplierIDs = selectedSupplierIDs + customerId.trim() + ",";
+        });
+        //alert(selectedSupplierIDs);
+        //var Values = "25,31";
+        var ProjectId = "@ViewBag.ProjectId";
+        //var JsonValues = JSON.stringify(Values);
+        $.loader({ content: "<table><tr><td><h5>Saving Contract Supplier Mapping</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+        $.ajax({
+            type: "POST",
+            url: "/Contract/SaveContractsupplierMapping", // the URL of the controller action method
+            data: { "SuppIDValues": selectedSupplierIDs, "PrjID": ProjectId },
+            dataType: 'Json',
+            success: function (data) {
+                //  debugger;
+                $.loader('close');
+                var Result = data.data.Result;
+                var Errormessage = data.data.Errormessage;
+                if (Result == "1") {
+                    notify(Errormessage, "success");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.loader('close');
+                notify("Fail", "error");
+                notify(jqXHR, "error");
+            }
+        });
+    }
+
+    function BindCustomer() {
+        debugger;
+        var selectedSupplierId = $("#SupplierId").val();
+        var selectedSupplierText = $("#SupplierId").text();
+		$.get('@Url.Action("BindSupplier", "Master")', function (list) {
+			/*////debugger*/
+			if (list != null) {
+				var items = [];
+				// items.push("<option value=" + 0 + ">" + "--Select Customer--" + "</option>");
+				var i;
+				for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].Supplier_id + ">" + list.data[i].Supplier_Name + "</option>");
+				}
+                items.push("<option selected value=" + selectedSupplierId + ">" + selectedSupplierText + "</option>");
+                $("#SupplierId").html(items.join(' '));
+                $('#SupplierId').select2();
+			}
+			else {
+				var items = [];
+				//items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#SupplierId").html(items.join(' '));
+                $('#SupplierId').select2();
+			}
+		});
+    }
+
+</script>

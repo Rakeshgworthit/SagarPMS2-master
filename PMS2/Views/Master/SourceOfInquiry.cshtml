@@ -1,0 +1,257 @@
+﻿@{
+    ViewBag.Title = "SourceOfInquiry";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="col-md-6">
+            <h3 class="animated fadeInLeft text-primary">Source Of Inquiry List</h3>
+        </div>
+    </div>
+</div>
+<div class="row mx-3">
+    <div class="col-md-12">
+        <div class="responsive-table">
+            <div id="SourceOfInquirygrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        kendo.ui.Grid.fn.onAddClearFilter = function () {
+            debugger
+            var grid = this;
+            grid.wrapper.find(".k-grid-add").on("click", function (e) {
+                //console.log('onaddclearfilter');
+                //send to first page if it's not already
+                if (grid.pager) grid.pager.page(1);
+                //clear the filter
+                if (grid.dataSource) grid.dataSource.filter([]);
+            });
+        }
+        dataSource = new kendo.data.DataSource({
+                        transport: {
+                              read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("SourceOfInquiryList", "Master")',
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                $.ajax({
+                                    url: '@Url.Action("CreateSourceOfInquiry", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonSourceOfInquiry: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        $("#SourceOfInquirygrid").data('kendoGrid').dataSource.read();
+                                        $("#SourceOfInquirygrid").data('kendoGrid').refresh();
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                //to clear filter
+                                clearAllFilters();
+                            },
+                            update: function (options) {
+                                debugger
+                                $.ajax({
+                                    url: '@Url.Action("CreateSourceOfInquiry", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonSourceOfInquiry: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        $("#SourceOfInquirygrid").data('kendoGrid').dataSource.read();
+                                        $("#SourceOfInquirygrid").data('kendoGrid').refresh();
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                //to clear filter
+                                clearAllFilters();
+                            },
+                            destroy: function (options) {
+                                debugger
+                                var SourceOfInquiry_Id = options.data.models[0].SourceOfInquiry_Id;
+                                $.ajax({
+                                    url: '@Url.Action("DeleteSourceOfInquiryBySourceOfInquiryId", "Master")?SourceOfInquiryId=' + SourceOfInquiry_Id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        $("#SourceOfInquirygrid").data('kendoGrid').dataSource.read();
+                                        $("#SourceOfInquirygrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                //to clear filter
+                                clearAllFilters();
+                            },
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 15,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "SourceOfInquiry_Id",
+                                fields: {
+                                    SourceOfInquiry_Id: { editable: false, type: "number"  },
+                                    SourceOfInquiry_cd: { validation: { required: false } },
+                                    SourceOfInquiry_name: { validation: { required: true, maxlength: 30 }},
+                                    SourceOfInquiry_description: { validation: { required: true, maxlength: 40 } },
+                                    isactive: { validation: { required: true }, defaultValue: true },
+                                    Seq_No: { type: "number", validation: { required: true }},
+                                }
+                            }
+                        }
+                    });
+        var SourceOfInquiryGrid = $("#SourceOfInquirygrid").kendoGrid({
+               dataSource: dataSource,
+               dataBound: function (e) {
+                   $('.k-grid-add').unbind("click");
+               },
+                    navigatable: true,
+                    pageable: true,
+               toolbar: [{ name: "create", text: "Add New SourceOfInquiry" }, { name: "excel", text: "Export to Excel " },  { name: "search" }, { template: '   <a type="button" class="k-button" onclick="return  clearAllFilters()" style="float:right" >Clear All Filters</a>' }],
+               excel: {
+                   fileName: "SourceOfInquiry List.xlsx",
+                   allPages: true,
+               },
+               //Nithin Added For Filter Ascending Order
+               filterMenuInit: function (e) {
+                   debugger
+                   if (e.field === "SourceOfInquiry_name" || e.field === "SourceOfInquiry_description") {
+                       var filterMultiCheck = this.thead.find("[data-field=" + e.field + "]").data("kendoFilterMultiCheck")
+                       filterMultiCheck.container.empty();
+                       filterMultiCheck.checkSource.sort({ field: e.field, dir: "asc" });
+
+                       // uncomment the following line to handle any grouping from the original dataSource:
+                       // filterMultiCheck.checkSource.group(null);
+
+                       filterMultiCheck.checkSource.data(filterMultiCheck.checkSource.view().toJSON());
+                       filterMultiCheck.createCheckBoxes();
+                   }
+               },
+                    filterable: true,
+               sortable: true,
+               reorderable: true,
+                    autoSync: true,
+                    resizable:true,
+                    pageable: {
+                        pageSize: 15,
+                        buttonCount: 15,
+                        pageSizes: [5, 15, 30, 60, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} SourceOfInquiry", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No SourceOfInquiry to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "SourceOfInquiry per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+               columns: [
+                   {
+                       command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                           { name: "destroy", text: " ", iconClass: "k-icon k-i-delete"  }], title: "Action", width: "100px"
+                   },
+                        { field: "SourceOfInquiry_cd", title: "Code", hidden: true, filterable: { multi: true, search: true }},
+                   { field: "SourceOfInquiry_name", title: "Name", filterable: { multi: true, search: true }, width: "415px" },
+                   { field: "SourceOfInquiry_description", title: "Description", filterable: { multi: true, search: true }, width: "455px"  },
+                        { field: "isactive", title: "is active", hidden: true },
+                   { field: "Seq_No", title: "Sequence No", filterable: { multi: true, search: true }, width: "125px"  },
+                        /*{ command: ["edit", "destroy"], title: "Action", width: "185px" }*/],
+                    editable: "inline"
+           }).data("kendoGrid");
+        SourceOfInquiryGrid.onAddClearFilter();
+    });
+    //Nithin Added to clear all filterrs
+    function clearAllFilters() {
+        $("#SourceOfInquirygrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");
+    }
+    //Tooltips For Kendogrid Action Btn
+
+    $("#SourceOfInquirygrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel SourceOfInquiry";
+        }
+    });
+    $("#SourceOfInquirygrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit SourceOfInquiry Details";
+        }
+    });
+    $("#SourceOfInquirygrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete SourceOfInquiry";
+        }
+    });
+    $("#SourceOfInquirygrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update SourceOfInquiry";
+        }
+    });
+</script>

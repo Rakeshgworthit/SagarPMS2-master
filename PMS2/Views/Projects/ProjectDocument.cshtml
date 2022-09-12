@@ -1,0 +1,151 @@
+﻿@model PMS.Models.ProjectDocumentViewModel
+@{
+    Layout = null;
+}
+<link rel="stylesheet" type="text/css" href="/Content/css/bootstrap.min.css">
+<!-- plugins -->
+<link rel="stylesheet" type="text/css" href="/Content/css/plugins/font-awesome.min.css" />
+<link rel="stylesheet" type="text/css" href="/Content/css/plugins/simple-line-icons.css" />
+<link rel="stylesheet" type="text/css" href="/Content/css/plugins/animate.min.css" />
+<link rel="stylesheet" href="~/Content/css/jquery-ui.css">
+<link href="/Content/css/style.css" rel="stylesheet">
+<script src="/Content/js/jquery.min.js"></script>
+<script src="/Content/js/jquery.ui.min.js"></script>
+
+
+<div class="container" style="width:850px;">
+    <div class="row">
+        <div class="col-md-12">
+            <h4 class="animated fadeInLeft text-primary">Documents</h4>
+            <form class="form-horizontal" id="frmAddJob" name="frmAddJob" method="post" enctype="multipart/form-data" action="/Projects/SaveDocument">
+                <table class="table">
+                    <tr>
+                        <td><strong>Select Document</strong></td>
+                        <td>
+                            <input type="file" id="FileName" name="FileName" />
+                            <input type="hidden" id="project_id" name="project_id" value="@Model.project_id" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <input type="hidden" id="IsProject" name="IsProject" value="@Model.IsProject" />
+                            <input type="hidden" id="IsDashBoard" name="IsDashBoard" value="@Model.IsDashBoard" />
+                            <input type="hidden" id="IsContract" name="IsContract" value="@Model.IsContract" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td><strong>Description</strong></td>
+                        <td><textarea id="file_desc" name="file_desc" rows="3" cols="40"></textarea></td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td>
+                            <input type="submit" id="btn_submit" name="btn_submit" value="Submit" class="btn btn-primary" />
+                            <input type="button" id="TB_closeWindowButton" name="TB_closeWindowButton" value="Cancel" class="btn btn-danger" onclick="self.close();" />
+                        </td>
+                    </tr>
+                </table>
+            </form>
+
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>File Name</th>
+                        <th>Description</th>
+                        <th>Uploaded By</th>
+                        <th>Uploaded Date</th>
+                        <th></th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model.project_document_list.Count == 0)
+                    {
+                        <tr>
+                            <td colspan="4"><p class="alert alert-info" role="alert">Record Not Found.</p></td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var pdlist in Model.project_document_list)
+                        {
+                            if ((pdlist.Uploaded_By_Name) != null)
+                            {
+                                <tr>
+                                    <td>@pdlist.file_name</td>
+                                    <td>@Html.Raw(pdlist.file_desc)</td>
+                                    <td>@pdlist.UploadedName</td>
+                                    <td>@pdlist.uploaded_on.ToString("MM/dd/yyyy")</td>
+                                    <td><a target="_blank" title="View document" href="@pdlist.document_path/@pdlist.file_name">View</a></td>
+                                    <td><a target="_self" title="Delete document" onclick="deletedocument(@pdlist.document_id,@pdlist.project_id, '@pdlist.file_name', '@pdlist.document_path')" href="Javascript:void(0)">Delete</a></td>
+                                </tr>
+                            }
+                        }
+
+                    }
+
+
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<style>
+    body {
+    background:#fff!important;
+    
+    }
+    .container {
+        font-size: 12px;
+    }
+</style>
+
+<script>
+    function deletedocument(docid, project_id, FileName, FilePath) {
+        var r = confirm("Are you sure want to delete this record?");
+        if (r == true) {
+            $.ajax({
+                url: '/Projects/DeleteDocument',
+                type: "post",
+                data: {
+                    Id: docid,
+                    FilePath: FilePath,
+                    FileName: FileName,
+                    project_id: project_id
+                },
+                success: function (data) {
+                    debugger;
+                    location.reload();
+
+                }
+            });
+        }
+    }
+
+    function Savedocument(project_id, file_desc) {
+        debugger;
+        var IsProject = $("#IsProject").val();
+        var IsDashBoard = $("#IsDashBoard").val();
+        var IsContract = $("#IsContract").val();
+        $.ajax({
+            url: '/Projects/SaveDocument',
+            type: "post",            
+            data: {
+                project_id: project_id,
+                IsProject: IsProject,
+                file_desc: file_desc,
+                IsDashBoard: IsDashBoard,
+                IsContract: IsContract
+            },
+            success: function (data) {
+                debugger;
+                location.reload();
+
+            }
+        });
+
+    }
+
+</script>

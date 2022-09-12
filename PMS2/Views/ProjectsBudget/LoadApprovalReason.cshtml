@@ -1,0 +1,75 @@
+﻿@model PMS.Models.ProjectsBudget
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<style>
+    .redborder {
+        border: solid 1px #ff0000;
+    }
+</style>
+
+<div class="modal-header">
+    <h4 class="modal-title">Budgeted Cost Approval Reason</h4>
+    <button type="button" class="close" onclick="CloseModal1();">&times;</button>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="frmProjectBudget" name="frmProjectBudget">
+        <div class="row">
+            <div class="col-md-5 col-sm-5">
+                <div class="form-group row">
+                    <label class="control-label col-sm-3" for="pwd">Reason:</label>
+                    <div class="col-sm-9">
+                        <textarea id="reasonID" style="width:950px;height:80px;vertical-align:top" />
+                    </div>
+                </div>
+            </div>
+        </div>
+        <input type="hidden" id="approved_amount" value="@Model.Approved_amount" />
+        <input type="hidden" id="project_budget_details_id" value="@Model.project_budget_details_id" />
+    </form>
+</div>
+<div class="modal-footer">
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" onclick="CloseModal();">Save</button>
+</div>
+
+<script>
+
+    function CloseModal1() {
+        window.location = '@Url.Action("", "ProjectsBudget")';
+    }
+
+    function CloseModal() {
+        var reason = $("#reasonID").val();
+        var approved_amount = $("#approved_amount").val();
+        var project_budget_details_id = $("#project_budget_details_id").val();
+        var status_id = 2;
+        if (reason == '' || reason == null) {
+            notify("Please enter Reason", "error");
+            return false;
+        }
+        else {
+            $.loader({ content: "<table><tr><td><h5>Approval Of Budget Cost is in Progress</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+            $.ajax({
+                url: '@Url.Action("Update_ForApprovalWithReason", "ProjectsBudget")?id=' + project_budget_details_id + '&Status_Id=' + status_id + '&Approved_Amount=' + approved_amount + '&reason=' + reason,
+                data: {},
+                type: "POST",
+                dataType: 'Json',
+                success: function (data) {
+                    debugger;
+                    $.loader('close');
+                    notify(data.data.Errormessage, "success")
+                    window.location = '@Url.Action("", "ProjectsBudget")';
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    $.loader('close');
+                    notify("Fail", "error");
+                    notify(jqXHR, "error");
+                }
+            });
+        }
+    }
+
+</script>

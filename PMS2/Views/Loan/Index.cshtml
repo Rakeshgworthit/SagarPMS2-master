@@ -1,0 +1,190 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.LoanViewModel
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-6">
+                <h3 class="animated fadeInLeft text-primary">Loan</h3>
+            </div>
+            <div class="col-md-6 col-6">
+                <button type="button" onclick="openModelpop('/loan/LoadAddEdit', 'id', 0);" class='btn btn-primary pull-right'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="well">
+                    @using (Html.BeginForm("Index", "Loan", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+                    {
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 col-sm-5">
+                                <div class="form-group ">
+                                    <label class="control-label" for="from_date">From:&nbsp;</label>
+                                    <input id="SearchFrom" name="SearchFrom" class="form-control" value="@Convert.ToDateTime(Model.SearchFrom).ToString("dd/MM/yyyy")" />
+                                </div>
+                            </div>
+                            <div class="col-lg-3 col-md-4 col-sm-5 col-xs-10">
+                                <div class="form-group ">
+                                    <label class="control-label " for="from_date">To:&nbsp;</label>
+                                    <input id="SearchTo" name="SearchTo" class="form-control" value="@Convert.ToDateTime(Model.SearchTo).ToString("dd/MM/yyyy")" />
+                                </div>
+                            </div>
+                            <div class="col-md-1 col-sm-1 col-xs-2">
+                                <input type="hidden" id="branch_id" name="branch_id" value="@PMS.Common.SessionManagement.SelectedBranchID" />
+                                <button type="submit" class="btn btn-primary btn-sm mt-srh-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                            </div>
+                        </div>
+                    }
+                </div>
+                <div class="responsive-table">
+                    <input type="hidden" id="branch_id" name="branch_id" value="@PMS.Common.SessionManagement.SelectedBranchID" />
+
+                    @Html.MVCGrid("LoanGrid", new { hdnUID = Model.UID, brId = PMS.Common.SessionManagement.SelectedBranchID, SearchFrom = Model.SearchFrom, SearchTo = Model.SearchTo })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+
+    $(function () {
+        //debugger
+        var val = '@ViewBag.Message';
+        if (val) {
+            notify(val, 'success');
+        }
+        //console.log("ready!");
+    });
+
+    function SaveForm() {
+        var form = $('#frmLoan');
+        var chval = false;
+        if (String($("#payment_mode").val()) == "4" && $("#cheque_number").val() == "" && ($("#bank_id").val() == "" || $("#bank_id").val() == "0")) {
+            $(".chequenumbervalidation").show();
+            $(".bankvalidation").show();
+            chval = true;
+        }
+        else if (String($("#payment_mode").val()) == "4" && $("#cheque_number").val() == "") {
+            $(".chequenumbervalidation").show();
+            $(".bankvalidation").hide();
+            chval = true;
+        } else if (String($("#payment_mode").val()) == "4" && ($("#bank_id").val() == "" || $("#bank_id").val() == "0")) {
+            $(".bankvalidation").show();
+            $(".chequenumbervalidation").hide();
+            chval = true;
+        }
+        else if ($("#cheque_number").val() != "") {
+            if (isNumber($("#cheque_number").val()) == false) {
+                $(".chequenumbervalidation").show();
+                chval = true;
+            } else {
+                chval = false;
+                $(".chequenumbervalidation").hide();
+                $(".bankvalidation").hide();
+            }
+
+        }
+        else {
+            chval = false;
+            $(".chequenumbervalidation").hide();
+            $(".bankvalidation").hide();
+        }
+
+
+
+
+        $.validator.unobtrusive.parse(form);
+        if (form.valid() && chval == false) {
+
+            $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                type: "POST",
+                url: "/Loan/SaveUpdate", // the URL of the controller action method
+                data: {
+                    Id: $("#Id").val(),
+                    branch_Id: $("#branch_Id").val(),
+                    LoanDate: $("#LoanDate").val(),
+                    rec_type: $("#rec_type").val(),
+
+                    person_id: $("#person_id").val(),
+
+                    purpose: $("#purpose").val(),
+                    payment_mode: $("#payment_mode").val(),
+                    bank_id: $("#bank_id").val(),
+                    cheque_number: $("#cheque_number").val(),
+
+                    amount: $("#amount").val(),
+                    created_by: $("#created_by").val(),
+                    created_on: $("#created_on").val(),
+                    updated_by: $("#updated_by").val(),
+                    updated_on: $("#updated_on").val(),
+                    isactive: $("#isactive").val(),
+                    project_id: $("#project_id").val()
+                }, // optional data
+                success: function (result) {
+                    $.loader('close');
+                    if (result.cls == "error") {
+                        notify(result.msg, result.cls);
+                    } else {
+                        $("#btnClose").click();
+                        loadGrid();
+                        notify(result.msg, result.cls);
+                    }
+                },
+                error: function (req, status, error) {
+                    // do something with error
+                    notify(error, "error");
+                }
+            });
+        }
+    }
+
+    function loadGrid() {
+        MVCGrid.reloadGrid('LoanGrid');
+    }
+    function isNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    $(function () {
+        $("#SearchFrom").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt2 = $('#SearchTo');
+                var startDate = $(this).datepicker('getDate');
+                var minDate = $(this).datepicker('getDate');
+                dt2.datepicker('option', 'minDate', minDate);
+            }
+        });
+        $('#SearchFrom').removeAttr("data-val-date");
+
+        $("#SearchTo").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt1 = $('#SearchFrom');
+                var startDate = $(this).datepicker('getDate');
+                var maxDate = $(this).datepicker('getDate');
+                dt1.datepicker('option', 'maxDate', maxDate);
+            }
+
+        });
+        $('#SearchTo').removeAttr("data-val-date");
+        //$("#SearchFrom").datepicker({ changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy" });
+        //$('#SearchFrom').removeAttr("data-val-date");
+
+        //$("#SearchTo").datepicker({ changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy" });
+        //$('#SearchTo').removeAttr("data-val-date");
+    });
+</script>

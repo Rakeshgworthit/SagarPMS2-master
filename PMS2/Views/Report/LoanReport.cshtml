@@ -1,0 +1,154 @@
+﻿@model PMS.Models.ReportViewModel
+@{
+    ViewBag.Title = "Loan Report";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="animated fadeInLeft text-primary">Loan Report</h3>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-heading">
+                <div class="well">
+                    @using (Html.BeginForm("LoanReport", "Report", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+                    {
+
+                        @Html.ValidationSummary("", new { @class = "text-danger" })
+                    <div class="row">
+                        <div class="col-md-3 col-lg-3 col-xl-2 col-sm-6 ">
+                            <div class="form-group ">
+                                <label class="control-label" for="from_date">From:</label>
+                                <input id="from_date" name="from_date" class="form-control" value="@Convert.ToDateTime(Model.from_date).ToString("dd/MM/yyyy")" />
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 col-xl-2 col-sm-6 ">
+                            <div class="form-group">
+                                <label class="control-label" for="to_date">To:</label>
+                                <input id="to_date" name="to_date" class="form-control" value="@Convert.ToDateTime(Model.to_date).ToString("dd/MM/yyyy")" />
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-2 col-sm-6 ">
+                            <div class="form-group">
+                                <label class="control-label">Status:</label>
+                                @Html.DropDownListFor(o => o.SearchSalesmenStatus, Model.SalesmenStatusList, new { @class = "form-control", id = "ddlStatus" })
+                            </div>
+                        </div>
+                        @if (!User.IsInRole("Salesman"))
+                        {
+                            <div class="col-md-6 col-lg-3  col-xs-10 ">
+                                @*<div class="form-group">
+                    @Html.DropDownListFor(o => o.SalesmenId, Model.SalenmenList, new { @class = "form-control", id = "ddlSalesmen" })
+                </div>*@
+                                <div class="form-group">
+                                    <label class="control-label">Salesman:</label>
+                                    @Html.DropDownListFor(o => o.SalesmenOrUserId, Model.SalesmenAndUserList, new { @class = "form-control", id = "ddlSalesmen" })
+                                </div>
+                            </div>
+                        }
+                        <div class="col-md-1 col-sm-1 col-xs-2 pl-md-2 ">
+
+                            <button type="submit" class="btn btn-primary mt-srh-btn" onclick="return SubmitAs('form');"><i class="fa fa-search" aria-hidden="true"></i></button>
+                        </div>
+                    </div>
+                        <div class="row mb-2" >
+                            <div class="col-md-12">
+                                <button type="submit" class="btn btn-success pull-right " onclick="return SubmitAs('export');"><i class="fa fa-file-excel-o" aria-hidden="true"></i> Export</button>
+
+                            </div>
+                        </div>
+                    }
+
+                </div>
+            </div>
+            <div class="panel-body">
+                <div class="responsive-table">
+                    @Html.Raw(Model.GridData)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function SubmitAs(obj) {
+        if ($("#SalesmenOrUserId").val() == "") {
+            notify("Please select an employee", "error");
+            return false;
+        } else {
+            if (obj == 'form') {
+                $("#SearchForm").attr('action', "LoanReport").submit();
+            } else {
+                $('#SearchForm').attr('action', "ExportLoanReport").submit();
+            }
+        }
+    }
+
+    $(function () {
+
+        $("#from_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt2 = $('#to_date');
+                var startDate = $(this).datepicker('getDate');
+                var minDate = $(this).datepicker('getDate');
+                dt2.datepicker('option', 'minDate', minDate);
+            }
+        });
+        $("#to_date").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt1 = $('#from_date');
+                var startDate = $(this).datepicker('getDate');
+                var maxDate = $(this).datepicker('getDate');
+                dt1.datepicker('option', 'maxDate', maxDate);
+            }
+        });
+
+        $('#from_date').removeAttr("data-val-date");
+        $('#to_date').removeAttr("data-val-date");
+
+        //$("#from_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy" });
+        //$('#from_date').removeAttr("data-val-date");
+
+        //$("#to_date").datepicker({ changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy" });
+        //$('#to_date').removeAttr("data-val-date");
+
+    });
+    $("#ddlStatus").change(function () {
+
+        var Id = $('#ddlStatus').val();
+        $.ajax({
+            type: 'POST',
+
+            url: "/Report/GetSalesmenforLoanReport",
+            data: { salesmenStatus: Id },
+            dataType: "json",
+            success: function (Model) {
+                {
+                    debugger;
+                    $("#ddlSalesmen").empty();
+                    $.each(Model.SalesmenAndUserList, function () {
+                        $("#ddlSalesmen").append($("<option/>").val(this.Value).text(this.Text));
+                    });
+                }
+            },
+            error: function () {
+
+            }
+
+        })
+    });
+    $(document).ready(function () {
+        $(".table").addClass("table-bordered");
+    });
+</script>
+

@@ -1,0 +1,96 @@
+﻿@model PMS.Models.ProjectAdditionsViewModel
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    <h4 class="modal-title">Add/Edit Additions & Omissions</h4>
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="frmProject" name="frmProject">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="customer_name">Project:</label>
+                    <div class="col-sm-8">
+                        @Html.HiddenFor(o => o.id)
+                        @Html.DropDownListFor(o => o.project_id, Model.ProjectList, new { @class = "form-control", @tabindex = "1" })
+                        @Html.ValidationMessageFor(o => o.project_id, "", new { @class = "text-error" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="pwd">Addition Description:</label>
+                    <div class="col-sm-8">
+                        @Html.TextBoxFor(o => o.addition_omissioni_description, new { @class = "form-control", @tabindex = "3" })                        
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="pwd">Amount:</label>
+                    <div class="col-sm-8">
+                        @Html.TextBoxFor(o => o.amount, new { @class = "form-control amount", @tabindex = "5" })
+                        @Html.ValidationMessageFor(o => o.amount, "", new { @class = "text-error" })
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="pwd">Total Amount:</label>
+                    <div class="col-sm-8">
+                        @Html.TextBoxFor(o => o.total_amount, new { @class = "form-control amount", @tabindex = "7" })
+                        @Html.ValidationMessageFor(o => o.total_amount, "", new { @class = "text-error" })
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="pwd">Date:</label>
+                    <div class="col-sm-8">
+                        @Html.TextBoxFor(o => o.date, "{0:MM/dd/yyyy}", new { @class = "form-control", @tabindex = "2" })
+                        @Html.ValidationMessageFor(o => o.date, "", new { @class = "text-error" })
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="pwd">Remarks:</label>
+                    <div class="col-sm-8">
+                        @Html.TextBoxFor(o => o.remarks, new { @class = "form-control", @tabindex = "4" })
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="control-label col-sm-4" for="pwd">Gst Amount:</label>
+                    <div class="col-sm-8">
+                        @Html.TextBoxFor(o => o.gst_amount, new { @class = "form-control amount", @tabindex = "6" })
+                        @Html.ValidationMessageFor(o => o.gst_amount, "", new { @class = "text-error" })
+                    </div>
+                </div>
+                @Html.HiddenFor(o => o.isactive)
+
+                @*<div class="form-group">
+                    <label class="control-label col-sm-4" for="email">Is Active:</label>
+                    <div class="col-sm-8">
+                        @Html.DropDownListFor(o => o.isactive, Model.ActiveInactiveList, new { @class = "form-control" })
+                    </div>
+                </div>*@
+               
+            </div>
+        </div>        
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveForm();">Save</button>
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>
+
+
+<script>
+    $(function () {
+        $("#date").datepicker({changeMonth: true, changeYear: true, dateFormat: "mm/dd/yy" });      
+    });
+</script>
+
+

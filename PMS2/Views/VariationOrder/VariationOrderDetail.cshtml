@@ -1,0 +1,856 @@
+﻿
+@{
+    ViewBag.Title = "VariationOrderDetail";
+}
+<style>
+    .data_inline {
+        font-size: 1rem;
+        font-weight: 500;
+    }
+
+    .data_inline_label {
+        font-size: 1rem;
+        font-weight: bold;
+    }
+
+    #discount {
+        text-align: right;
+        padding-right: 0px;
+        width: 120px;
+    }
+</style>
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-7">
+                <h3 class="animated fadeInLeft text-primary">VO-Contract Details</h3>
+            </div>
+            <div class="col-md-6 col-5 ">
+                <button type="button" onclick="ContractList();" class='btn btn-primary pull-right mr-2'>
+                    <span>Contract List</span>
+                </button>
+                @*<button type="button" onclick="OnClickOmission();" class='btn btn-primary pull-right mr-2'>
+                        <span>Omission</span>
+                    </button>*@
+                <button type="button" onclick="AdditionOmission();" class='btn btn-primary pull-right mr-2'>
+                    <span>Variation Order</span>
+                </button>
+
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="row">
+            <div class="col-md-3 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label" style="font-size:20px">Salesmen : </span></label>
+                    <label class="control-label"><span class="data_inline">@Model.salesmen</span></label>
+                </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label" style="font-size:20px">Customer : </span></label>
+                    <label class="control-label"><span class="data_inline">@Model.customer</span></label>
+
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-6 ">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label" style="font-size:20px">Status :</span></label>
+                    <label class="control-label"><span class="data_inline">@Model.status</span></label>
+
+                </div>
+            </div>
+            <div class="col-md-3 col-sm-6 ">
+                <div class="form-group">
+                    <label class="control-label" for="from_date"><span class="data_inline_label" style="font-size:20px">Amount :</span></label>
+                    <label class="control-label"><span class="data_inline"><strong>$@Model.total_amount.ToString("#,##0.00")</strong></span></label>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row ml-1">
+            <div style="width: 25%">
+                <div class="form-group">
+                    <label for="from_date" class="control-label"><span class="data_inline_label" style="font-size:20px">Contr No: </span></label>
+                    <label class="control-label">
+                        <span class="data_inline">@Model.project_number</span>
+                    </label>
+                </div>
+            </div>
+            <div style="width: 35%">
+                <label for="from_date" class="control-label"><span class="data_inline_label" style="font-size:20px">Contract Date: </span></label>
+                <label class="control-label">
+                    <span class="data_inline">
+                        @Model.shortForwardDate
+                    </span>
+                </label>
+            </div>
+            <div style="width: 40%">
+                <div class="form-group ml-2  ">
+                    <label class="control-label" for="project_name"><span class="data_inline_label" style="font-size:20px">Address/Site :</span></label>
+                    <label class="control-label"><span class="data_inline">@Model.project_name</span></label>
+                </div>
+            </div>
+
+        </div>
+        <div class="row ml-1">
+            <div style="width: 80%">
+            </div>
+            <div style="width: 20%">
+                <button class="k-button" id="expand">Expand All</button>
+                <button class="k-button" id="collapse">Collapse All</button>
+            </div>
+        </div>
+        <input type="hidden" id="ProjectId" class="form-control col-8" value="@ViewBag.ProjectId" />
+
+        <div id="ContractGrid" class="accordion">
+        </div>
+
+        <br />
+        @*<div class="col-md-12">
+                <label class="control-label" for="from_date"><span class="data_inline_label" style="font-size:20px">Payment Terms :</span></label>
+            </div>
+
+            <div id="TermsGrid" class="accordion">
+            </div>*@
+        @* Start We need to have for Each Task Total*@
+        <br />
+        <div class="row justify-content-end mx-0">
+            <div class="col-md-4 mr-3">
+                <table class="table task_total_amount_tables">
+                    <tbody>
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Sub Total :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    <label id="sub_total_amount" name="sub_total_amount">
+                                        $@Model.contract_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Less Discount :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    @*<input type="number" min="0" onkeypress="return event.charCode >= 48" id="discount" name="discount" class="form-control" value="@Model.discount.ToString("#,##0.00")" maxlength="10" disabled/>*@
+                                    <label id="discount" name="discount">
+                                        $@Model.discount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles"> Total :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    <label id="total_afterDiscount" name="total_afterDiscount">
+                                        @*$@Model.contract_amount.ToString("#,##0.00")*@
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right">
+                                <p class="task_total_amount_titles">
+                                    <label class="task_total_amount_titles" id="gst_percentage" name="gst_percentage">
+                                        @Model.gst_percentage % GST :
+                                    </label>
+                                </p>
+                            </td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    <label id="gst_amount" name="gst_amount">
+                                        $@Model.gst_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right"><p class="task_total_amount_titles">Grand Total :</p></td>
+                            <td align="right">
+                                <p class="task_total_amount_details">
+                                    @*<span><i class="fa fa-dollar mr-2"></i></span>*@ <label id="grand_total_amount" name="grand_total_amount">
+                                        $@Model.total_amount.ToString("#,##0.00")
+                                    </label>
+                                </p>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    var ProjectId = $('#ProjectId').val();
+    var TaskId = '00000000-0000-0000-0000-000000000000';
+    function DateRangePicker() {
+        $('#date_range').daterangepicker({
+            "singleDatePicker": true,
+            "autoUpdateInput": true,
+            "autoApply": true,
+            locale: {
+                format: 'DD/MM/YYYY',
+                cancelLabel: 'Clear'
+            },
+            ranges: {
+                'Today': [moment(), moment()],
+                'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
+                'Last 7 Days': [moment().subtract(6, 'days'), moment()],
+                'Last 30 Days': [moment().subtract(29, 'days'), moment()],
+                'This Month': [moment().startOf('month'), moment().endOf('month')],
+                'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1, 'month').endOf('month')]
+            },
+            "alwaysShowCalendars": true,
+        });
+
+        $('#date_range').on('apply.daterangepicker', function (ev, picker) {
+            $(this).val(picker.startDate.format('DD/MM/YYYY') /*+ ' - ' + picker.endDate.format('DD/MM/YYYY')*/);
+        });
+
+        $('#date_range').on('cancel.daterangepicker', function (ev, picker) {
+            $(this).val('');
+        });
+
+        $('#date_range + .input-group-append').click(function () {
+            $('#date_range').trigger("focus");
+        });
+    }
+    $(document).ready(function () {
+         var SubTotal = @Model.contract_amount;
+        var discount =  @Model.discount;
+        var tolalamount = SubTotal - discount;
+        $("#total_afterDiscount").text(formatCurrency(tolalamount));
+        $("#discount").val(@Model.discount);
+
+        $('#ContractGrid').kendoGrid({
+            dataSource: {
+                transport: {
+                    read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("GetContractTasksItem", "Contract")?ProjectId=' + ProjectId + '&TaskId=' + TaskId,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                    update: {
+                        url: '@Url.Action("UpsertContractTasks", "Contract")?ProjectId=' + ProjectId,
+                        type: "POST",
+                        dataType: "json",
+                        complete: function (e) {
+                            $("#ContractGrid").data("kendoGrid").dataSource.read();
+                        }
+                    },
+                    destroy: {
+                        url: '@Url.Action("", "Contract")',
+                        type: "POST",
+                        dataType: "json"
+                    },
+                    create: {
+                        url: '@Url.Action("UpsertContractTasks", "Contract")?ProjectId=' + ProjectId,
+                        type: "POST",
+                        dataType: "json",
+                        complete: function (e) {
+                            $("#ContractGrid").data("kendoGrid").dataSource.read();
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    }
+                },
+                batch: true,
+                pageSize: 6,
+                schema: {
+                    data: "data.Items", total: "data.TotalCount",
+                    model: {
+                        id: "Task_Id",
+                        fields: {
+                            Task: { defaultValue: { Task_Id: 0, Task_Name: "Select Task" } },
+                        }
+                    }
+                }
+
+            },
+            pageable: true,
+            //toolbar: [
+            //    { name: "create", text: "Add new Contract Task" }
+            //],
+            detailInit: detailInit,
+            dataBound: function () {
+                this.expandRow(this.tbody.find("tr.k-master-row").first());
+            },
+            pageable: {
+                pageSize: 10,
+                buttonCount: 10,
+                pageSizes: [5, 10, 20, 50, 100, 500],
+                messages: {
+                    display: "{0} - {1} of {2} tasks", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                    empty: "No tasks to display",
+                    page: "Page",
+                    of: "of {0}", //{0} is total amount of pages
+                    itemsPerPage: "tasks per page",
+                    first: "Go to the first page",
+                    previous: "Go to the previous page",
+                    next: "Go to the next page",
+                    last: "Go to the last page",
+                    refresh: "Refresh"
+                }
+            },
+            columns: [
+                { field: "Task", title: " ", attributes: { style: "text-align:left;font-size: 20px;" }, editor: GetContractTasksListItem, template: "#=Task.Task_Name#" },
+            ],
+            editable: "inline"
+
+        });
+          $("#TermsGrid").kendoGrid({
+                    dataSource: {
+                  transport: {
+                       read: function (options) {
+                                $.ajax({
+                                  url: '@Url.Action("GetContractpaymentterms", "Contract")?ProjectId=' + ProjectId,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                $.ajax({
+                                      url: '@Url.Action("UpsertProjectPaymentTerms", "Contract")?ProjectId=' + ProjectId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonContract: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            update: function (options) {
+                                debugger
+                                $.ajax({
+                                     url: '@Url.Action("UpsertProjectPaymentTerms", "Contract")?ProjectId=' + ProjectId,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonContract: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#TermsGrid").data('kendoGrid').dataSource.read();
+                                        $("#TermsGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            destroy: {
+                                 url: '@Url.Action("", "Contract")',
+                                        type: "POST",
+                                dataType: "json",
+                                complete: function (e) {
+                                    $("#TermsGrid").data("kendoGrid").dataSource.read();
+                                    $("#TermsGrid").data('kendoGrid').refresh();
+                                }
+                            },
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 6,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "payment_term_id",
+                                fields: {
+                                    payment_term_id: { editable: false, nullable: true },
+                                    paymentdescription: { defaultValue: { Master_payment_term_id: 0, Master_payment_description: "--Select--" } },
+                                }
+                            }
+                        }
+               },
+               filterable: true,
+                scrollable: false,
+                sortable: true,
+                pageable: true,
+                navigatable: true,
+              //toolbar: [
+              //    { name: "create", text: "Add new Payment Term" }
+              //],
+                autoSync: true,
+                resizable: true,
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500]
+                    },
+                    columns: [
+
+                        { field: "payment_term_id", title: "" ,hidden: true },
+                        { field: "paymentdescription", title: "Payment Description", attributes: { style: "text-align:left;" }, filterable: { multi: true, search: true }, editor: PaymentTermsDropDownEditor, template: "#=paymentdescription.Master_payment_description#" },
+                        //{
+                        //    command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                        //        { name: "destroy", text: " " }], title: "Action", width: "100px" }
+                    ],
+                    editable: "inline"
+                });
+    });
+    function detailInit(e) {
+           $("<div/>").appendTo(e.detailCell).kendoGrid({
+                dataSource: {
+                        transport: {
+                            read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("GetContractTasksItemDetails", "Contract")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task.Task_Id,
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                        },
+                             update: function (options) {
+                                debugger
+                                $.ajax({
+                                    url: '@Url.Action("UpsertContractDetails", "Contract")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + e.data.Task.Task_Name,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonContractDetails: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#ContractGrid").data('kendoGrid').dataSource.read();
+                                        $("#ContractGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                        },
+                             create: function (options) {
+                                debugger
+                                $.ajax({
+                                    url: '@Url.Action("UpsertContractDetails", "Contract")?ProjectId=' + ProjectId + '&TaskId=' + e.data.Task.Task_Id + '&TaskName=' + e.data.Task.Task_Name,
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonContractDetails: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        $("#ContractGrid").data('kendoGrid').dataSource.read();
+                                        $("#ContractGrid").data('kendoGrid').refresh();
+                                        if (result.data.Result > 0) {
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        notify(result.data.Errormessage, "error");
+                                        options.error(result);
+                                    }
+                                });
+                            },
+
+                            destroy: {
+                                 url: '@Url.Action("", "Contract")',
+                                        type: "POST",
+                                dataType: "json"
+                            },
+
+
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 10,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "project_id",
+                                fields: {
+                                    project_id: { editable: false },
+                                    project_det_Id: { editable: false },
+                                    Task_Id: { editable: false },
+                                    Category: { defaultValue: { category_Id: 0, category_name: "-- Select --" } },
+                                    Item: { defaultValue: { item_id: 0, item_description: "-- Select --" } },
+                                    BillingUOM: { defaultValue: { status_lookup_id: 0, description: "-- Select --" } },
+                                    Price: { validation: { required: true }, type: "number" },
+                                    Qty: { validation: { required: true, type: "number",min: 0 } },
+                                    UOM: { defaultValue: { uom_id: 0, uom_description: "-- Select --" } },
+                                    item_remarks: { validation: { required: false } },
+                                    Amount: { validation: { required: true }, type: "number" },
+                                }
+                            }
+                        },
+                        aggregate: [
+                            { field: "Price", aggregate: "sum" },
+                            { field: "Amount", aggregate: "sum" }
+                        ]
+                    },
+                    scrollable: false,
+                    sortable: true,
+                    pageable: true,
+                    navigatable: true,
+               //toolbar: [
+               //    { name: "create", text: "Add new Item" }
+               //],
+                    autoSync: true,
+                    resizable: true,
+                    pageable: {
+                        pageSize: 10,
+                        buttonCount: 10,
+                        pageSizes: [5, 10, 20, 50, 100, 500]
+               },
+              // edit: onGridEditing,
+                    columns: [
+                        {
+                            field: "Category", title: "Category", attributes: { style: "text-align:left;", filterable: { multi: true, search: true } },
+                            editor: CategoryDropDownEditor, template: "#=Category.category_name#"
+                        },
+                        { field: "Item", title: "Item Description", width: "350px", attributes: { style: "text-align:left;" }, editor: ItemDropDownEditor, template: "#=Item.item_description#" },
+                        { field: "BillingUOM", title: "Billing UOM", attributes: { style: "text-align:left;" }, editor: BillingUOMDropDownEditor, template: "#=BillingUOM.description#" },
+                        { field: "Price", title: "Price ($)", format: "{0:c}",footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" }},
+                        { field: "Qty", title: "Quantity" },
+                        { field: "UOM", title: "UOM", attributes: { style: "text-align:left;" }, editor: UOMDropDownEditor, template: "#=UOM.uom_description#" },
+                        { field: "item_remarks", title: "Remarks", attributes: { style: "text-align:left;" } },
+                        { field: "Amount", title: "Amount", format: "{0:c}", footerTemplate: "<div style='float: right'>#= kendo.toString(sum, 'c2') #</div>", attributes: { style: "text-align:right;" } },
+                        {
+                            command: [], title: "Action", width: "100px"
+                            //command: [{ name: "edit", text: { edit: " ", update: " ", cancel: " " } },
+                            //{ name: "destroy", text: " " }], title: "Action", width: "100px"
+
+                        }
+                    ],
+               editable: "inline",
+                    edit: function (e) {
+                        debugger;
+                        var detailGridWrapper = this.wrapper;
+                        var parentRow = detailGridWrapper.closest("tr.k-detail-row").prev("tr");
+                        var parentGrid = parentRow.closest("[data-role=grid]").data("kendoGrid");
+                        debugger
+                        var parentModel = parentGrid.dataItem(parentRow);
+
+                        var ParentTaskId = parentModel.Task.Task_Id;
+                        var ParentTaskName = parentModel.Task.Task_Name;
+                        debugger
+                        var a = this;
+                        a.dataSource.transport.create.url = '@Url.Action("UpsertContractDetails", "Contract")?ProjectId=' + ProjectId + '&TaskId=' + ParentTaskId + '&TaskName=' + ParentTaskName;
+                    },
+                    complete: function (e) {
+                        debugger
+                        $("#ContractGrid").data("kendoGrid").dataSource.read();
+                        $("#ContractGrid").data('kendoGrid').refresh();
+                                }
+           });
+    }
+    function onGridEditing(arg) {
+        arg.container.find("input[name='item_remarks']").attr('maxlength', '100');
+    }
+     function CategoryDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter: "contains",
+                            autoBind: false,
+                           // optionLabel: "Select Category",
+                            dataTextField: "category_name",
+                            dataValueField: "category_Id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("CategoryDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                }
+                            },
+                            noDataTemplate: $("#CategoryTemplate").html()
+                        });
+           }
+
+    function ItemDropDownEditor(container, options) {
+                    $('<input required name="' + options.field + '"/>')
+                        .appendTo(container)
+                        .kendoDropDownList({
+                            filter: "contains",
+                            autoBind: false,
+                           // optionLabel: "Select Item Description",
+                            dataTextField: "item_description",
+                            dataValueField: "item_id",
+                               dataSource: {
+                                    type: "json",
+                                    transport: {
+                                        read: {
+                                            url: '@Url.Action("ItemDropDownList", "Master")',
+                                            type: "GET",
+                                            dataType: "json",
+                                            contentType: "application/json; charset=utf-8"
+                                        }
+                                   },
+                                   parameterMap: function (options, operation) {
+                                       if (operation !== "read" && options.models) {
+                                           return { models: kendo.stringify(options.models) };
+                                       }
+                                   },
+                                schema: {
+                                    data: "data"
+                                }
+                            }
+                        });
+           }
+
+    function UOMDropDownEditor(container, options) {
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                //optionLabel: "Select UOM",
+                dataTextField: "uom_description",
+                dataValueField: "uom_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("UOMDropDownList", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                }
+            });
+    }
+
+    function BillingUOMDropDownEditor(container, options) {
+        var LookUpColumnId = 1;
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                //optionLabel: "Select BillingUOM",
+                dataTextField: "description",
+                dataValueField: "status_lookup_id",
+                select: onSelectUOM,
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("Bind_StatusLookUp", "Master")?LookUpColumnId='+LookUpColumnId,
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                }
+            });
+    }
+
+    function onSelectUOM(e) {
+        debugger
+        var detailGridWrapper = this.wrapper;
+        var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+        var value = e.dataItem.description;
+
+        if (value == "FOC" || value == "Inclusive" || value == "Complementary") {
+            parentTR.find("td[data-container-for='Price'] input").attr("disabled", true).addClass("disabled");
+            parentTR.find("td[data-container-for='Qty'] input").attr("disabled", true).addClass("disabled");
+            parentTR.find("td[data-container-for='uom_description'] input").attr("disabled", true).addClass("disabled");
+            parentTR.find("td[data-container-for='uom_description'] span.k-dropdown").css("pointer-events", "none");
+            parentTR.find("td[data-container-for='Amount'] input").attr("disabled", true).addClass("disabled");
+        } else {
+            parentTR.find("td[data-container-for='Price'] input").attr("disabled", false).removeClass("disabled");
+            parentTR.find("td[data-container-for='Qty'] input").attr("disabled", false).removeClass("disabled");
+            parentTR.find("td[data-container-for='uom_description'] input").attr("disabled", false).removeClass("disabled");
+            parentTR.find("td[data-container-for='uom_description'] span.k-dropdown").css("pointer-events", "");
+            parentTR.find("td[data-container-for='Amount'] input").attr("disabled", false).removeClass("disabled");
+        }
+
+    };
+
+    function PaymentTermsDropDownEditor(container, options) {
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+               // optionLabel: "Select Payment Description",
+                dataTextField: "Master_payment_description",
+                dataValueField: "Master_payment_term_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                             url: '@Url.Action("BindMasterpaymentterms", "Master")',
+                            type: "GET",
+                            dataType: "json",
+                            contentType: "application/json; charset=utf-8"
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                },
+                noDataTemplate: $("#PaymentTermTemplate").html()
+            });
+    }
+    function GetContractTasksListItem(container, options) {
+        $('<input required name="' + options.field + '"/>')
+            .appendTo(container)
+            .kendoDropDownList({
+                filter: "contains",
+                autoBind: false,
+                optionLabel: "Select Task",
+                dataTextField: "Task_Name",
+                dataValueField: "task_id",
+                dataSource: {
+                    type: "json",
+                    transport: {
+                        read: {
+                            url: '@Url.Action("GetContractTasksListItem", "Contract")?ProjectId=' + ProjectId + '&TaskId=' + TaskId,
+                            dataType: "json",
+                        }
+                    },
+                    parameterMap: function (options, operation) {
+                        if (operation !== "read" && options.models) {
+                            return { models: kendo.stringify(options.models) };
+                        }
+                    },
+                    schema: {
+                        data: "data"
+                    }
+                },
+                noDataTemplate: $("#TaskTemplate").html()
+            });
+    }
+    $('#expand').click(function (e) {
+        var grid = $("#ContractGrid").data("kendoGrid");
+        $(".k-master-row").each(function (index) {
+            grid.expandRow(this);
+        });
+    })
+
+    $('#collapse').click(function (e) {
+        var grid = $("#ContractGrid").data("kendoGrid");
+        $(".k-master-row").each(function (index) {
+            grid.collapseRow(this);
+        });
+    })
+     function ContractList() {
+        window.location = '@Url.Action("ContractList", "Contract")';
+    }
+
+    function AdditionOmission() {
+         window.location = '@Url.Action("AdditionOmission", "VariationOrder")?ProjectId=' + ProjectId;
+    }
+
+    function OnClickOmission() {
+        debugger;
+        window.location = '@Url.Action("OmissionDetail", "VariationOrder")?ProjectId=' + ProjectId;
+    }
+    function OnClickAddition() {
+        debugger;
+        window.location = '@Url.Action("AdditionDetail", "VariationOrder")?ProjectId=' + ProjectId;
+    }
+
+</script>

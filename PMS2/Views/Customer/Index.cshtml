@@ -1,0 +1,129 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.CustomerViewModel
+@{
+    ViewBag.Title = "Customers";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-6">
+                <h3 class="animated fadeInLeft text-primary">Customer</h3> 
+            </div>
+            <div class="col-md-6 col-6 ">
+                <button type="button" onclick="openModelpop('/Customer/_LoadCustomer','id',0);" class='btn btn-primary pull-right'>
+                    <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+        <div class="panel">
+            <div class="panel-body">
+                <div class="well">
+                    @using (Html.BeginForm("Index", "Customer", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+                    {
+                        <div class="row">
+                            <div class="col-lg-3 col-md-4 col-xs-10">
+                                <div class="form-group ">
+                                    <label class="control-label " for="from_date">Search:&nbsp;</label>
+                                    <input id="customersearch" name="customersearch" class="form-control" value="@Model.customersearch" placeholder="Search" />
+                                </div>
+                            </div>
+                            @*<div class="col-lg-3 col-md-4 col-xs-10">
+                                <div class="form-group ">
+                                    <label class="control-label " for="BranchId">Branch:&nbsp;</label>
+                                    @Html.DropDownListFor(o => o.BranchId, Model.BranchList, new { @id = "BranchId", @class = "form-control" })
+                                </div>
+                            </div>*@
+                                <div class="col-md-1 col-xs-2">
+                                    <button type="submit" class="btn btn-primary btn-sm mt-srh-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+                                </div>
+                            </div>
+
+
+                    }
+                </div>
+                <div>
+                    @Html.MVCGrid("Customer", new { customersearch = Model.customersearch, BranchId = Model.BranchId })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+@*<div id="divModel">
+        <div id="myModal" class="modal fade" role="dialog">
+            <div class="modal-dialog modal-lg modal-content-left">
+
+                <div class="modal-content" id="ModelForm">
+
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+<script type="text/javascript">
+
+    $(function () {
+        //debugger
+        var val = '@ViewBag.Message';
+        var cls ='@ViewBag.cls';
+        if (val) {
+            notify(val, cls);
+        }
+        //console.log("ready!");
+    });
+
+    //function ShowModel(obj)
+    //{
+
+    //        $("#ModelForm").html("");
+    //        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+
+    //        $.ajax({
+    //            type: "POST",
+    //            url: "/Customer/_LoadCustomer", // the URL of the controller action method
+    //            data: {
+    //                Id: obj
+    //            }, // optional data
+    //            success: function (result) {
+    //                $("#ModelForm").html(result);
+    //                $.loader('close');
+    //            },
+    //            error: function (req, status, error) {
+    //                // do something with error
+    //            }
+    //        });
+
+    //        $("#myModal").modal('show');
+
+    //}
+
+
+
+    function notify(msg, type) {
+        notif({
+            msg: msg,
+            type: type,
+            position: "center",
+            opacity: 0.9,
+            timeout: 2000
+        });
+    }
+
+    function loadGrid() {
+        MVCGrid.reloadGrid('Customer');
+    }
+
+    function UploadFile(id) {
+        debugger;
+        window.open("/Projects/ProjectDocument?id=" + id + "&IsProject=" + false , 'targetWindow', 'toolbar=no,location=no, status=no, menubar=no, scrollbars=yes,resizable=yes,width=850,height=500');
+        //UploadFile
+    }
+
+</script>

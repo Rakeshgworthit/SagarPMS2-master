@@ -1,0 +1,224 @@
+﻿@model PMS.Models.CustomerViewModel
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <h4 class="modal-title">Add/Edit Customer</h4>
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="frmCustomer" name="frmCustomer">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="customer_name">Name1:</label>
+                        <div class="col-sm-8">
+                            @Html.HiddenFor(o => o.id)
+                            @Html.TextBoxFor(o => o.name1, new { @class = "form-control", @tabindex = "31" , @maxlength = "50" })
+                            @Html.ValidationMessageFor(o => o.name1, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="customer_name">Name2:</label>
+                        <div class="col-sm-8">
+
+                            @Html.TextBoxFor(o => o.name2, new { @class = "form-control", @tabindex = "32", @maxlength = "50" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Block No:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.block_no, new { @class = "form-control", @tabindex = "33", @maxlength = "50" })
+                            @Html.ValidationMessageFor(o => o.block_no, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Job Site:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.job_site, new { @class = "form-control", @tabindex = "34", @maxlength = "250" })
+                            @Html.ValidationMessageFor(o => o.job_site, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="pwd">Address:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.address, new { @class = "form-control", @tabindex = "35", @maxlength = "250" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">Contact Person:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.contact_person, new { @class = "form-control", @tabindex = "36", @maxlength = "50" })
+                            @Html.ValidationMessageFor(o => o.contact_person, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="Enquiry">Source Enquiry:</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownListFor(o => o.SourceOfEnquiry, Model.SourceList, new { @class = "form-control", @tabindex = "37" })
+                            @*<select name="EnquiryId" id="EnquiryId" class="form-control" required="required">
+                                    <option selected value=0>Select</option>
+                                </select>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">NRIC 1:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.nric1, new { @class = "form-control", @tabindex = "37", @maxlength = "50" })
+                            @Html.ValidationMessageFor(o => o.nric1, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">NRIC 2:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.nric2, new { @class = "form-control", @tabindex = "38", @maxlength = "50" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">Email:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.email, new { @class = "form-control", @tabindex = "39", @maxlength = "50" })
+                            @Html.ValidationMessageFor(o => o.email, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">Phone:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.phone, new { @class = "form-control", @tabindex = "40", @maxlength = "13",@type = "number" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">Mobile:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.mobile, new { @class = "form-control", @tabindex = "41", @maxlength = "13", @type = "number" })
+                            @Html.ValidationMessageFor(o => o.mobile, "", new { @class = "text-error" })
+                        </div>
+                    </div>
+
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">GST Registered:</label>
+                        <div class="col-sm-8">
+                            @Html.DropDownListFor(o => o.gst_registered, Model.GSTRegisterList, new { @class = "form-control", @tabindex = "42" })
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="row">
+                        <label class="control-label col-sm-4" for="email">GSTNo:</label>
+                        <div class="col-sm-8">
+                            @Html.TextBoxFor(o => o.gst_no, new { @class = "form-control", @tabindex = "43", @maxlength = "15" })
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+
+        @Html.HiddenFor(o => o.isactive)
+
+    </form>
+</div>
+<div class="modal-footer">
+    @if (@Model.id != 0)
+    {
+        <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveForm();">Update</button>
+    }
+    else
+    {
+        <button id="btnSelect" name="btnSelect" type="button" class="btn btn-primary" onclick="SaveForm();">Save</button>
+    }
+
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+</div>
+
+<script>
+    function SaveForm() {
+
+        var form = $('#frmCustomer');
+        $.validator.unobtrusive.parse(form);
+        if (form.valid()) {
+
+            $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+            $.ajax({
+                type: "POST",
+                url: "/Customer/SaveCustomer", // the URL of the controller action method
+                data: {
+                    id: $('#frmCustomer').find("#id").val(),
+                    name1: $('#frmCustomer').find("#name1").val(),
+                    name2: $('#frmCustomer').find("#name2").val(),
+                    nric1: $('#frmCustomer').find("#nric1").val(),
+                    nric2: $('#frmCustomer').find("#nric2").val(),
+                    block_no: $('#frmCustomer').find("#block_no").val(),
+                    job_site: $('#frmCustomer').find("#job_site").val(),
+                    address: $('#frmCustomer').find("#address").val(),
+                    contact_person: $('#frmCustomer').find("#contact_person").val(),
+                    email: $('#frmCustomer').find("#email").val(),
+                    phone: $('#frmCustomer').find("#phone").val(),
+                    mobile: $('#frmCustomer').find("#mobile").val(),
+                    gst_registered: $('#frmCustomer').find("#gst_registered").val(),
+                    gst_no: $('#frmCustomer').find("#gst_no").val(),
+                    isactive: $('#frmCustomer').find("#isactive").val(),
+                    SourceOfEnquiry: $('#frmCustomer').find("#SourceOfEnquiry").val(),
+                    /*SourceOfEnquiry: $('#frmCustomer').find("#SourceOfEnquiry option:selected").text(),*/
+                }, // optional data
+                success: function (result) {
+                    debugger;
+                    $.loader('close');
+                    if (result.cls == "error") {
+                        notify(result.msg, result.cls);
+                    } else {
+                        $("#btnClose").click();
+
+                        if ($('#frmProject').length) {
+                            FillCustomerDropdown(result.id);
+                        }
+                        else if ($('#frmQuotation').length) {
+                            FillCustomerDropdown(result.id, result.msg, result.cls);
+                        }
+                        else {
+                            loadGrid();
+                            notify(result.msg, result.cls);
+                        }
+                    }
+                },
+                error: function (req, status, error) {
+                    // do something with error
+                }
+            });
+        }
+    }
+
+</script>

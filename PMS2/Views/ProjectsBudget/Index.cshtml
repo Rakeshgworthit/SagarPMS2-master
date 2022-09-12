@@ -1,0 +1,995 @@
+﻿@using MVCGrid.Web
+@model PMS.Models.ProjectsBudgetViewModel
+@{
+
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.css" integrity="sha512-zrPsLVYkdDha4rbMGgk9892aIBPeXti7W77FwOuOBV85bhRYi9Gh+gK+GWJzrUnaCiIEm7YfXOxW8rzYyTuI1A==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/print-js/1.6.0/print.min.js" integrity="sha512-16cHhHqb1CbkfAWbdF/jgyb/FDZ3SdQacXG8vaOauQrHhpklfptATwMFAc35Cd62CQVN40KDTYo9TIsQhDtMFg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<style>
+    .view_icon {
+        background-image: url(/content/img/file_search.png);
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: contain;
+    }
+
+        .view_icon:hover {
+            background-image: url(/content/img/file_search.png);
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: contain;
+            background-color: white;
+        }
+</style>
+
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="row">
+            <div class="col-md-6 col-10">
+                <h3 class="animated fadeInLeft text-primary">Budgeted Cost</h3>
+            </div>
+            @if (User.IsInRole("SuperAdmin") || User.IsInRole("User") || User.IsInRole("Supplier"))
+            {
+                <div class="col-md-6 col-2">
+                    <button type="button" onclick="openModelpopup('/ProjectsBudget/LoadAddEditNew', 'id', 0, 'ProjectId', 0);" class='btn btn-primary pull-right'>
+                        <i class="fa fa-plus" aria-hidden="true"></i><span style="padding-left:10px;">Add</span>
+                    </button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+<div class="row mx-1">
+    <div class="col-md-12">
+
+        <div>
+            @using (Html.BeginForm("Index", "ProjectsBudget", FormMethod.Post, new { id = "SearchForm", name = "SearchForm" }))
+            {
+                <div class="row">
+                    @*<div class="col-md-4">
+                            <label class="control-label" for="date_rangelbl">Date Range</label>
+                            <div class="input-group">
+                                <input type="text" id="date_range" name="date_range" class="form-control date_form_control" maxlength="23" readonly />
+                                <div class="input-group-append">
+                                    <span class="input-group-text"><i class="fa fa-calendar"></i></span>
+                                </div>
+                            </div>
+                        </div>*@
+
+                    <div class="col-md-2  col-sm-6" style="white-space:nowrap">
+                        <label class="control-label " for="from_date"> From Date:</label>
+                        <div class="input-group col-md-9">
+                            <input id="SearchFrom" name="SearchFrom" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.SearchFrom).ToString("dd/MM/yyyy")" />
+                        </div>
+                    </div>
+                    <div class="col-md-2  col-sm-6" style="white-space:nowrap">
+                        <label class="control-label" for="to_date">To Date:</label>
+                        <div class="input-group col-md-9">
+                            <input id="SearchTo" name="SearchTo" class="form-control" style="width:100px" value="@Convert.ToDateTime(Model.SearchTo).ToString("dd/MM/yyyy")" />
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-4 col-sm-5">
+                        <div class="form-group">
+                            <label class="control-label">Supplier:&nbsp;</label>
+                            @Html.DropDownListFor(o => o.supplier_id, Model.supplierList, new { @class = "form-control", @tabindex = "3" })
+                        </div>
+                    </div>
+
+                    <div class="col-lg-3 col-md-4 col-sm-5">
+                        <div class="form-group">
+                            <label class="control-label">StatusId:&nbsp;</label>
+                            @Html.DropDownListFor(o => o.Status_Id, Model.StatusList, new { @class = "form-control", @tabindex = "4" })
+                        </div>
+                    </div>
+                    @*<div class="col-lg-3  col-md-4  col-sm-5 col-xs-10">
+                            <div class="form-group ">
+                                <label class="control-label " for="from_date">Search:&nbsp;</label>
+                                <input id="SearchString" name="SearchString" class="form-control" value="@Model.SearchString" placeholder="Search with" onblur="Search();" maxlength="250" />
+
+                            </div>
+                        </div>*@
+                    <div class="col-md-1  col-sm-2 col-xs-2">
+                        <input type="hidden" id="branch_id" name="branch_id" value="@PMS.Common.SessionManagement.SelectedBranchID" />
+                        <button type="submit" class="btn btn-primary btn-sm mt-srh-btn"><i class="fa fa-search" aria-hidden="true"></i></button>
+
+                    </div>
+                </div>
+            }
+        </div>
+        <div id="grid" class="accordion"></div>
+    </div>
+</div>
+
+<div id="divModel">
+    <div id="myModal" class="modal fade" role="dialog" style="z-index:10000">
+        <div class="modal-dialog modal-lg modal-content-left">
+            <div class="modal-content" id="ModelForm">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(function () {
+        debugger
+        var val = '@ViewBag.Message';
+        if (val) { notify(val, 'success'); }
+        
+        $("#SearchFrom").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt2 = $('#SearchTo');
+                var startDate = $(this).datepicker('getDate');
+                var minDate = $(this).datepicker('getDate');
+                dt2.datepicker('option', 'minDate', minDate);
+            }
+        });
+        $('#SearchFrom').removeAttr("data-val-date");
+
+        $("#SearchTo").datepicker({
+            changeMonth: true, changeYear: true, dateFormat: "dd/mm/yy",
+            onSelect: function (date) {
+                var dt1 = $('#SearchFrom');
+                var startDate = $(this).datepicker('getDate');
+                var maxDate = $(this).datepicker('getDate');
+                dt1.datepicker('option', 'maxDate', maxDate);
+            }
+
+        });
+        $('#SearchTo').removeAttr("data-val-date");
+
+        BindGrid();
+
+    });
+
+    //function hidecolumn() {
+    //     // var role = ';
+    //    debugger
+    //    if (role == "Admin") {
+    //        debugger
+    //        var grid = $("#grid").data('kendoGrid');
+    //        grid.hideColumn(1);
+
+    //    }
+    //}
+    function BindGrid() {
+        debugger;
+        var IsAdmin;
+
+        var IsAdminLogin = '@ViewBag.IsAdminLogin';
+        if (IsAdminLogin == 'YES')
+            IsAdmin = false;
+        else
+            IsAdmin = true;
+       // var supplier_id = $('#supplier_id').val();
+       // //var supplier_id = 539;
+       //var SearchString = $('#SearchString').val();
+       // //var SearchString = '';
+       // var fromdate = $('#date_range').data('daterangepicker').startDate;
+       // var enddate = $('#date_range').data('daterangepicker').endDate;
+        var Values = {
+            fromdate: $('#SearchFrom').val(),
+            endDate: $('#SearchTo').val(),
+            supplier_id: $('#supplier_id').val(),
+            SearchString: $('#SearchString').val(),
+            SupplierId: $('#supplier_id').val(),
+            StatusId: $('#Status_Id').val(),
+        };
+        var JsonValues = JSON.stringify(Values);
+        dataSource = new kendo.data.DataSource({
+			transport: {
+                read: function (options) {
+
+                    $.ajax({
+                        //url: '@Url.Action("ProjectsBudgetList", "ProjectsBudget")?supplier_id=' + supplier_id + '&SearchString=' + SearchString + '&fromdate=' + date.toISOString(fromdate) + '&enddate=' + date.toISOString(enddate),
+                        url: '@Url.Action("ProjectsBudgetList", "ProjectsBudget")?JsonValues=' + JsonValues,
+                        type: "GET",
+                        dataType: "json",
+                        success: function (result) {
+                            debugger;
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            options.error(result);
+                        }
+                    });
+				},
+
+                 @*destroy: function (options) {
+                    //debugger
+                     var project_budget_details_id = options.data.models[0].project_budget_details_id;
+                    $.ajax({
+                        url: '@Url.Action("Remove_Project_Budget_Detail", "ProjectsBudget")?Project_Budget_Detail_Id=' + project_budget_details_id,
+                        type: "POST",
+                        dataType: "json",
+                        data: {},
+                        success: function (result) {
+                            //debugger
+                            $("#grid").data('kendoGrid').dataSource.read();
+                            $("#grid").data('kendoGrid').refresh();
+                            if (result.data.Result > 0) {
+                                notify(result.data.Errormessage, "success");
+                            }
+                            else {
+                                notify(result.data.Errormessage, "error");
+                            }
+                            options.success(result);
+                        },
+                        error: function (result) {
+                            //debugger
+                            options.error(result);                       }
+					});
+				},*@
+
+
+				parameterMap: function (options, operation) {
+                    if (operation !== "read" && options.models) {
+                        return { models: kendo.stringify(options.models) };
+                    }
+                }
+			},
+            batch: true,
+            pageSize: 15,
+            schema: {
+                data: "data.Items", total: "data.TotalCount",
+                model: {
+                    project_budget_details_id: "project_budget_details_id",
+                    fields: {
+                       // project_budget_details_id: { type: "number", defaultValue: 0 },
+                        project_budget_id: { type: "number"},
+                        project_id: { type: "number" },
+                        project_name: { validation: { required: true } },
+                        supplier_names: { validation: { required: true } },
+                        //supplier_id: { validation: { required: false } },
+                        status_id: { validation: { required: true } },
+                        budget_amount: { type: "number", validation: { required: true } },
+                        InvoiceAmtWithGST: { type: "number", validation: { required: true } },
+                        Approved_amount: { type: "number", validation: { required: true } },
+                        CreatedUpdated: { validation: { required: true }, editable: false },
+                        status_name: { validation: { required: true } },
+                    }
+                }
+            }
+		});
+         $("#grid").kendoGrid({
+            dataSource: dataSource,
+            navigatable: true,
+            toolbar: [{ name: "excel", text: "Export to Excel " },
+            { name: "search" }, { template: '   <a type="button" class="k-button" style="float:right;" onclick="return  clearAllFilters()" >Clear All Filters</a>' }],
+            excel: {
+                fileName: "Budget Cost List.xlsx",
+                allPages: true,
+            },
+            pageable: {
+                        pageSize: 15,
+                        buttonCount: 15,
+                        pageSizes: [5, 15, 30, 60, 100, 500],
+                        refresh: true,
+                        messages: {
+                            display: "{0} - {1} of {2} BC", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No BC to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "BC per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+            },
+            filterable: true,
+            sortable: true,
+             autoSync: true,
+    //           dataBound: function (e) {
+    //    debugger
+    //    //Nithin Added for disabling  inline edit for approved invoice
+    //               // var ApprovedAmount = e.container.find("input[name=Approved_amount]").data("kendoNumericTextBox");
+
+    //               //ApprovedAmount.enable(false);
+
+        //var grid = $("#grid").data("kendoGrid");
+        //var gridData = grid.dataSource.view();
+        //for (var i = 0; i < gridData.length; i++) {
+    //    //    var currentUid = gridData[i].uid;
+    //    //    if (gridData[i].status_id == 1 || gridData[i].status_id == "1" ) {
+    //    //        debugger
+    //    //        var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+    //    //        var currenttd = grid.table.find("td[data-field='" + "Approved_amount" + "']");
+
+    //    ////        debugger
+    //    ////        //var editButton = $(currenRow).find(".k-grid-Active");
+    //    ////        //editButton.addClass("active_btn");
+    //    //   } else {
+    //    ////        //var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+    //    ////        //var editButton = $(currenRow).find(".k-grid-Active");
+    //    ////        ////  editButton.hide();
+            //    ////        //editButton.removeClass("active_btn");
+        //    gridData[0].fields["Approved_amount"].visible = false;
+        //}
+
+    //    //}
+
+
+
+
+    //},
+            columns: [
+                 {
+                    command: [{
+                            name: "Approve", text: " ", iconClass: "k-icon k-i-check", click: UpdateForApproval, visible: function () {
+                             var StatusId = status_id; return StatusId == "7"  }     },
+                        {
+                            name: "Approved", text: " ", iconClass: "k-icon k-i-undo",
+                            //click: UpdateForDisApproval,
+                            visible: function () {
+                                var StatusId = status_id; return (StatusId == "2" || StatusId == "6")
+                            }
+                        },
+                    ], title: "Approve", width: "50px", hidden: !IsAdmin
+                },
+                {
+                    command: [{
+                        name: "Verify", text: " ", iconClass: "k-icon k-i-check", click: UpdateForVerification, visible: function () {
+                            var StatusId = status_id; return (StatusId == "1")
+                        }
+                    },
+                    {
+                        name: "Verified", text: " ", iconClass: "k-icon k-i-undo",
+                        //click: UpdateForDisApproval,
+                        visible: function () {
+                            var StatusId = status_id; return (StatusId == "2" || StatusId == "6" || StatusId == "7")
+                        }
+                    },
+                    ], title: "Verify", width: "50px", hidden: IsAdmin
+                },
+                { field: "project_budget_details_id", hidden: true},
+                { field: "project_name", title: "Address/Site", filterable: { multi: true, search: true }, editable: true , width: "200px"},
+                { field: "supplier_names", title: "Suppliers", filterable: { multi: true, search: true }, editable: true, width: "130px" },
+                //{ field: "supplier_id", title: "supplier_id", filterable: { multi: true, search: true }, editable: false, width: "130px" },
+                { field: "status_name", title: "Status", filterable: { multi: true, search: true }, editable: true , width: "80px"},
+                { field: "InvoiceNumber", title: "Invoice Number", filterable: { multi: true, search: true }, editable: true , width: "100px"},
+                { field: "budget_amount", title: "Inv Amount", format: "{0:c}", hidden: true,  filterable: { multi: true, search: true }, editable: true, attributes: { style: "text-align:right;" } , width: "100px"},
+                { field: "InvoiceAmtWithGST", title: "Inv Amount(incl.GST)", format: "{0:c}", filterable: { multi: true, search: true }, editable: true, attributes: { style: "text-align:right;" }, width: "130px" },
+                { field: "Approved_amount", title: "App Amount", format: "{0:c}", filterable: { multi: true, search: true }, attributes: { style: "text-align:right;" }, width: "100px"
+                    //, editable: function () {
+                    //    var status = status_id;
+                    //    debugger;
+                    //    if (status != "2") {
+                    //        return true;
+                    //    }
+                    //    else {
+                    //        return false;
+                    //    }
+                    //}
+                },
+                {
+                    field: "reason", title: "Reason", filterable: { multi: true, search: true }, editable: true, width: "100px"},
+                { field: "CreatedUpdated", width: "170px", title: "Created/Updated", filterable: false, editable: true, encoded: false },
+                {
+                    command: [
+                        {
+                            name: "MakePayment", text: " ", iconClass: "k-icon k-i-pencil", click: MakePaymentForBudgetCost, visible: function () {
+                                var StatusId = status_id; return StatusId == "2"
+                            }
+                        },
+                        {
+                            name: "NoPayment", text: " ", iconClass: "k-icon k-i-cancel",
+                            //click: UpdateForDisApproval,
+                            visible: function () {
+                                var StatusId = status_id; return (StatusId == "1" || StatusId == "6" || StatusId == "7")
+                            }
+                        }
+                    ], title: "Payment", width: "50px", hidden: IsAdmin
+                },
+                {
+                    command: [
+                        { name: "editdetails", text: " ", iconClass: "k-icon k-i-pencil", click: UpdateForBudgetCost, visible: function () { return ('@ViewBag.IsAdminLogin' == 'YES'  ) } },
+                        { name: "preview", text: "", className: "view_icon", iconClass: "k-icon ", click: InvoiceFilePreview, visible: function () { return ('@ViewBag.IsAdminLogin' == 'YES' || '@ViewBag.IsAdminLogin' == 'NO') }},
+                        { name: "deletedetails", text: "", iconClass: "k-icon k-i-delete", click: DestroyForBudgetCost, visible: function () { return '@ViewBag.IsAdminLogin' == 'YES' && (status_id == "1" || status_id == "7")} },
+                        //{,
+                        //    name: "Approve", text: " ", iconClass: "k-icon k-i-check", id: "Approve123", click: UpdateForApproval,
+                        // visible: function () {
+                        //     var StatusId = status_id; return StatusId != "2"
+                        //    }},
+
+                        /*{ name: 'Active', text: " ", iconClass: "k-icon k-i-checkmark", id: "Active123", click: ActDeactPackage, className: "active_btn", },*/
+
+                    ], title: "Action", width: "90px" //, hidden: IsAdmin
+                }
+            ],
+			 editable: true,
+             edit: function (e) {
+                 debugger;
+                 var data = e.model;
+                 var ApprovedAmount = e.container.find("input[name=Approved_amount]").data("kendoNumericTextBox");
+                 if (data.status_id == "2" || data.status_id == 2) {
+                     ApprovedAmount.enable(false);
+                 }
+                 else {
+                     ApprovedAmount.enable(true);
+                 }
+             },
+            //editable: "inline",
+		 }).data("kendoGrid");
+    }
+
+    function clearAllFilters() {
+        $("#grid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");
+    }
+
+    function UpdateForBudgetCost(e) {
+        debugger;
+        //var Customer_Id = $('#Customer_Id').val();
+        //if (Customer_Id == 0) {
+        //    notify("Please select customer.", "error");
+        //}
+        //else {
+        //    openModelpop('/Customer/_LoadCustomer', 'id', Customer_Id);
+        //    BindCustomer();
+        //}
+        //openModelpop('/Customer/_LoadCustomer', 'id', Customer_Id);
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var Id = item.project_budget_id;// get the date of this row
+        var project_id = item.project_id;// get the date of this row
+        var project_budget_details_id = item.project_budget_details_id;// get the date of this row
+      //  openModelpopNew('/ProjectsBudget/LoadAddEdit', 'id', Id, 'project_id', project_id, 'project_budget_details_id', project_budget_details_id);
+        openModelpopup('/ProjectsBudget/LoadAddEditNew', 'id', Id, 'ProjectId', project_id);
+    }
+
+    function DestroyForBudgetCost(e) {
+        debugger;
+
+        //var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        //var item = this.dataItem(tr);
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var project_budget_id = item.project_budget_id;// get the date of this row
+        $.ajax({
+            url: '@Url.Action("Remove_Project_Budget", "ProjectsBudget")?project_budget_id=' + project_budget_id,
+           /* data: {},*/
+            type: "POST",
+            dataType: 'Json',
+            success: function (data) {
+                //debugger;
+                var Result = data.data.Result;
+                var Errormessage = data.data.Errormessage;
+                if (data.data.Result == 1)
+                    notify(Errormessage, "success");
+                if (Result > 0) {
+                    ////debugger;
+                    $("#grid").data('kendoGrid').dataSource.read();
+                    $("#grid").data('kendoGrid').refresh();
+                    //notify(Errormessage, "success");
+                }
+                else {
+                    //debugger
+                    notify(Errormessage, "error");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.loader('close');
+                notify("Fail", "error");
+                notify(jqXHR, "error");
+            }
+        });
+    }
+
+    function UpdateForVerification(e) {
+        debugger;
+        //alert('hi');
+        //UpdateForApproval(e);
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var Id = item.project_budget_details_id;// get the date of this row
+        var status_id = 7;//item.status_id;
+        var Approved_amount = item.Approved_amount;
+         $.loader({ content: "<table><tr><td><h5>Verification Of Budget Cost is in Progress</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+         $.ajax({
+
+                        url: '@Url.Action("Update_ForApproval", "ProjectsBudget")?id=' + Id + '&Status_Id=' + status_id + '&Approved_Amount=' + Approved_amount,
+                        /*url: "/ProjectsBudget/Update_ForApproval?Id=" + Id + "&status_id=" + status_id + "&Approved_amount=" + Approved_amount,*/
+                        data: {},
+                        type: "POST",
+                        dataType: 'Json',
+                        success: function (data) {
+                           debugger;
+                            $.loader('close');
+                            var Result = data.data.Result;
+                            var Errormessage = data.data.Errormessage;
+                            if (Result > 0) {
+                                ////debugger;
+                                $("#grid").data('kendoGrid').dataSource.read();
+                                $("#grid").data('kendoGrid').refresh();
+                                //ApprovedAmount.enable(false);
+                                notify("Verified Successfully", "success");
+                            }
+                            else {
+                                debugger;
+                                notif({
+                                    msg: Errormessage,
+                                    type: "error",
+                                    position: "center",
+                                    width: 520,
+                                    opacity: 0.9,
+                                    timeout: 2000
+                                });
+                            }
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            $.loader('close');
+                            notify("Fail", "error");
+                            notify(jqXHR, "error");
+                        }
+                    });
+    }
+
+    function UpdateForApproval(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var Id = item.project_budget_details_id;// get the date of this row
+        var status_id = 2;//item.status_id;
+        var Approved_amount = item.Approved_amount;
+		var detailGridWrapper = this.wrapper;
+        var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+        $.ajax({
+            url: '@Url.Action("CheckApprovedAmount", "ProjectsBudget")?id=' + Id,
+            data: {},
+            type: "POST",
+            dataType: 'Json',
+            success: function (data) {
+                debugger;
+                var ActualApprAmt = data.data.Items.ApprovedAmount
+                if (Approved_amount != ActualApprAmt) {
+                    IsApprovedAmtEdited = true;
+                    openModelpopProjectBudget('/ProjectsBudget/LoadApprovalReason', 'id', Id, 'Approved_Amount', Approved_amount);
+                }
+                else {
+                    $.loader({ content: "<table><tr><td><h5>Approval Of Budget Cost is in Progress</h5></td></tr> <tr><td><br><img src='/Content/img/Preloader_3.gif' /></td></tr></table>" });
+                    $.ajax({
+
+                        url: '@Url.Action("Update_ForApproval", "ProjectsBudget")?id=' + Id + '&Status_Id=' + status_id + '&Approved_Amount=' + Approved_amount,
+                        /*url: "/ProjectsBudget/Update_ForApproval?Id=" + Id + "&status_id=" + status_id + "&Approved_amount=" + Approved_amount,*/
+                        data: {},
+                        type: "POST",
+                        dataType: 'Json',
+                        success: function (data) {
+                            debugger;
+                            $.loader('close');
+                            var Result = data.data.Result;
+                            var Errormessage = data.data.Errormessage;
+                            if (Result > 0) {
+                                debugger;
+                                $("#grid").data('kendoGrid').dataSource.read();
+                                $("#grid").data('kendoGrid').refresh();
+                                //ApprovedAmount.enable(false);
+                                notify(Errormessage, "success");
+                            }
+                            else {
+                                debugger;
+                                notif({
+                                    msg: Errormessage,
+                                    type: "error",
+                                    position: "center",
+                                    width: 520,
+                                    opacity: 0.9,
+                                    timeout: 2000
+                                });
+                            }
+                        },
+                        //error: function (jqXHR, textStatus, errorThrown) {
+                        //    debugger;
+                        //    $.loader('close');
+                        //    notify("Fail", "error");
+                        //    notify(jqXHR, "error");
+                        //}
+                        error: function (data) {
+                            $.loader('close');
+                            notify("Update Approval Status Error", "error");
+                        }
+                    });
+                }
+            },
+            //error: function (jqXHR, textStatus, errorThrown) {
+            //    debugger;
+            //    notify("Fail", "error");
+            //    notify(jqXHR, "error");
+            //}
+            error: function (data) {
+                debugger;
+                $.loader('close');
+                notify("Check Approval Data Error", "error");
+            }
+        });
+    }
+
+
+      function UpdateForDisApproval(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var Id = item.project_budget_details_id;// get the date of this row
+        var status_id = 1;//item.status_id;
+		var Approved_amount = item.Approved_amount;
+		var detailGridWrapper = this.wrapper;
+		var parentTR = detailGridWrapper.closest("tr.k-grid-edit-row");
+	//	var ApprovedAmount = parentTR.find("td[data-container-for='Approved_amount'] input[data-role='numerictextbox']").data("kendoNumericTextBox");
+		//disablecelledit(e);
+       // item.fields["Approved_amount"].editable = false;
+		//debugger
+		//var Values = {
+        //    package_id: PackageId,
+        //    isActive: ActDeactId,
+        //    Reason: Reason,
+        //};
+        //var JsonValues = JSON.stringify(Values);
+        $.ajax({
+
+            url: '@Url.Action("Update_ForApproval", "ProjectsBudget")?id=' + Id + '&Status_Id=' + status_id + '&Approved_Amount=' + Approved_amount,
+            /*url: "/ProjectsBudget/Update_ForApproval?Id=" + Id + "&status_id=" + status_id + "&Approved_amount=" + Approved_amount,*/
+            data: {},
+            type: "POST",
+            dataType: 'Json',
+            success: function (data) {
+                ////debugger;
+                var Result = data.data.Result;
+                var Errormessage = data.data.Errormessage;
+                if (Result > 0) {
+                    ////debugger;
+                    $("#grid").data('kendoGrid').dataSource.read();
+					$("#grid").data('kendoGrid').refresh();
+					//ApprovedAmount.enable(false);
+                    notify(Errormessage, "success");
+                }
+                else {
+                    notify(Errormessage, "error");
+                }
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.loader('close');
+                notify("Fail", "error");
+                notify(jqXHR, "error");
+            }
+        });
+    }
+
+    function SubmitAs(obj) {
+        //debugger;
+        var alphanumers = /^[\w\s]+$/;
+        if ($("#SearchProject").val() == "0" && $("#supplier_id").val() == "0" && $("#ProjectSalesmen").val() == "0" && $("#SearchString").val() == "") {
+            notify("Please select any one of salesman or site or supplier or search.", "error");
+            return false;
+        }
+        else if (!alphanumers.test($("#SearchString").val()) && $("#SearchString").val() != '') {
+                notify("Search can have only alphabets and numbers.", "error");
+                return false;
+        }
+        else {
+             @*document.location = '@Url.Action("Index", "ProjectsBudget")';*@
+            $("#SearchForm").attr('action', '@Url.Action("Index", "ProjectsBudget")').submit();
+            return true;
+        }
+    }
+
+    function Submit() {
+        //debugger;
+        var alphanumers = /^[\w\s]+$/;
+        if ($("#SearchProject").val() == "0" && $("#supplier_id").val() == "0" && $("#ProjectSalesmen").val() == "0" && $("#SearchString").val() == "") {
+            notify("Please select any one of salesman or site or supplier or search.", "error");
+            return false;
+        }
+        else if (!alphanumers.test($("#SearchString").val()) && $("#SearchString").val() != '') {
+                notify("Search can have only alphabets and numbers.", "error");
+                return false;
+        }
+        else {
+             @*document.location = '@Url.Action("Index", "ProjectsBudget")';*@
+            debugger;
+            BindGrid();
+        }
+    }
+
+    function SaveForm() {
+        //debugger;
+        var chval = false;
+        var form = $('#frmProjectBudget');
+        $.validator.unobtrusive.parse(form);
+        if (form.valid() && chval == false) {
+            var errorValidation = false;
+            var jsonData = {
+                id: $('#frmProjectBudget').find("#id").val(),
+                project_id: $('#frmProjectBudget').find("#project_id").val(),
+                projects_budget_details: []
+            };
+            $("#tblbody tr").each(function () {
+                var ddlsupplier_val = $(this).find(".ddlsupplier_id").val();
+
+                if (parseInt(ddlsupplier_val) == 0) {
+                    errorValidation = true;
+                    $(this).find(".ddlsupplier_id").addClass("redborder");
+                } else {
+                    $(this).find(".ddlsupplier_id").removeClass("redborder");
+                }
+
+
+                //debugger;
+
+                var budget_amount_val = $(this).find(".budget_amount").val();
+
+                var project_budget_details_id_val = $(this).find(".project_budget_details_id").val();
+
+
+                if (isNumber(budget_amount_val) == false) {
+                    errorValidation = true;
+                    $(this).find(".budget_amount").addClass("redborder");
+                } else {
+                    $(this).find(".budget_amount").removeClass("redborder");
+                }
+                var remarks_val = $(this).find(".remarks").val();
+                jsonData.projects_budget_details.push({
+                    supplier_id: ddlsupplier_val,
+                    budget_amount: budget_amount_val,
+                    remarks: remarks_val,
+                    project_budget_details_id: project_budget_details_id_val == "" ? 0 : project_budget_details_id_val,
+                });
+
+            });
+
+            if (errorValidation == false) {
+
+                var paymentReturnID = "";
+                $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+
+
+                $.ajax({
+                    type: "POST",
+                    url: "/ProjectsBudget/SaveUpdate", // the URL of the controller action method
+                    data: "objProjectBudget=" + JSON.stringify(jsonData), // optional data
+                    success: function (result) {
+                        $.loader('close');
+                        if (result.cls == "error") {
+                            notify(result.msg, result.cls);
+                        } else {
+                            $("#btnClose").click();
+                            loadGrid();
+                            paymentReturnID = String(result.id);
+                            notify(result.msg, result.cls);
+                        }
+                    },
+                    error: function (req, status, error) {
+                        // do something with error
+                        $.loader('close');
+                        notify(error, "error");
+                    }
+                });
+            }
+        }
+
+
+
+    }
+
+    function loadGrid() {
+        MVCGrid.reloadGrid('ProjectsBudget');
+    }
+
+    function MakePaymentForBudgetCost(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");   // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var Id = item.project_budget_id;// get the date of this row
+        var SupplierId = item.supplier_id;
+        //alert(Id)
+
+        //openModelpopup('/Payments/LoadAddEdit', 'id', 0, 'SupplierId', SupplierId);
+
+        window.location = '@Url.Action("LoadAddEdit", "Payments")?id=' + 0 + '&SupplierId=' + SupplierId;
+    }
+
+    $(function () {
+        $("#SearchProject").chosen();
+        var val = '@ViewBag.MsgDelete';
+        if (val) {
+            notify(val, 'success');
+        }
+    });
+
+    function isNumber(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    function FilterAddressBySalesmans() {
+        //debugger
+        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        $("#SearchProject").empty();
+
+        $.getJSON("/ProjectsBudget/GetAddressSiteBySaleman?salemanId=" + $("#ProjectSalesmen").val(), function (response) {
+            $.each(response, function () {
+                //options.append($("<option />").val(this.Value).text(this.Text));
+                var newOption = $('<option value="' + this.Value + '">' + this.Text + '</option>');
+                $('#SearchProject').append(newOption);
+                $('#SearchProject').trigger("chosen:updated");
+            });
+        });
+
+        $.loader('close');
+    }
+
+    function FilterSupplierByAddress() {
+        //debugger
+        $.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        $("#supplier_id").empty();
+        $.getJSON("/ProjectsBudget/FilterSupplierByAddress?AddressId=" + $("#SearchProject").val(), function (response) {
+            $.each(response, function () {
+
+                    var newOption = $('<option value="' + this.Value + '">' + this.Text + '</option>');
+                    $('#supplier_id').append(newOption);
+                    $('#supplier_id').trigger("chosen:updated");
+
+
+            });
+        });
+        $.loader('close');
+
+    }
+
+    @*function BindSupplier() {
+        debugger;
+        $.get('@Url.Action("BindSupplier", "Master")', function (list) {
+            /*//debugger*/
+            if (list != null) {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "--Select Supplier--" + "</option>");
+                var i;
+                for (i = 0; i < list.data.length; i++) {
+                    items.push("<option value=" + list.data[i].supplier_id + ">" + list.data[i].supplier_name + "</option>");
+                }
+                $("#supplier_id").html(items.join(' '));
+                $('#supplier_id').select2();
+            }
+            else {
+                var items = [];
+                items.push("<option value=" + 0 + ">" + "ALL" + "</option>");
+                $("#supplier_id").html(items.join(' '));
+                $('#supplier_id').select2();
+            }
+        });
+
+    }*@
+
+    function Search() {
+       // //debugger;
+        var alphanumers = /^[\w\s]+$/;
+       if (!alphanumers.test($("#SearchString").val()) && $("#SearchString").val() != '') {
+            notify("Search can have only alphabets and numbers.", "error");
+            return false;
+        }
+    }
+
+    //function InvoiceFilePreview(ProjectId) {
+    function InvoiceFilePreview(e) {
+        debugger;
+        var tr = $(e.target).closest("tr");    // get the current table row (tr)
+        var item = this.dataItem(tr);
+        var project_budget_details_id = item.project_budget_details_id;
+        $.ajax({
+            url: '@Url.Action("GetFilePathByProjectBudgetDetailsId", "ProjectsBudget")',
+            type: "POST",
+            data: { "ProjectId": item.project_id, "ProjectBudgetDetailsId": project_budget_details_id },
+            dataType: 'Json',
+            success: function (result) {
+                //debugger;
+                var path = window.location.origin + result.data;
+                window.open(path, '_blank');
+                //printJS(path);
+            },
+            error: function (jqXHR, textStatus, errorThrown) {
+                $.loader('close');
+                notify("Fail", "error");
+                notify(jqXHR, "error");
+            }
+        });
+        //e.data
+        //var invoicepath = "http://localhost:5998/UploadDocuments/ProjectBudget/10597/282938439509_5.pdf";
+        //printJS(invoicepath);
+    }
+
+
+	//Tooltips For Kendogrid Action Btn
+
+	 $("#grid").kendoTooltip({
+        filter: ".k-grid-editdetails",
+        autoHide: true,
+        content: function (e) {
+            return "Edit BC Details";
+        }
+     });
+    $("#grid").kendoTooltip({
+        filter: ".k-grid-MakePayment",
+        autoHide: true,
+        content: function (e) {
+            return "Make Payment";
+        }
+    });
+    //$("#grid").kendoTooltip({
+    //    filter: ".k-grid-NoPayment",
+    //    autoHide: true,
+    //    content: function (e) {
+    //        return "Payment Not Allowed";
+    //    }
+    //});
+    $("#grid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Delete BC";
+        }
+    });
+    $("#grid").kendoTooltip({
+        filter: ".k-grid-preview",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Preview Invoice";
+        }
+	});
+	 $("#grid").kendoTooltip({
+        filter: ".k-grid-Approve",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Approve Invoice";
+        }
+	 }); $("#grid").kendoTooltip({
+         filter: ".k-grid-Approved",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Already Invoice Approved";
+        }
+     });
+
+    $("#grid").kendoTooltip({
+        filter: ".k-grid-Verified",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Already Invoice Verified";
+        }
+    });
+
+    $("#grid").kendoTooltip({
+        filter: ".k-grid-Verify",
+        autoHide: true,
+        position: "bottom",
+        content: function (e) {
+            return "Verify Invoice";
+        }
+    });
+
+    function openModelpopProjectBudget(pageName, fieldname1, fieldval1, fieldname2, fieldval2) {
+        //$.loader({ content: "<img src='/Content/img/Preloader_3.gif' />" });
+        //$("#modalcontent").html("<img src='/Content/img/Preloader_3.gif' />");
+        $('#mainModel').modal({ backdrop: 'static', keyboard: false });
+        pageName = pageName + "?" + fieldname1 + "=" + fieldval1 + "&" + fieldname2 + "=" + fieldval2;
+        $("#modalcontent").load(pageName);
+        $.loader('close');
+    }
+
+//	function disablecelledit(e) {
+//		console.log(e);
+//			var newgrid = $("#grid").data("kendoGrid");
+//			debugger
+//newgrid.dataSource.at(0).fields["Approved_amount"].editable = false;
+//	}
+
+</script>

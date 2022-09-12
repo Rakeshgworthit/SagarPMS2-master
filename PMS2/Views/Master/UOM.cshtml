@@ -1,0 +1,307 @@
+﻿@*@using Resources;*@
+@{
+    ViewBag.Title = "UOM";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .text_capitalize {
+        text-transform: capitalize
+    }
+ 
+</style>
+<div class="panel box-shadow-none content-header">
+    <div class="panel-body">
+        <div class="col-md-6">
+            <h3 class="animated fadeInLeft text-primary">UOM List</h3>
+        </div>
+    </div>
+</div>
+@*<h1> @Resource.Save</h1>
+<h6> @Resource.Update</h6>*@
+<div class="row mx-3">
+    <div class="col-md-12">
+                <div class="responsive-table">
+                    <div id="UOMgrid"></div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    $(document).ready(function () {
+        kendo.ui.Grid.fn.onAddClearFilter = function () {
+            debugger
+            var grid = this;
+            grid.wrapper.find(".k-grid-add").on("click", function (e) {
+                //console.log('onaddclearfilter');
+                //send to first page if it's not already
+                if (grid.pager) grid.pager.page(1);
+                //clear the filter
+                if (grid.dataSource) grid.dataSource.filter([]);
+            });
+        }
+                    dataSource = new kendo.data.DataSource({
+                        transport: {
+                            read: function (options) {
+                                $.ajax({
+                                    url: '@Url.Action("UOMList", "Master")',
+                                    type: "GET",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            create: function (options) {
+                                debugger
+                                $.ajax({
+                                    url: '@Url.Action("CreateUOM", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonValues: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        if (result.data.Result > 0) {
+
+                                            notify(result.data.Errormessage, "success");
+
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        $("#UOMgrid").data('kendoGrid').dataSource.read();
+                                        $("#UOMgrid").data('kendoGrid').refresh();
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                            },
+                            update: function (options) {
+                                debugger
+                                $.ajax({
+                                  url: '@Url.Action("CreateUOM", "Master")',
+                                    type: "POST",
+                                    dataType: "json",
+                                    data: { JsonValues: JSON.stringify(options.data.models[0]) },
+                                    success: function (result) {
+                                        debugger
+                                        if (result.data.Result > 0) {
+
+                                            notify(result.data.Errormessage, "success");
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        $("#UOMgrid").data('kendoGrid').dataSource.read();
+                                        $("#UOMgrid").data('kendoGrid').refresh();
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                //to clear filter
+                                clearAllFilters();
+                            },
+
+                              destroy: function (options) {
+                                debugger
+                                  var uom_id = options.data.models[0].uom_id;
+                                $.ajax({
+                                    url: '@Url.Action("DeleteUOMByUomId", "Master")?Uom_Id=' + uom_id,
+                                    type: "POST",
+                                    dataType: "json",
+                                    success: function (result) {
+                                        debugger
+                                        if (result.data.Result > 0) {
+
+                                            notify(result.data.Errormessage, "success");
+
+                                        }
+                                        else {
+                                            notify(result.data.Errormessage, "error");
+                                        }
+                                        $("#UOMgrid").data('kendoGrid').dataSource.read();
+                                        $("#UOMgrid").data('kendoGrid').refresh();
+                                        options.success(result);
+                                    },
+                                    error: function (result) {
+                                        debugger
+                                        options.error(result);
+                                    }
+                                });
+                                  //to clear filter
+                                  clearAllFilters();
+                            },
+                             @*read: {
+                                 url: '@Url.Action("UOMList", "Master")',
+                                        type: "GET",
+                                        dataType: "json"
+                            },
+                            update: {
+                               url: '@Url.Action("CreateUOM", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#UOMgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },
+                            destroy: {
+                                 url: '@Url.Action("DeleteUOM", "Master")',
+                                        type: "POST",
+                                        dataType: "json"
+                            },
+                            create: {
+                                url: '@Url.Action("CreateUOM", "Master")',
+                                        type: "POST",
+                                        dataType: "json",
+                                complete: function (e) {
+                                    $("#UOMgrid").data("kendoGrid").dataSource.read();
+                                }
+                            },*@
+                            parameterMap: function (options, operation) {
+                                if (operation !== "read" && options.models) {
+                                    return { models: kendo.stringify(options.models) };
+                                }
+                            }
+                        },
+                        batch: true,
+                        pageSize: 15,
+                        schema: {
+                            data: "data.Items", total: "data.TotalCount",
+                            model: {
+                                id: "uom_id",
+                                fields: {
+                                    uom_id: { editable: false, type: "number"  },
+                                    uom_cd: { validation: { required: true, maxlength: 14 } },
+                                    uom_description: { validation: { required: true, maxlength: 40 }},
+                                    isactive: { validation: { required: true }, defaultValue: true },
+                                    IsSystem: {
+                                        editable: false, validation: { required: false }, type: "boolean"}
+                                }
+                            }
+                        }
+                    });
+
+        var UOMGrid =  $("#UOMgrid").kendoGrid({
+            dataSource: dataSource,
+            //to Handle the add button click
+            dataBound: function (e) {
+                $('.k-grid-add').unbind("click");
+
+                //$('.k-grid-add').bind("click");
+            },
+                    navigatable: true,
+                    pageable: true,
+            toolbar: [{ name: "create", text: "Add New UOM" }, { name: "excel", text: "Export to Excel " }, { name: "search" }, { template: '   <a type="button" class="k-button" onclick="return  clearAllFilters()" style="float:right" >Clear All Filters</a>' }],
+            excel: {
+                fileName: "UOM List.xlsx",
+                allPages: true,
+            },
+            //Nithin Added For Filter Ascending Order
+            filterMenuInit: function (e) {
+                debugger
+                if (e.field === "uom_cd" || e.field === "uom_description") {
+                    var filterMultiCheck = this.thead.find("[data-field=" + e.field + "]").data("kendoFilterMultiCheck")
+                    filterMultiCheck.container.empty();
+                    filterMultiCheck.checkSource.sort({ field: e.field, dir: "asc" });
+
+                    // uncomment the following line to handle any grouping from the original dataSource:
+                    // filterMultiCheck.checkSource.group(null);
+
+                    filterMultiCheck.checkSource.data(filterMultiCheck.checkSource.view().toJSON());
+                    filterMultiCheck.createCheckBoxes();
+                }
+            },
+            serverFiltering: true,
+            reorderable: true,
+                    filterable: true,
+                    sortable: true,
+                    autoSync: true,
+                    resizable: true,
+                    pageable: {
+                        pageSize: 15,
+                        buttonCount: 15,
+                        pageSizes: [5, 15, 30, 60, 100, 500],
+                        messages: {
+                            display: "{0} - {1} of {2} UOM", //{0} is the index of the first record on the page, {1} - index of the last record on the page, {2} is the total amount of records
+                            empty: "No UOM to display",
+                            page: "Page",
+                            of: "of {0}", //{0} is total amount of pages
+                            itemsPerPage: "UOM per page",
+                            first: "Go to the first page",
+                            previous: "Go to the previous page",
+                            next: "Go to the next page",
+                            last: "Go to the last page",
+                            refresh: "Refresh"
+                        }
+                    },
+            columns: [
+              {
+                       command: [{ name: "edit", text: { edit: "", update: "", cancel: "" } },
+                      { name: "destroy", text: "", iconClass: "k-icon k-i-delete"}], title: "Action", width: "100px"
+                   },
+                        { field: "uom_cd", title: "Code", filterable: { multi: true, search: true },width: "200px"},
+                { field: "uom_description", title: "Description", filterable: { multi: true, search: true }, width: "300px" },
+                        { field: "isactive", title: "is active",hidden:true },
+                { field: "IsSystem", title: "System Generated", filterable: { multi: true, search: true }, width: "100px", attributes: { style: "text-align:center;","class":"text_capitalize" }},
+                     ],
+                    editable: "inline"
+        }).data("kendoGrid");
+        UOMGrid.onAddClearFilter();
+    });
+    //Nithin Added to clear all filterrs
+    function clearAllFilters() {
+        $("#UOMgrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");  
+    }
+
+    //Nithin Added to clear all filterrs
+    function clearAllFilters() {
+        $("#UOMgrid").data("kendoGrid").dataSource.filter({});
+        $(".k-grid-search input").val("").trigger("input");
+    }
+
+    //Tooltips For Kendogrid Action Btn
+
+    $("#UOMgrid").kendoTooltip({
+        filter: ".k-grid-cancel",
+        autoHide: true,
+        content: function (e) {
+            return "Cancel UOM";
+        }
+    });
+    $("#UOMgrid").kendoTooltip({
+        filter: ".k-grid-edit",
+        autoHide: true,
+        content: function (e) {
+            return "Edit UOM Details";
+        }
+    });
+    $("#UOMgrid").kendoTooltip({
+        filter: ".k-grid-delete",
+        autoHide: true,
+        content: function (e) {
+            return "Delete UOM";
+        }
+    });
+    $("#UOMgrid").kendoTooltip({
+        filter: ".k-grid-update",
+        autoHide: true,
+        content: function (e) {
+            return "Update UOM";
+        }
+    });
+</script>
+
+
+

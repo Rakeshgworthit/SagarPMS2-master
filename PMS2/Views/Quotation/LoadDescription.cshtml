@@ -1,0 +1,180 @@
+﻿@model PMS.Models.AdditionalDescription
+@{
+    Layout = null;
+}
+<style>
+    /*Nithin start added for kendo popup in contract terms*/
+    div.k-widget.k-window {
+        right: 5%;
+        left: 5% !important;
+    }
+
+    div.k-edit-form-container {
+        width: auto;
+        height: auto;
+    }
+
+    .k-edit-form-container .editor-label, .k-edit-label {
+        float: left;
+        clear: both;
+        width: 10%;
+        padding: .4em 0 1em;
+        margin-left: 2%;
+        text-align: right;
+    }
+
+    .k-edit-field, .k-edit-form-container .editor-field {
+        float: right;
+        clear: right;
+        width: 80%;
+        margin-right: 2%;
+        padding: 0 0 .6em;
+    }
+
+    table.k-editor {
+        min-height: 567px;
+    }
+
+    textarea.k-editor-textarea.k-input {
+        width: 94%;
+        margin: 1%;
+    }
+    /*Nithin End added for kendo popup in contract terms*/
+    /*Nithin start Added contract terms description stop show less inside grid*/
+    .contract_description_td {
+        white-space: nowrap;
+    }
+
+    .k-edit-field .k-no-editor {
+        display: none;
+    }
+
+    .k-edit-field.k-no-editor, .k-edit-form-container .editor-field.k-no-editor {
+        display: none;
+    }
+
+    label[for="Id"] {
+        display: none;
+    }
+</style>
+<div id="Description_modal" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-header">
+        <h4 class="modal-title">Description</h4>
+        <button type="button" class="close" data-dismiss="modal" onclick="CloseModal();">&times;</button>
+    </div>
+    <div class="modal-body">
+        <div class="row mx-3">
+            <div class="col-md-12">
+                <div id="example">
+                    @*<textarea id="DescriptionTest"></textarea>*@
+                    <textarea id="Description">@Html.Raw(@Model.Description) </textarea>
+                    @*@Html.EditorFor(x => x.Description, Model.Description)*@
+                    <input type="hidden" id="hdnId" name="hdnId" value="@Model.Id" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="btnOk" name="btnOk" type="submit" onclick="SaveDescription();" data-dismiss="modal" class="btn btn-primary">Okay</button>
+    </div>
+</div>
+@*<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.common-material.min.css" />*@
+@*<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.material.min.css" />*@
+@*<link rel="stylesheet" href="https://kendo.cdn.telerik.com/2018.3.1017/styles/kendo.material.mobile.min.css" />*@
+@*<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/jquery.min.js"></script>*@
+@*<script src="https://kendo.cdn.telerik.com/2018.3.1017/js/kendo.all.min.js"></script>*@
+
+<script type="text/javascript">
+        $(document).ready(function () {
+            debugger;
+            //$("#Description").append($("#hdnDescription").val());
+            $("#Description").kendoEditor({
+                tools: [
+                    "bold",
+                    "italic",
+                    "underline",
+                    "strikethrough",
+                    "justifyLeft",
+                    "justifyCenter",
+                    "justifyRight",
+                    "justifyFull",
+                    "insertUnorderedList",
+                    "insertOrderedList",
+                    "insertUpperRomanList",
+                    "insertLowerRomanList",
+                    "indent",
+                    "outdent",
+                    "createLink",
+                    "unlink",
+                    "subscript",
+                    "superscript",
+                    "tableWizard",
+                    "createTable",
+                    "addRowAbove",
+                    "addRowBelow",
+                    "addColumnLeft",
+                    "addColumnRight",
+                    "deleteRow",
+                    "deleteColumn",
+                    "mergeCellsHorizontally",
+                    "mergeCellsVertically",
+                    "splitCellHorizontally",
+                    "splitCellVertically",
+                    "tableAlignLeft",
+                    "tableAlignCenter",
+                    "tableAlignRight",
+                    "viewHtml",
+                    "formatting",
+                    "cleanFormatting",
+                    "copyFormat",
+                    "applyFormat",
+                    "fontName",
+                    "fontSize",
+                    "foreColor",
+                    "backColor",
+                    "print"
+                ],
+                encoded: false,
+            });
+
+
+        });
+
+    function CloseModal() {        
+            $("#Description_modal").modal('hide');
+        }
+
+        function SaveDescription() {
+            debugger;
+            var Description = escape($("#Description").val());
+            var Id = $("#hdnId").val()
+            $.ajax({
+                url: '@Url.Action("SaveDescription", "Quotation")',
+                type: "POST",
+                dataType: "json",
+                data:
+                {
+                    description: Description,
+                    Id: Id
+                },
+                success: function (result) {
+                    debugger;
+                    if (Id.length > 0 || Id != "") {
+                        window.location.reload();
+                    }
+                    else {
+                        CloseModal();
+                    }
+                },
+                error: function (result) {
+                    // debugger
+                    CloseModal();
+                }
+            });
+        }
+
+</script>
+
+
+
+

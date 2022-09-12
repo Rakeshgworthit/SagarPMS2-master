@@ -1,0 +1,337 @@
+﻿@model PMS.Models.PrintBatchPaymentViewModel
+@{
+    Layout = null;
+}
+
+<div class="modal-header">
+    <h4 class="modal-title">Print Preview</h4>
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+
+</div>
+<div class="modal-body">
+    <form class="form-horizontal" id="frmPayment" name="frmPayment">
+        <div id="PrintElement">
+            <center>
+                @{
+                    int chkrw = Convert.ToInt32(Model.printpaymentviewmodel.Count());
+                }
+
+                @foreach (var objprintbatch in Model.printpaymentviewmodel)
+                {
+                    @*//*****************Start Main Header********************//*@
+                    <table width="95%" style="color:#000000!important;" class="printaddress">
+                        <tr>
+                            <td align="left" valign="top" width="68%"></td>
+
+                            <td align="left" valign="top" width="32%"></td>
+                        </tr>
+
+                        <tr>
+                            <td align="left" valign="top">
+                                <b>
+                                    @objprintbatch.ssp_paymentById_result.branch_name
+                                </b>
+                            </td>
+                            <td align="left" valign="top"></td>
+                        </tr>
+
+                        <tr>
+                            <td align="left" valign="top">
+                                <b> Payment Voucher</b>
+                            </td>
+                            <td align="left" valign="top"></td>
+                        </tr>
+
+                        <tr>
+                            <td align="left" valign="top" colspan="2">
+                                &nbsp;
+                            </td>
+                        </tr>
+
+                        @*//***************END Main Header**********************//*@
+
+                        <tr>
+                            <td colspan="2">
+                                <table style="width:100%; border-collapse: collapse;" border="1" class="printaddress">
+                                    <tr>
+                                        <td align="left" valign="top" width="68%">
+                                            &nbsp;&nbsp;<b>Payee</b>
+                                            <br />
+                                            &nbsp; @objprintbatch.ssp_paymentById_result.supplier_name
+                                        </td>
+                                        <td align="left" valign="top" width="32%">
+                                            &nbsp; <b>Date &nbsp; &nbsp; &nbsp;:</b> @Convert.ToDateTime(@objprintbatch.ssp_paymentById_result.payment_date).ToString("dd/MM/yyyy")
+                                            <br />
+                                            &nbsp; <b> Cheque :</b>  @objprintbatch.ssp_paymentById_result.cheque_number
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" valign="top" colspan="2">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="center" valign="top" width="68%">
+                                            <b>Description </b>
+                                        </td>
+                                        <td align="center" valign="top" width="32%">
+                                            <b>Amount</b>
+                                        </td>
+                                    </tr>
+
+                                    @foreach (var pdlist in objprintbatch.payment_details)
+                                    {
+
+                                        <tr>
+                                            <td align="left" valign="top" width="68%">
+                                                &nbsp; @pdlist.supplier_inv_number
+                                            </td>
+                                            <td align="left" valign="top" width="32%">
+                                                <div style="float:left;margin-left:20px;">
+                                                    $
+                                                </div>
+                                                <div style="float:right;margin-right:5px;">
+                                                    @(Convert.ToDecimal(pdlist.payment_amount))
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    @if (objprintbatch.payment_details.Count < 6)
+                                    {
+                                        int totalRow = 7 - objprintbatch.payment_details.Count;
+
+                                        for (int i = 0; i < totalRow; i++)
+                                        {
+                                            <tr>
+                                                <td align="left" valign="top" width="68%">
+                                                    &nbsp;
+                                                </td>
+                                                <td align="left" valign="top" width="32%">
+                                                    &nbsp;
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                    <tr>
+                                        <td align="left" valign="top" width="68%">
+                                            &nbsp;
+                                        </td>
+                                        <td align="left" valign="top" width="32%">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+
+                                    <tr>
+                                        <td align="left" valign="top">
+                                            &nbsp; <b>Total Amount</b>
+                                        </td>
+
+                                        <td align="right" valign="top">
+                                            <div style="float:left;margin-left:20px;">
+                                                $
+                                            </div>
+                                            <div style="float:right;margin-right:5px;">
+                                                <b> @objprintbatch.payment_details.Sum(o => o.payment_amount)</b>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" valign="top">
+                                            &nbsp;  <b>Rebate</b>
+                                        </td>
+
+                                        <td align="right" valign="top">
+                                            <div style="float:left;margin-left:20px;">
+                                                $
+                                            </div>
+                                            <div style="float:right;margin-right:5px;">
+                                                <b>(@(Convert.ToDecimal(objprintbatch.ssp_paymentById_result.rebate_amount)))</b>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" valign="top" width="68%">
+                                            &nbsp;
+                                        </td>
+                                        <td align="left" valign="top" width="32%">
+                                            &nbsp;
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td align="left" valign="top">
+                                            &nbsp; <b>Total Paid Amount</b>
+                                        </td>
+
+                                        <td align="right" valign="top">
+                                            <div style="float:left;margin-left:20px;">
+                                                $
+                                            </div>
+                                            <div style="float:right;margin-right:5px;">
+                                                <b>@(Convert.ToDecimal(objprintbatch.payment_details.Sum(o => o.payment_amount)) - Convert.ToDecimal(objprintbatch.ssp_paymentById_result.rebate_amount))</b>
+
+                                            </div>
+                                        </td>
+                                    </tr>
+
+
+
+                                    @if (objprintbatch.SSP_PaymentsDescription_Result != null)
+                                    {
+                                        if (objprintbatch.SSP_PaymentsDescription_Result.Count > 0)
+                                        {
+                                            <tr>
+                                                <td align="left" valign="top" colspan="2">
+                                                    &nbsp;
+                                                </td>
+                                            </tr>
+                                        }
+
+
+                                        foreach (var pdlist in objprintbatch.SSP_PaymentsDescription_Result)
+                                        {
+
+                                            <tr>
+                                                <td align="left" valign="top" width="68%">
+                                                    &nbsp;   <b>@(Convert.ToString(pdlist.description))</b>
+                                                </td>
+
+                                                <td align="right" valign="top" width="32%">
+                                                    <div style="float:left;margin-left:20px;">
+                                                        $
+                                                    </div>
+
+                                                    @if (pdlist.amount < 0)
+                                                    {
+                                                        <div style="float:right;margin-right:5px;">
+                                                            <b>(@(Convert.ToDecimal(pdlist.amount * -1)))</b>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div style="float:right;margin-right:5px;">
+                                                            <b>@(Convert.ToDecimal(pdlist.amount))</b>
+                                                        </div>
+                                                    }
+
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+
+                                    @if (objprintbatch.SSP_PaymentsDescription_Result.Count > 0)
+                                    {
+                                        <tr>
+                                            <td align="left" valign="top" width="68%">
+                                                &nbsp; <b>Total To Be Paid</b>
+                                            </td>
+                                            <td align="right" valign="top" width="32%">
+                                                <div style="float:left;margin-left:20px;">
+                                                    $
+                                                </div>
+
+                                                @{
+                                                    decimal TotalAmount = (Convert.ToDecimal(objprintbatch.payment_details.Sum(o => o.payment_amount)) - Convert.ToDecimal(objprintbatch.ssp_paymentById_result.rebate_amount) +
+                                        Convert.ToDecimal(objprintbatch.SSP_PaymentsDescription_Result.Sum(i => i.amount)));
+                                                    if (TotalAmount < 0)
+                                                    {
+                                                        <div style="float:right;margin-right:5px;">
+                                                            <b>(@TotalAmount)</b>
+                                                        </div>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div style="float:right;margin-right:5px;">
+                                                            <b>@TotalAmount</b>
+                                                        </div>
+                                                    }
+                                                }
+                                                @*@(Convert.ToDecimal(objprintbatch.SSP_PaymentsDescription_Result.Sum(i => i.amount)))*@
+                                            </td>
+                                        </tr>
+                                    }
+                                </table>
+                            </td>
+                        </tr>
+
+                        @*//***************Start Footer**********************//*@
+                        <tr>
+                            <td align="right" width="68%"></td>
+                            <td align="center" valign="top" style="font-size:11px;" width="32%" class="textlabelnormal">
+                                <b> FULL & FINAL SETTLEMENT</b>
+                                <br />
+                                <br />
+
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="right"></td>
+                            <td align="center" valign="top">
+                                <b>Received by</b>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td align="right" valign="top">&nbsp;</td>
+                            <td align="right" valign="top">&nbsp;</td>
+                        </tr>
+
+                        <tr>
+                            <td align="right" valign="top">&nbsp;</td>
+                            <td align="right" valign="top">&nbsp;</td>
+                        </tr>
+
+                        <tr>
+                            <td align="left"></td>
+                            <td align="right" colspan="1" style="border-bottom:solid 1px #000000;" valign="bottom">
+                            </td>
+                        </tr>
+
+                        @*//***************Start Footer**********************//*@
+                    </table>
+
+                    chkrw = chkrw - 1;
+                    if (chkrw > 0)
+                    {
+                        <div style="display: block; page-break-before: always;"></div>
+                    }
+                }
+            </center>
+        </div>
+
+    </form>
+</div>
+<div class="modal-footer">
+    <button id="btnSave" name="btnSave" type="submit" class="btn btn-primary" onclick="PrintElem();">Print</button>
+    <button id="btnClose" name="btnClose" type="button" class="btn btn-secondary" onclick="CloseElem();" data-dismiss="modal">Close</button>
+</div>
+<script>
+
+    function CloseElem() {
+        location.reload();
+    }
+
+    function PrintElem() {
+        var elem = "PrintElement";
+        var mywindow = window.open('', 'PRINT', 'height=400,width=600');
+
+        mywindow.document.write('<html><head><title></title>');
+        mywindow.document.write('<style>@@page { size: auto;margin:0mm; margin-left:30px;} body{font-family:"Source Sans Pro","Helvetica Neue",Helvetica,Arial,sans-serif;} .printaddress { font-size: 13px;} .textlabel { font-size: 12px!Important;font-weight: bold;} .textlabelnormal{ font-size: 12px!Important;font-weight: normal;} .tablebgcolor {background-color:#000000; /*border-spacing:1px!important;*/border-collapse: separate!important;} .trbgcolor { background-color:#ffffff;} .trbgcolorextra { border-bottom:solid 1px #000000; background-color:#ffffff; } .trbgcolorextratopbottom { border-top:solid 1px #000000;border-bottom:solid 1px #000000; background-color:#ffffff; }  .table_borders{ border: 1px solid black;}</style>');
+        mywindow.document.write('</head><body >');
+        mywindow.document.write("<br>");
+        mywindow.document.write(document.getElementById(elem).innerHTML);
+        mywindow.document.write('</body></html>');
+
+        mywindow.document.close(); // necessary for IE >= 10
+        mywindow.focus(); // necessary for IE >= 10*/
+
+        mywindow.print();
+        mywindow.close();
+
+        return false;
+    }
+
+</script>

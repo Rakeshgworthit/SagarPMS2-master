@@ -1,0 +1,40 @@
+27 Jul 2022 12:30:38 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Contract/SendingMail
+Method Name: SendingMail
+iTextSharp.text.DocumentException: Could not find a part of the path 'D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Signature\Contract\2022\BR2_201\BR2_201-.jpg'.
+   at iTextSharp.text.pdf.PdfDocument.Add(IElement element)
+   at iTextSharp.text.Document.Add(IElement element)
+   at PMS.Controllers.ContractController.SendEmailWithPDF(String emailID, String subject, String path, String fileNameWithExt, String fullAddress, Signature signature, String mailType, String Id, String TaskId) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ContractController.cs:line 3620
+Get Base Exception  :  
+iTextSharp.text.DocumentException: Could not find a part of the path 'D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Signature\Contract\2022\BR2_201\BR2_201-.jpg'.
+   at iTextSharp.text.pdf.PdfDocument.Add(IElement element)
+   at iTextSharp.text.Document.Add(IElement element)
+   at PMS.Controllers.ContractController.SendEmailWithPDF(String emailID, String subject, String path, String fileNameWithExt, String fullAddress, Signature signature, String mailType, String Id, String TaskId) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ContractController.cs:line 3620
+Get Base Exception  :  
+iTextSharp.text.DocumentException: Could not find a part of the path 'D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Signature\Contract\2022\BR2_201\BR2_201-.jpg'.
+   at iTextSharp.text.pdf.PdfDocument.Add(IElement element)
+   at iTextSharp.text.Document.Add(IElement element)
+   at PMS.Controllers.ContractController.SendEmailWithPDF(String emailID, String subject, String path, String fileNameWithExt, String fullAddress, Signature signature, String mailType, String Id, String TaskId) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ContractController.cs:line 3620
+--------------------------------------------------------------------------------
+27 Jul 2022 12:33:34 PM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/Contract/SendingMail
+Method Name: SendingMail
+iTextSharp.text.DocumentException: Could not find a part of the path 'D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Signature\Contract\2022\BR2_200\BR2_200-Achu_Koh_Sow_Chee.jpg'.
+   at iTextSharp.text.pdf.PdfDocument.Add(IElement element)
+   at iTextSharp.text.Document.Add(IElement element)
+   at PMS.Controllers.ContractController.SendEmailWithPDF(String emailID, String subject, String path, String fileNameWithExt, String fullAddress, Signature signature, String mailType, String Id, String TaskId) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ContractController.cs:line 3918
+Get Base Exception  :  
+iTextSharp.text.DocumentException: Could not find a part of the path 'D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Signature\Contract\2022\BR2_200\BR2_200-Achu_Koh_Sow_Chee.jpg'.
+   at iTextSharp.text.pdf.PdfDocument.Add(IElement element)
+   at iTextSharp.text.Document.Add(IElement element)
+   at PMS.Controllers.ContractController.SendEmailWithPDF(String emailID, String subject, String path, String fileNameWithExt, String fullAddress, Signature signature, String mailType, String Id, String TaskId) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ContractController.cs:line 3918
+Get Base Exception  :  
+iTextSharp.text.DocumentException: Could not find a part of the path 'D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Signature\Contract\2022\BR2_200\BR2_200-Achu_Koh_Sow_Chee.jpg'.
+   at iTextSharp.text.pdf.PdfDocument.Add(IElement element)
+   at iTextSharp.text.Document.Add(IElement element)
+   at PMS.Controllers.ContractController.SendEmailWithPDF(String emailID, String subject, String path, String fileNameWithExt, String fullAddress, Signature signature, String mailType, String Id, String TaskId) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ContractController.cs:line 3918
+--------------------------------------------------------------------------------

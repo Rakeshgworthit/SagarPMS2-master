@@ -1,0 +1,82 @@
+11 Aug 2022 10:40:00 AM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/ProjectsBudget/Remove_Project_Budget_Detail?project_budget_detail_Id=117295
+Method Name: Remove_Project_Budget_Detail Parameters= 117295
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'SSP_Remove_Project_Budget_Detail' expects parameter '@project_budget_detail_id', which was not supplied.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at PMS.Data_Access.DBSqlCommand.ExecuteDataReader(String commandText) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DBSqlCommands.cs:line 84
+   at PMS.Data_Access.DataLayer.Remove_Project_Budget_Detail(String project_budget_detail_id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DataLayer.cs:line 8027
+ClientConnectionId:87b9eae8-255c-4979-800f-589b831faac2
+Error Number:201,State:4,Class:16
+Get Base Exception  :  
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'SSP_Remove_Project_Budget_Detail' expects parameter '@project_budget_detail_id', which was not supplied.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at PMS.Data_Access.DBSqlCommand.ExecuteDataReader(String commandText) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DBSqlCommands.cs:line 84
+   at PMS.Data_Access.DataLayer.Remove_Project_Budget_Detail(String project_budget_detail_id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DataLayer.cs:line 8027
+ClientConnectionId:87b9eae8-255c-4979-800f-589b831faac2
+Error Number:201,State:4,Class:16
+Get Base Exception  :  
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'SSP_Remove_Project_Budget_Detail' expects parameter '@project_budget_detail_id', which was not supplied.
+   at System.Data.SqlClient.SqlConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.SqlInternalConnection.OnError(SqlException exception, Boolean breakConnection, Action`1 wrapCloseInAction)
+   at System.Data.SqlClient.TdsParser.ThrowExceptionAndWarning(TdsParserStateObject stateObj, Boolean callerHasConnectionLock, Boolean asyncClose)
+   at System.Data.SqlClient.TdsParser.TryRun(RunBehavior runBehavior, SqlCommand cmdHandler, SqlDataReader dataStream, BulkCopySimpleResultSet bulkCopyHandler, TdsParserStateObject stateObj, Boolean& dataReady)
+   at System.Data.SqlClient.SqlDataReader.TryConsumeMetaData()
+   at System.Data.SqlClient.SqlDataReader.get_MetaData()
+   at System.Data.SqlClient.SqlCommand.FinishExecuteReader(SqlDataReader ds, RunBehavior runBehavior, String resetOptionsString, Boolean isInternal, Boolean forDescribeParameterEncryption, Boolean shouldCacheForAlwaysEncrypted)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReaderTds(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, Boolean async, Int32 timeout, Task& task, Boolean asyncWrite, Boolean inRetry, SqlDataReader ds, Boolean describeParameterEncryptionRequest)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method, TaskCompletionSource`1 completion, Int32 timeout, Task& task, Boolean& usedCache, Boolean asyncWrite, Boolean inRetry)
+   at System.Data.SqlClient.SqlCommand.RunExecuteReader(CommandBehavior cmdBehavior, RunBehavior runBehavior, Boolean returnStream, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader(CommandBehavior behavior, String method)
+   at System.Data.SqlClient.SqlCommand.ExecuteReader()
+   at PMS.Data_Access.DBSqlCommand.ExecuteDataReader(String commandText) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DBSqlCommands.cs:line 84
+   at PMS.Data_Access.DataLayer.Remove_Project_Budget_Detail(String project_budget_detail_id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DataLayer.cs:line 8027
+ClientConnectionId:87b9eae8-255c-4979-800f-589b831faac2
+Error Number:201,State:4,Class:16
+--------------------------------------------------------------------------------
+11 Aug 2022 10:40:00 AM        Debug Version:AGMSUser IP Address:::1
+--------------------------------------------------------------------------------
+Information
+URL :http://localhost:5998/ProjectsBudget/Remove_Project_Budget_Detail?project_budget_detail_Id=117295
+Method Name: Remove_Project_Budget_Detail
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'SSP_Remove_Project_Budget_Detail' expects parameter '@project_budget_detail_id', which was not supplied.
+   at PMS.Data_Access.DataLayer.Remove_Project_Budget_Detail(String project_budget_detail_id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DataLayer.cs:line 8040
+   at PMS.Controllers.ProjectsBudgetController.Remove_Project_Budget_Detail(String project_budget_detail_Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ProjectsBudgetController.cs:line 1275
+ClientConnectionId:87b9eae8-255c-4979-800f-589b831faac2
+Error Number:201,State:4,Class:16
+Get Base Exception  :  
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'SSP_Remove_Project_Budget_Detail' expects parameter '@project_budget_detail_id', which was not supplied.
+   at PMS.Data_Access.DataLayer.Remove_Project_Budget_Detail(String project_budget_detail_id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DataLayer.cs:line 8040
+   at PMS.Controllers.ProjectsBudgetController.Remove_Project_Budget_Detail(String project_budget_detail_Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ProjectsBudgetController.cs:line 1275
+ClientConnectionId:87b9eae8-255c-4979-800f-589b831faac2
+Error Number:201,State:4,Class:16
+Get Base Exception  :  
+System.Data.SqlClient.SqlException (0x80131904): Procedure or function 'SSP_Remove_Project_Budget_Detail' expects parameter '@project_budget_detail_id', which was not supplied.
+   at PMS.Data_Access.DataLayer.Remove_Project_Budget_Detail(String project_budget_detail_id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Data Access\DataLayer.cs:line 8040
+   at PMS.Controllers.ProjectsBudgetController.Remove_Project_Budget_Detail(String project_budget_detail_Id) in D:\Development\Swathi\Source\D4S\PMS 2 D4S\SagarPMS2\PMS2\Controllers\ProjectsBudgetController.cs:line 1275
+ClientConnectionId:87b9eae8-255c-4979-800f-589b831faac2
+Error Number:201,State:4,Class:16
+--------------------------------------------------------------------------------
